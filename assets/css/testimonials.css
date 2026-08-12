@@ -1,0 +1,147 @@
+/* ===== Testimonials ===== */
+.testimonials {
+    padding: 100px 0;
+    background: #F7F8FA;
+    overflow: hidden;
+}
+
+.ts-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.ts-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.ts-title {
+    font-family: var(--font-main);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #0F172A;
+    margin: 0;
+}
+
+.ts-social {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.ts-avatars {
+    display: flex;
+}
+
+.ts-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #C7CCD6;
+    border: 2px solid #F7F8FA;
+    margin-left: -8px;
+    object-fit: cover;
+    display: block;
+}
+
+.ts-avatar:first-child {
+    margin-left: 0;
+}
+
+.ts-avatar-count {
+    background: #0F172A;
+    color: #fff;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.ts-stars {
+    color: var(--color-lime);
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.ts-social-label {
+    font-size: 12px;
+    color: #8A93A3;
+}
+
+.ts-track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+    margin: 0 -40px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.ts-track::-webkit-scrollbar {
+    height: 6px;
+}
+
+.ts-track::-webkit-scrollbar-thumb {
+    background: #D9DCE3;
+    border-radius: 999px;
+}
+
+.ts-card {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+    background: linear-gradient(160deg, #1A1F2E 0%, #0B0E17 100%);
+    border-radius: 20px;
+    padding: 24px;
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #fff;
+}
+
+.ts-card-head strong {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.ts-card-head span {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+}
+
+.ts-stat {
+    font-family: var(--font-main);
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.ts-card-body p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.85);
+    margin: 0;
+}
+
+@media (max-width: 700px) {
+    .ts-title {
+        font-size: 24px;
+    }
+    .ts-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .ts-social {
+        align-items: flex-start;
+    }
+}

@@ -1,0 +1,140 @@
+/* ===== Tienda Física ===== */
+.tienda-fisica {
+    padding: 100px 0;
+    background: #F7F8FA;
+    text-align: center;
+}
+
+.tf-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.tf-eyebrow {
+    display: block;
+    color: var(--color-primary-blue);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.tf-title {
+    font-family: var(--font-main);
+    font-size: 32px;
+    font-weight: 700;
+    color: #0F172A;
+    margin: 0 0 12px;
+}
+
+.tf-subtitle {
+    font-size: 15px;
+    color: #5B6472;
+    max-width: 520px;
+    margin: 0 auto 40px;
+    line-height: 1.6;
+}
+
+.tf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    text-align: left;
+    margin-bottom: 24px;
+}
+
+.tf-info-card {
+    background: #fff;
+    border: 1px solid #E7E9EE;
+    border-radius: 20px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+}
+
+.tf-info-row {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid #EDEEF2;
+}
+
+.tf-info-row:first-child {
+    padding-top: 0;
+}
+
+.tf-icon {
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid var(--color-primary-blue);
+    border-radius: 5px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.tf-info-row strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-primary-blue);
+    margin-bottom: 6px;
+}
+
+.tf-info-row p {
+    font-size: 14px;
+    color: #3A4150;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.tf-info-card 
+
+.tf-map {
+    border-radius: 20px;
+    overflow: hidden;
+    min-height: 320px;
+    border: 1px solid #E7E9EE;
+}
+
+.tf-cta-banner {
+    background: #EEF2FF;
+    border: 1px solid #D6E0FF;
+    border-radius: 20px;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    text-align: left;
+}
+
+.tf-cta-banner strong {
+    display: block;
+    font-size: 15px;
+    color: #0F172A;
+    margin-bottom: 4px;
+}
+
+.tf-cta-banner p {
+    font-size: 13px;
+    color: #5B6472;
+    margin: 0;
+}
+
+@media (max-width: 800px) {
+    .tf-grid {
+        grid-template-columns: 1fr;
+    }
+    .tf-map {
+        min-height: 260px;
+    }
+    .tf-cta-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .tf-title {
+        font-size: 26px;
+    }
+}

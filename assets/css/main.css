@@ -1,0 +1,70 @@
+:root {
+    --color-primary-blue: #2952E3;
+    --color-badge-dark: #0F172A;
+    --color-lime: #D4F547;
+    --color-text-muted: #CBD5E1;
+    --font-main: 'Stack Sans Headline', sans-serif;
+}
+
+/* ===== Global Buttons (usado en múltiples secciones) ===== */
+.btn {
+    font-family: var(--font-main);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 16px 28px;
+    border-radius: 999px;
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity 0.2s ease;
+}
+
+.btn:hover {
+    opacity: 0.85;
+}
+
+.btn-primary {
+    background: var(--color-lime);
+    color: #0F172A;
+}
+
+.btn-outline {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.6);
+}
+
+.btn-block {
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+
+.btn-outline-dark {
+    display: inline-block;
+    border: 1.5px solid #D9DCE3;
+    color: #0F172A;
+    padding: 12px 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.btn-outline-dark:hover {
+    border-color: #0F172A;
+}
+
+.btn-primary-blue {
+    background: var(--color-primary-blue);
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.btn-primary-blue:hover {
+    opacity: 0.9;
+}

@@ -1,0 +1,131 @@
+/* ===== Commission ===== */
+.commission {
+    padding: 100px 0;
+    background: #fff;
+    text-align: center;
+}
+
+.cm-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.cm-eyebrow {
+    display: block;
+    color: var(--color-primary-blue);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.cm-title {
+    font-family: var(--font-main);
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #0F172A;
+    margin: 0 0 16px;
+}
+
+.cm-subtitle {
+    font-size: 15px;
+    color: #5B6472;
+    max-width: 520px;
+    margin: 0 auto 48px;
+    line-height: 1.6;
+}
+
+.cm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    text-align: left;
+    margin-bottom: 24px;
+}
+
+.cm-card {
+    border: 1px solid #E7E9EE;
+    border-radius: 20px;
+    padding: 28px;
+}
+
+.cm-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--color-primary-blue);
+    margin-bottom: 16px;
+}
+
+.cm-card h3 {
+    font-family: var(--font-main);
+    font-size: 20px;
+    font-weight: 700;
+    color: #0F172A;
+    margin: 0 0 8px;
+}
+
+.cm-desc {
+    font-size: 13px;
+    color: #5B6472;
+    line-height: 1.5;
+    margin: 0 0 24px;
+    max-width: 320px;
+}
+
+.cm-rate {
+    font-family: var(--font-main);
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--color-primary-blue);
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.cm-rate-note {
+    font-size: 13px;
+    color: #8A93A3;
+}
+
+.cm-cta-banner {
+    background: #EEF2FF;
+    border: 1px solid #D6E0FF;
+    border-radius: 20px;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    text-align: left;
+}
+
+.cm-cta-banner strong {
+    display: block;
+    font-size: 16px;
+    color: #0F172A;
+    margin-bottom: 4px;
+}
+
+.cm-cta-banner p {
+    font-size: 13px;
+    color: #5B6472;
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+    .cm-grid {
+        grid-template-columns: 1fr;
+    }
+    .cm-cta-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .cm-title {
+        font-size: 26px;
+    }
+}

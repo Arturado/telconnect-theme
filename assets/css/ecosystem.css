@@ -1,0 +1,150 @@
+/* ===== Ecosystem ===== */
+.ecosystem {
+    padding: 64px 20px;
+}
+
+.eco-container {
+    max-width: 1120px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #E7E9EE;
+    border-radius: 32px;
+    padding: 48px 48px 40px;
+    text-align: center;
+}
+
+.eco-badge {
+    display: inline-block;
+    background: #EEF2FF;
+    color: var(--color-primary-blue);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 20px;
+}
+
+.eco-title {
+    font-family: var(--font-main);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #0F172A;
+    margin: 0 0 28px;
+}
+
+.eco-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.eco-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #E1E4EA;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-family: var(--font-main);
+    font-size: 13px;
+    font-weight: 500;
+    color: #3A4150;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.eco-tab:hover {
+    border-color: var(--color-primary-blue);
+}
+
+.eco-tab.is-active {
+    border-color: var(--color-primary-blue);
+    background: #F3F6FF;
+    color: var(--color-primary-blue);
+}
+
+.eco-tab-icon {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    object-fit: contain;
+}
+
+.eco-photo-wrap {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: left;
+}
+
+.eco-photo-wrap img.eco-main-photo {
+    width: 100%;
+    display: block;
+    max-height: 420px;
+    object-fit: cover;
+    transition: opacity 0.25s ease;
+}
+
+.eco-floating-card {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    max-width: 300px;
+    background: rgba(15, 20, 32, 0.85);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    border-radius: 14px;
+    padding: 18px 20px;
+}
+
+.eco-floating-title {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.eco-floating-desc {
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.75);
+    margin: 0;
+}
+
+.eco-hashtags-label {
+    display: block;
+    font-size: 12px;
+    color: #8A93A3;
+    margin: 24px 0 14px;
+}
+
+.eco-hashtags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 20px;
+}
+
+.eco-hashtags span {
+    font-size: 13px;
+    font-weight: 500;
+    color: #3A4150;
+}
+
+@media (max-width: 700px) {
+    .eco-container {
+        padding: 32px 20px;
+    }
+    .eco-title {
+        font-size: 24px;
+    }
+    .eco-floating-card {
+        position: static;
+        max-width: 100%;
+        margin-top: 12px;
+        border-radius: 14px;
+    }

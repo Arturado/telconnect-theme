@@ -1,0 +1,53 @@
+<section class="faq">
+    <div class="faq-container">
+        <span class="faq-eyebrow">Preguntas frecuentes</span>
+        <h2 class="faq-title">Todo lo que necesitas saber antes de comprar</h2>
+
+        <div class="faq-list">
+            <?php
+            /**
+             * Respuestas: solo tenía las preguntas visibles en el Figma (colapsadas).
+             * Reemplaza el texto de 'answer' con el copy real del cliente/diseñador
+             * apenas lo tengan definido — por ahora dejé respuestas breves y genéricas
+             * para que el acordeón no se vea vacío al abrir.
+             */
+            $faqs = array(
+                array(
+                    'q' => '¿Comprar con Telconnect cuesta más que comprar directo en TUU?',
+                    'a' => 'No. Somos distribuidor autorizado: mismos precios, mismas comisiones y misma garantía. Lo que agregamos no tiene costo adicional: asesoría, instalación presencial en Santiago y soporte directo.',
+                ),
+                array(
+                    'q' => '¿Qué incluye mi máquina?',
+                    'a' => 'Pagos con tarjeta, boleta y factura electrónica conectada al SII, catálogo e inventario, sistema de reervas y acceso a Adelanto, Abono Flexible y Cuotas TUU. Todo activado desde el primer día, sin costo extra. ',
+                ),
+                array(
+                    'q' => '¿Hay mensualidad o arriendo?',
+                    'a' => 'No. Solo pagas la comisión por transacción. No hay cobro por emitir boletas, por el chip, por mantención ni por tener la máquina. El equipo es tuyo.',
+                ),
+                array(
+                    'q' => '¿Cuál es la comisión?',
+                    'a' => '1,49% por venta con bono en 1 día hábil, sin IVA. Es la misma tarifa para débito, crédito y prepago nacional. Las tarjetas internacionales tienen tarifas distintas. ',
+                ),
+                array(
+                    'q' => '¿En cuánto tiempo llega?',
+                    'a' => 'En comunas de Santiago la Recibes el mismo día si compras antes de las 12:00. En el resto de la Región Metropolitana, de 1 a 3 días hábiles: en regiones, de 3 a 5. El Desapacho es gratis en todo Chile.',
+                ),
+            );
+
+            foreach ( $faqs as $i => $faq ) :
+                ?>
+                <details class="faq-item"<?php echo 0 === $i ? ' open' : ''; ?>>
+                    <summary>
+                        <span><?php echo esc_html( $faq['q'] ); ?></span>
+                        <span class="faq-icon" aria-hidden="true"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p><?php echo esc_html( $faq['a'] ); ?></p>
+                    </div>
+                </details>
+                <?php
+            endforeach;
+            ?>
+        </div>
+    </div>
+</section>
