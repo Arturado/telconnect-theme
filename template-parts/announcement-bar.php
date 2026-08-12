@@ -1,6 +1,6 @@
 <div class="announcement-bar">
     <div class="announcement-content">
-        <span class="announcement-icon">🏆</span>
+        <img class="announcement-icon" src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/icons/award.svg' ); ?>" alt="">
         <span>Haulmer Partner Award 2026</span>
         <span class="dot">·</span>
         <span>Distribuidor Autorizado TUU</span>

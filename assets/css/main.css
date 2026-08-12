@@ -2,11 +2,14 @@
     --color-primary-blue: #2952E3;
     --color-eyebrow-blue: #2B5EED;
     --color-badge-dark: #0F172A;
-    --color-lime: #D4F547;
+    --color-lime: #E5FF9E;
     --color-text-muted: #CBD5E1;
     --color-heading: #0D0F15;
     --color-body: #5A6073;
+    --color-ink-300: #686C76;
+    --color-red: #E20829;
     --font-main: 'Stack Sans Headline', sans-serif;
+    --font-body: 'Stack Sans Text', sans-serif;
 
     /* Escala tipográfica — valores reales de Figma */
     --text-h1: 78px;
@@ -36,7 +39,7 @@
 }
 
 body {
-    font-family: var(--font-main);
+    font-family: var(--font-body);
     color: var(--color-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -53,10 +56,11 @@ p {
 
 /* ===== Global Buttons (usado en múltiples secciones) ===== */
 .btn {
-    font-family: var(--font-main);
-    font-weight: 600;
-    font-size: 15px;
-    padding: 16px 28px;
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: 16px;
+    letter-spacing: -0.002em;
+    padding: 17px 32px;
     border-radius: 999px;
     text-decoration: none;
     display: inline-block;
@@ -69,13 +73,13 @@ p {
 
 .btn-primary {
     background: var(--color-lime);
-    color: #0F172A;
+    color: var(--color-heading);
 }
 
 .btn-outline {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.2);
     color: #fff;
-    border: 1.5px solid rgba(255,255,255,0.6);
+    border: 1.5px solid #fff;
 }
 
 .btn-block {
