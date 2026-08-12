@@ -13,17 +13,17 @@
 
 .dp-title {
     font-family: var(--font-main);
-    font-size: 34px;
-    font-weight: 700;
-    color: #0F172A;
+    font-size: var(--text-section-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
     max-width: 620px;
     margin: 0 auto 16px;
     line-height: 1.25;
 }
 
 .dp-subtitle {
-    font-size: 15px;
-    color: #5B6472;
+    font-size: var(--text-subtitle);
+    color: var(--color-body);
     max-width: 560px;
     margin: 0 auto 48px;
     line-height: 1.6;

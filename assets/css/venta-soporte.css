@@ -13,15 +13,15 @@
 
 .vs-title {
     font-family: var(--font-main);
-    font-size: 32px;
-    font-weight: 700;
-    color: #0F172A;
+    font-size: var(--text-section-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
     margin: 0 0 12px;
 }
 
 .vs-subtitle {
-    font-size: 15px;
-    color: #5B6472;
+    font-size: var(--text-subtitle);
+    color: var(--color-body);
     max-width: 480px;
     margin: 0 auto 48px;
     line-height: 1.6;

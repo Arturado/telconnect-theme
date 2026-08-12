@@ -13,9 +13,9 @@
 
 .cm-eyebrow {
     display: block;
-    color: var(--color-primary-blue);
-    font-size: 13px;
-    font-weight: 700;
+    color: var(--color-eyebrow-blue);
+    font-size: var(--text-eyebrow);
+    font-weight: var(--weight-medium);
     letter-spacing: 0.04em;
     text-transform: uppercase;
     margin-bottom: 16px;
@@ -23,16 +23,16 @@
 
 .cm-title {
     font-family: var(--font-main);
-    font-size: 34px;
-    font-weight: 700;
+    font-size: var(--text-section-title);
+    font-weight: var(--weight-medium);
     line-height: 1.25;
-    color: #0F172A;
+    color: var(--color-heading);
     margin: 0 0 16px;
 }
 
 .cm-subtitle {
-    font-size: 15px;
-    color: #5B6472;
+    font-size: var(--text-subtitle);
+    color: var(--color-body);
     max-width: 520px;
     margin: 0 auto 48px;
     line-height: 1.6;

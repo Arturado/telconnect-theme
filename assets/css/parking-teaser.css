@@ -13,9 +13,9 @@
 
 .pt-eyebrow {
     display: block;
-    color: var(--color-primary-blue);
-    font-size: 13px;
-    font-weight: 700;
+    color: var(--color-eyebrow-blue);
+    font-size: var(--text-eyebrow);
+    font-weight: var(--weight-medium);
     letter-spacing: 0.04em;
     text-transform: uppercase;
     margin-bottom: 16px;
@@ -23,15 +23,15 @@
 
 .pt-title {
     font-family: var(--font-main);
-    font-size: 34px;
-    font-weight: 700;
-    color: #0F172A;
+    font-size: var(--text-section-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
     margin: 0 0 16px;
 }
 
 .pt-subtitle {
-    font-size: 15px;
-    color: #5B6472;
+    font-size: var(--text-subtitle);
+    color: var(--color-body);
     max-width: 560px;
     margin: 0 auto 48px;
     line-height: 1.6;

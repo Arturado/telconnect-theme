@@ -1,9 +1,54 @@
 :root {
     --color-primary-blue: #2952E3;
+    --color-eyebrow-blue: #2B5EED;
     --color-badge-dark: #0F172A;
     --color-lime: #D4F547;
     --color-text-muted: #CBD5E1;
+    --color-heading: #0D0F15;
+    --color-body: #5A6073;
     --font-main: 'Stack Sans Headline', sans-serif;
+
+    /* Escala tipográfica — valores reales de Figma */
+    --text-h1: 78px;
+    --text-eyebrow: 12px;
+    --text-section-title: 48px;   /* H2 de cada sección */
+    --text-subtitle: 18px;        /* párrafo bajo el H2 */
+    --text-card-title: 20px;      /* H3 dentro de cards */
+    --text-body: 14px;            /* texto de párrafo genérico dentro de cards */
+    --text-small: 13px;           /* notas, labels chicos */
+
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+    --weight-extrabold: 800;
+
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.6;
+}
+
+/* ===== Reset base / Tipografía global ===== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    color: var(--color-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-main);
+    margin: 0;
+}
+
+p {
+    margin: 0;
 }
 
 /* ===== Global Buttons (usado en múltiples secciones) ===== */
