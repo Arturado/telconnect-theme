@@ -1,11 +1,11 @@
 :root {
     --color-primary-blue: #2952E3;
     --color-eyebrow-blue: #2B5EED;
-    --color-badge-dark: #0F172A;
+    --color-badge-dark: #0D0F15;
     --color-lime: #E5FF9E;
     --color-text-muted: #CBD5E1;
-    --color-heading: #0D0F15;
-    --color-body: #5A6073;
+    --color-heading: #151A24;
+    --color-body: #686C76;
     --color-ink-300: #686C76;
     --color-red: #E20829;
     --font-main: 'Stack Sans Headline', sans-serif;

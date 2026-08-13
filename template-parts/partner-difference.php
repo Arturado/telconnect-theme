@@ -7,13 +7,12 @@
         <div class="pd-grid">
 
             <!-- Card 1: Atención presencial (mapa) -->
-            <div class="pd-card pd-card-blue">
+            <div class="pd-card pd-card-blue" style="background-image: url('<?php echo esc_url( get_template_directory_uri() . '/assets/img/geo.png' ); ?>');">
                 <div class="pd-card-text">
                     <h3>Atención, soporte y venta presencial en Santiago</h3>
                     <p>Compra tu máquina y recíbela el mismo día activada en tu local en Santiago, o visítanos en nuestras oficinas de Vicuña Mackena, La Florida.</p>
                 </div>
                 <div class="pd-map">
-                    <div class="pd-map-dots"></div>
                     <div class="pd-map-pin">
                         <span class="pd-pin-dot"></span>
                     </div>
@@ -22,7 +21,7 @@
             </div>
 
             <!-- Card 2: Tarifa TUU (stats) -->
-            <div class="pd-card pd-card-dark">
+            <div class="pd-card pd-card-dark" style="background-image: url('<?php echo esc_url( get_template_directory_uri() . '/assets/img/tarifa-bg.jpg' ); ?>');">
                 <div class="pd-card-text">
                     <h3>La tarifa oficial TUU, sin recargo</h3>
                     <p>Mismo precio que comprando directo. Lo que agregamos no te cuesta más.</p>
@@ -31,15 +30,21 @@
                     <span class="pd-stats-label">Tu venta de $12.000, al detalle</span>
                     <div class="pd-stats-rings">
                         <div class="pd-ring pd-ring-sm">
-                            <strong>1,49%</strong>
+                            <div class="pd-ring-visual pd-ring-visual-sm">
+                                <strong>1,49%</strong>
+                            </div>
                             <span>Comisión</span>
                         </div>
                         <div class="pd-ring pd-ring-lg">
-                            <strong>98,5%</strong>
+                            <div class="pd-ring-visual pd-ring-visual-lg">
+                                <strong>98,5%</strong>
+                            </div>
                             <span>Recibes</span>
                         </div>
                         <div class="pd-ring pd-ring-sm">
-                            <strong>0%</strong>
+                            <div class="pd-ring-visual pd-ring-visual-sm pd-ring-visual-empty">
+                                <strong>0%</strong>
+                            </div>
                             <span>Mensualidad</span>
                         </div>
                     </div>
@@ -47,28 +52,40 @@
                         <div>
                             <span class="pd-total-label">Total de la venta</span>
                             <strong>$12.000</strong>
+                            <span class="pd-total-note">Con tarjeta de débito, crédito o prepago</span>
                         </div>
                         <div>
                             <span class="pd-total-label">Comisión cobrada</span>
                             <strong>$179</strong>
+                            <span class="pd-total-note">1,49% por venta, más IVA</span>
                         </div>
                     </div>
-                    <span class="pd-stats-note">Con tarjeta de débito, crédito o QR.</span>
                 </div>
             </div>
 
-            <!-- Card 3: Abono al instante (foto) -->
-            <div class="pd-card pd-card-photo">
-                <div class="pd-card-text">
+            <!-- Card 3: Abono al instante (foto full-bleed) -->
+            <div class="pd-card pd-card-photo" style="background-image: url('<?php echo esc_url( get_template_directory_uri() . '/assets/img/partner-abono.jpg' ); ?>');">
+                <div class="pd-photo-overlay"></div>
+                <div class="pd-card-text pd-card-text-overlay">
                     <h3>Recibes el abono de tus ventas al instante</h3>
                     <p>Recibe el abono de tus ventas en el momento de la transacción, y revisa directamente desde tu máquina.</p>
                 </div>
-                <div class="pd-photo-wrap">
-                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/partner-abono.jpg' ); ?>" alt="Recibe el abono de tus ventas al instante" loading="lazy">
+
+                <div class="pd-floating-wrap">
+                    <!-- Cards fantasma difuminadas apiladas detrás -->
+                    <div class="pd-floating-ghost pd-floating-ghost-1"></div>
+                    <div class="pd-floating-ghost pd-floating-ghost-2"></div>
+
                     <div class="pd-floating-card">
-                        <span class="pd-floating-accent" aria-hidden="true"></span>
+                        <span class="pd-floating-icon">
+                            <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/icons/logo-mark.svg' ); ?>" alt="">
+                        </span>
                         <div class="pd-floating-info">
-                            <span class="pd-floating-label">Abono recibido <em>hace 3 min</em></span>
+                            <div class="pd-floating-top">
+                                <span class="pd-floating-dot"></span>
+                                <span class="pd-floating-label">Abono recibido</span>
+                                <span class="pd-floating-time">hace 3 min</span>
+                            </div>
                             <strong>$248.500</strong>
                             <span class="pd-floating-sub">Disponibles en tu cuenta.</span>
                         </div>
@@ -77,7 +94,7 @@
             </div>
 
             <!-- Card 4: Ecosistema -->
-            <div class="pd-card pd-card-dark pd-card-ecosystem">
+            <div class="pd-card pd-card-ecosystem">
                 <div class="pd-card-text">
                     <h3>Obtén un ecosistema, no solo una maquinita.</h3>
                     <p>Nueve herramientas incluidas. Más Telconnect Parking, exclusivamente solo con nosotros.</p>

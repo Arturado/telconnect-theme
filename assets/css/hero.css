@@ -38,7 +38,7 @@
 .hero-badge {
     display: inline-flex;
     align-items: center;
-    background: var(--color-heading);
+    background: var(--color-badge-dark);
     color: #fff;
     font-family: var(--font-body);
     font-size: 15px;
