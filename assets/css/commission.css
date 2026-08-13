@@ -1,24 +1,24 @@
 /* ===== Commission ===== */
 .commission {
-    padding: 100px 0;
+    padding: 40px 80px;
     background: #fff;
     text-align: center;
 }
 
 .cm-container {
-    max-width: 900px;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 0 40px;
 }
 
 .cm-eyebrow {
     display: block;
     color: var(--color-eyebrow-blue);
+    font-family: var(--font-body);
     font-size: var(--text-eyebrow);
     font-weight: var(--weight-medium);
     letter-spacing: 0.09em;
     text-transform: uppercase;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .cm-title {
@@ -27,107 +27,189 @@
     font-weight: var(--weight-medium);
     line-height: 58px;
     letter-spacing: -0.01em;
-    line-height: 1.25;
-    color: var(--color-heading);
-    margin: 0 0 16px;
+    color: #0D0F15;
+    max-width: 628px;
+    margin: 0 auto 16px;
 }
 
 .cm-subtitle {
+    font-family: var(--font-body);
     font-size: var(--text-subtitle);
     color: var(--color-body);
-    max-width: 520px;
+    max-width: 628px;
     margin: 0 auto 48px;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
 .cm-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    justify-content: center;
     gap: 24px;
-    text-align: left;
     margin-bottom: 24px;
 }
 
 .cm-card {
-    border: 1px solid #E7E9EE;
-    border-radius: 20px;
-    padding: 28px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px;
+    gap: 40px;
+    width: 519px;
+    background: #fff;
+    border: 1px solid #D9D4C6;
+    box-shadow: 0px 10px 28px -6px rgba(18,23,43,0.06);
+    border-radius: 24px;
+    text-align: left;
+}
+
+.cm-card-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
 }
 
 .cm-tag {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.03em;
+    display: block;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: var(--color-primary-blue);
-    margin-bottom: 16px;
+    color: var(--color-eyebrow-blue);
 }
 
 .cm-card h3 {
     font-family: var(--font-main);
-    font-size: 20px;
-    font-weight: 700;
-    color: #0F172A;
-    margin: 0 0 8px;
+    font-size: 34px;
+    font-weight: var(--weight-medium);
+    line-height: 40px;
+    letter-spacing: -0.005em;
+    color: #0D0F15;
+    margin: 0;
+    width: 100%;
 }
 
 .cm-desc {
-    font-size: 13px;
-    color: #5B6472;
-    line-height: 1.5;
-    margin: 0 0 24px;
-    max-width: 320px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-body);
+    opacity: 0.72;
+    margin: 0;
+    width: 100%;
+}
+
+.cm-tarifa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    text-align: center;
 }
 
 .cm-rate {
     font-family: var(--font-main);
-    font-size: 40px;
-    font-weight: 800;
-    color: var(--color-primary-blue);
-    line-height: 1;
-    margin-bottom: 8px;
+    font-size: 76px;
+    font-weight: var(--weight-medium);
+    line-height: 78px;
+    letter-spacing: -0.02em;
+    color: var(--color-eyebrow-blue);
+    width: 100%;
 }
 
 .cm-rate-note {
-    font-size: 13px;
-    color: #8A93A3;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 24px;
+    color: #848484;
+    opacity: 0.75;
 }
 
 .cm-cta-banner {
-    background: #EEF2FF;
-    border: 1px solid #D6E0FF;
-    border-radius: 20px;
-    padding: 28px 32px;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 24px;
+    padding: 32px 40px;
+    gap: 40px;
+    max-width: 1062px;
+    margin: 0 auto;
+    background: #EAEFFD;
+    border: 1px solid var(--color-eyebrow-blue);
+    border-radius: 20px;
     text-align: left;
+}
+
+.cm-cta-banner > div:first-child {
+    flex: 1;
 }
 
 .cm-cta-banner strong {
     display: block;
-    font-size: 16px;
-    color: #0F172A;
-    margin-bottom: 4px;
+    font-family: var(--font-main);
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    line-height: 29px;
+    color: #151A24;
+    margin-bottom: 6px;
 }
 
 .cm-cta-banner p {
-    font-size: 13px;
-    color: #5B6472;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--color-body);
     margin: 0;
 }
 
+.cm-cta-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 24px;
+    background: var(--color-eyebrow-blue);
+    color: #fff;
+    border-radius: 999px;
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: var(--weight-medium);
+    letter-spacing: -0.002em;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+}
+
+.cm-cta-btn:hover {
+    opacity: 0.9;
+}
+
 @media (max-width: 900px) {
+    .commission {
+        padding: 48px 20px;
+    }
+    .cm-title {
+        font-size: 32px;
+        line-height: 1.3;
+    }
     .cm-grid {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: center;
+    }
+    .cm-card {
+        width: 100%;
+        max-width: 460px;
+        padding: 32px;
+    }
+    .cm-rate {
+        font-size: 48px;
+        line-height: 1.1;
     }
     .cm-cta-banner {
         flex-direction: column;
         align-items: flex-start;
-    }
-    .cm-title {
-        font-size: 26px;
     }
 }

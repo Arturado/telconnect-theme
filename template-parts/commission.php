@@ -6,19 +6,27 @@
 
         <div class="cm-grid">
             <div class="cm-card">
-                <span class="cm-tag">Abonado al instante</span>
-                <h3>Comisión Estándar</h3>
-                <p class="cm-desc">La mejor si el monto promedio de tus ventas es menor a $9.300.</p>
-                <div class="cm-rate">1,49%</div>
-                <span class="cm-rate-note">por transacción + IVA</span>
+                <div class="cm-card-copy">
+                    <span class="cm-tag">Abonado al instante</span>
+                    <h3>Comisión Estándar</h3>
+                    <p class="cm-desc">La mejor si el monto promedio de tus ventas es menor a $9.300.</p>
+                </div>
+                <div class="cm-tarifa">
+                    <div class="cm-rate">1,49%</div>
+                    <span class="cm-rate-note">por transacción + IVA</span>
+                </div>
             </div>
 
             <div class="cm-card">
-                <span class="cm-tag">Abonado al instante</span>
-                <h3>Comisión Mixta</h3>
-                <p class="cm-desc">La mejor si el monto promedio de tus ventas es mayor a $9.300.</p>
-                <div class="cm-rate">0,79% + $65</div>
-                <span class="cm-rate-note">por transacción + IVA</span>
+                <div class="cm-card-copy">
+                    <span class="cm-tag">Abonado al instante</span>
+                    <h3>Comisión Mixta</h3>
+                    <p class="cm-desc">La mejor si el monto promedio de tus ventas es mayor a $9.300.</p>
+                </div>
+                <div class="cm-tarifa">
+                    <div class="cm-rate">0,79% + $65</div>
+                    <span class="cm-rate-note">por transacción + IVA</span>
+                </div>
             </div>
         </div>
 
@@ -27,7 +35,7 @@
                 <strong>¿Vendes más de $10 millones mensuales?</strong>
                 <p>Escríbenos y armamos una comisión a tu medida según tu ticket promedio.</p>
             </div>
-            <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="btn btn-primary-blue">Contactar un ejecutivo</a>
+            <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="cm-cta-btn">Contactar un ejecutivo</a>
         </div>
     </div>
 </section>
