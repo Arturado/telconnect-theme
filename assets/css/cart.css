@@ -1,0 +1,438 @@
+/* =====================================================
+   Carrito — mismo criterio que checkout.css: sin Figma real
+   todavía, layout construido sobre los tokens y patrones ya
+   establecidos (card style de .dp-card, botón .btn-primary,
+   grid 1fr/400px de .chk-grid). Iterar con Copy-as-CSS cuando
+   exista el diseño real.
+   ===================================================== */
+
+.crt-page {
+    padding: 56px 24px 96px;
+    background: #F7F8FA;
+}
+
+.crt-container {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.crt-eyebrow {
+    display: block;
+    color: var(--color-eyebrow-blue);
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.crt-title {
+    font-family: var(--font-main);
+    font-size: 36px;
+    font-weight: var(--weight-medium);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--color-heading);
+    margin: 0 0 32px;
+}
+
+/* ===== Notices (cupón inválido, stock, etc.) ===== */
+.crt-container .woocommerce-error,
+.crt-container .woocommerce-message,
+.crt-container .woocommerce-info {
+    list-style: none;
+    margin: 0 0 24px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--color-red);
+    color: var(--color-heading);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+}
+
+.crt-container .woocommerce-message,
+.crt-container .woocommerce-info {
+    border-color: #D9D9D9;
+}
+
+/* Mismo criterio que checkout.css: el ícono ::before del core (fuente
+   "WooCommerce", posicionado absolute left:1.5em) queda flotando sobre
+   el texto al resetear el padding a un valor parejo — se oculta en vez
+   de recalcular el padding para el ícono. */
+.crt-container .woocommerce-error::before,
+.crt-container .woocommerce-message::before,
+.crt-container .woocommerce-info::before {
+    display: none;
+}
+
+/* ===== Grid principal: items | resumen sticky ===== */
+.crt-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 32px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .crt-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.crt-items-col {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 24px;
+}
+
+/* ===== Tabla de items ===== */
+.crt-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.crt-table thead th {
+    text-align: left;
+    padding: 0 0 16px;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    color: var(--color-body);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #EEF0F3;
+}
+
+.crt-table tbody tr.woocommerce-cart-form__cart-item {
+    border-bottom: 1px solid #EEF0F3;
+}
+
+.crt-table td {
+    padding: 20px 12px 20px 0;
+    vertical-align: middle;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+}
+
+.crt-table .product-remove {
+    width: 32px;
+    padding-right: 4px;
+}
+
+.crt-table .remove.crt-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: var(--color-body);
+    font-size: 18px;
+    line-height: 1;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.crt-table .remove.crt-remove:hover {
+    background: #FCE4E7;
+    color: var(--color-red);
+}
+
+.crt-table .product-thumbnail img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 12px;
+    background: #F0F1F4;
+    border: 1px solid #EEF0F3;
+}
+
+.crt-table .product-name a {
+    color: var(--color-heading);
+    font-weight: var(--weight-medium);
+    text-decoration: none;
+}
+
+.crt-table .product-name a:hover {
+    text-decoration: underline;
+}
+
+.crt-table .product-price,
+.crt-table .product-subtotal {
+    white-space: nowrap;
+}
+
+.crt-table .product-subtotal {
+    font-weight: var(--weight-medium);
+}
+
+/* Quantity stepper nativo de WC (woocommerce_quantity_input) */
+.crt-table .quantity .qty {
+    width: 64px;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 10px;
+    padding: 8px 10px;
+    text-align: center;
+}
+
+.crt-table .quantity .qty:focus {
+    outline: none;
+    border-color: var(--color-eyebrow-blue);
+}
+
+/* Fila de acciones: cupón + actualizar carrito */
+.crt-table tr .actions {
+    padding-top: 20px;
+}
+
+.crt-table .coupon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.crt-table .coupon .input-text {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 10px;
+    padding: 10px 14px;
+    width: 200px;
+    max-width: 100%;
+}
+
+.crt-table .coupon .input-text:focus {
+    outline: none;
+    border-color: var(--color-eyebrow-blue);
+}
+
+.crt-table button.button {
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 999px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.crt-table button.button:hover {
+    border-color: var(--color-eyebrow-blue);
+}
+
+/* ===== Cross-sells (reusa .plp-grid / .dp-card) ===== */
+.crt-cross-sells {
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px solid #EEF0F3;
+}
+
+.crt-cross-sells-title {
+    font-family: var(--font-main);
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 20px;
+}
+
+/* La grilla genérica .plp-grid es a 3 columnas; los cross-sells del
+   carrito por defecto son solo 2 (woocommerce_cross_sell_display),
+   así que se limita a 2 columnas para que no queden apretados dentro
+   de la columna angosta de items. */
+.crt-cross-sells-grid.plp-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 620px) {
+    .crt-cross-sells-grid.plp-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== Columna resumen ===== */
+.crt-summary-col {
+    position: sticky;
+    top: 24px;
+}
+
+.crt-summary-card {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 28px;
+}
+
+.crt-summary-title {
+    font-family: var(--font-main);
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 20px;
+}
+
+.crt-totals-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.crt-totals-table tr th,
+.crt-totals-table tr td {
+    padding: 12px 0;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: var(--weight-regular);
+    color: var(--color-body);
+    text-align: left;
+    border-bottom: 1px solid #EEF0F3;
+}
+
+.crt-totals-table tr td {
+    text-align: right;
+    color: var(--color-heading);
+}
+
+/* La fila de envío tiene su propia lista de métodos (radios), no debe
+   heredar text-align:right — mismo criterio que .chk-review-table. */
+.crt-totals-table tr.shipping td,
+.crt-totals-table tr.woocommerce-shipping-totals td {
+    text-align: left;
+}
+
+.crt-totals-table ul#shipping_method {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.crt-totals-table ul#shipping_method li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.crt-totals-table ul#shipping_method li label {
+    flex: 1;
+}
+
+.crt-totals-table ul#shipping_method input[type="radio"] {
+    accent-color: var(--color-eyebrow-blue);
+    width: 16px;
+    height: 16px;
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+.crt-totals-order-total th,
+.crt-totals-order-total td {
+    border-bottom: none;
+    padding-top: 16px;
+    font-family: var(--font-main);
+    font-size: 22px;
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+}
+
+/* ===== Calculadora de envío ===== */
+.crt-totals-table .shipping-calculator-button {
+    color: var(--color-eyebrow-blue);
+    font-weight: var(--weight-medium);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.crt-totals-table .shipping-calculator-form .form-row {
+    margin: 0 0 12px;
+}
+
+.crt-totals-table .shipping-calculator-form label {
+    display: block;
+    font-size: var(--text-small);
+    color: var(--color-heading);
+    margin-bottom: 4px;
+}
+
+.crt-totals-table .shipping-calculator-form select,
+.crt-totals-table .shipping-calculator-form input.input-text {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+/* ===== Botón "Proceder al pago" ===== */
+.crt-proceed-to-checkout {
+    margin-top: 20px;
+}
+
+/* Especificidad reforzada (.button.alt) a propósito: el core tiene
+   ".woocommerce a.button.alt" y ".woocommerce-cart .wc-proceed-to-checkout
+   a.checkout-button" (ambas 0,3,1 vía :where()), que le ganaban a una regla
+   de 2 clases — mismo bug de especificidad ya documentado en pdp.css con
+   el botón "Agregar al carrito". */
+.crt-proceed-to-checkout a.checkout-button.button.alt {
+    display: block;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 0;
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: 16px;
+    letter-spacing: -0.002em;
+    padding: 17px 32px;
+    border-radius: 999px;
+    background-color: var(--color-lime);
+    color: var(--color-heading);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.crt-proceed-to-checkout a.checkout-button.button.alt:hover {
+    opacity: 0.85;
+    background-color: var(--color-lime);
+    color: var(--color-heading);
+}
+
+/* ===== Carrito vacío ===== */
+.crt-empty {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+}
+
+.crt-empty .woocommerce-info {
+    border: none;
+    background: none;
+    padding: 0 0 24px;
+    margin: 0;
+    font-size: var(--text-subtitle);
+    color: var(--color-body);
+}
+
+.crt-empty-cta {
+    display: inline-block;
+}

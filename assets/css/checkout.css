@@ -1,0 +1,560 @@
+/* =====================================================
+   Checkout — sin Figma real todavía, layout construido
+   sobre los tokens y patrones ya establecidos (card style
+   de .dp-card, botón .btn-primary, tipografía de secciones).
+   Iterar con Copy-as-CSS cuando exista el diseño real.
+   ===================================================== */
+
+.chk-page {
+    padding: 56px 24px 96px;
+    background: #F7F8FA;
+}
+
+.chk-container {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.chk-eyebrow {
+    display: block;
+    color: var(--color-eyebrow-blue);
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.chk-title {
+    font-family: var(--font-main);
+    font-size: 36px;
+    font-weight: var(--weight-medium);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--color-heading);
+    margin: 0 0 32px;
+}
+
+/* ===== Notices (errores de validación, RUT inválido, etc.) ===== */
+.chk-container .woocommerce-error,
+.chk-container .woocommerce-message,
+.chk-container .woocommerce-info {
+    list-style: none;
+    margin: 0 0 24px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--color-red);
+    color: var(--color-heading);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+}
+
+/* El core reserva padding-left:3.5em para el ícono ::before (fuente
+   "WooCommerce") y lo posiciona con left:1.5em absoluto — al resetear
+   el padding a un valor parejo, el ícono queda flotando encima del
+   texto. Se oculta en vez de recalcular el padding: el resto del sitio
+   no usa iconografía de fuente en notices, así que es más consistente
+   que reservar espacio para un ícono que no encaja con el estilo. */
+.chk-container .woocommerce-error::before,
+.chk-container .woocommerce-message::before,
+.chk-container .woocommerce-info::before {
+    display: none;
+}
+
+.chk-container .woocommerce-message {
+    border-color: var(--color-eyebrow-blue);
+}
+
+/* ===== Cupón ===== */
+.chk-container .woocommerce-form-coupon-toggle {
+    margin-bottom: 24px;
+}
+
+.chk-container .woocommerce-form-coupon-toggle .woocommerce-info {
+    border-color: #D9D9D9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.chk-container .showcoupon {
+    color: var(--color-eyebrow-blue);
+    font-weight: var(--weight-medium);
+    text-decoration: underline;
+}
+
+.chk-container .checkout_coupon.woocommerce-form-coupon {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 0 0 24px;
+}
+
+/* ===== Grid principal ===== */
+.chk-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 32px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .chk-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.chk-form-col {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 32px;
+}
+
+/* ===== Headings de sub-secciones (Detalles de facturación, etc.) ===== */
+.chk-section-billing > h3,
+.chk-section-shipping .woocommerce-shipping-fields > h3,
+.chk-section-shipping .woocommerce-additional-fields > h3 {
+    font-family: var(--font-main);
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 20px;
+    padding-top: 28px;
+    border-top: 1px solid #EEF0F3;
+}
+
+.chk-section-billing > h3 {
+    padding-top: 0;
+    border-top: none;
+}
+
+.chk-section-shipping .woocommerce-shipping-fields > h3 label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+/* ===== Campos de formulario ===== */
+.chk-form-col .form-row {
+    margin: 0 0 16px;
+}
+
+.chk-form-col label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin-bottom: 6px;
+}
+
+.chk-form-col label .required {
+    color: var(--color-red);
+    text-decoration: none;
+}
+
+.chk-form-col label .optional {
+    color: var(--color-body);
+    font-weight: var(--weight-regular);
+}
+
+.chk-form-col input.input-text,
+.chk-form-col select,
+.chk-form-col textarea,
+.chk-form-col .select2-container .select2-selection--single {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 12px;
+    padding: 13px 16px;
+    height: auto;
+    transition: border-color 0.2s ease;
+}
+
+.chk-form-col .select2-container .select2-selection--single {
+    display: flex;
+    align-items: center;
+}
+
+.chk-form-col .select2-selection__rendered {
+    padding: 0 !important;
+    line-height: normal !important;
+}
+
+.chk-form-col .select2-selection__arrow {
+    top: 10px !important;
+    right: 10px !important;
+}
+
+.chk-form-col input.input-text:focus,
+.chk-form-col select:focus,
+.chk-form-col textarea:focus,
+.chk-form-col .select2-container--focus .select2-selection--single {
+    outline: none;
+    border-color: var(--color-eyebrow-blue);
+}
+
+.chk-form-col input.input-text.chk-input-invalid {
+    border-color: var(--color-red);
+}
+
+.chk-field-rut-error {
+    color: var(--color-red);
+    font-size: 12px;
+    margin: -12px 0 16px;
+    display: none;
+}
+
+.chk-field-rut-error.is-visible {
+    display: block;
+}
+
+.chk-form-col textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+/* Checkbox / radio (ship to different address, terms, create account) */
+.chk-form-col input[type="checkbox"],
+.chk-form-col input[type="radio"] {
+    accent-color: var(--color-eyebrow-blue);
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.chk-form-col .woocommerce-form__label-for-checkbox {
+    display: flex;
+    align-items: center;
+    font-weight: var(--weight-regular);
+    color: var(--color-body);
+    cursor: pointer;
+}
+
+/* Factura: Razón social + Giro, ocultos hasta elegir "Factura electrónica" */
+.chk-field-factura {
+    display: none;
+}
+
+.chk-field-factura.is-visible {
+    display: block;
+}
+
+/* ===== Notas del pedido / additional info ===== */
+.woocommerce-additional-fields {
+    margin-top: 8px;
+}
+
+/* ===== Términos y condiciones ===== */
+.chk-form-col .woocommerce-terms-and-conditions-wrapper {
+    margin-top: 8px;
+}
+
+.chk-form-col .woocommerce-terms-and-conditions-wrapper .form-row {
+    margin: 0;
+}
+
+/* ===== Columna resumen ===== */
+.chk-summary-col {
+    position: sticky;
+    top: 24px;
+}
+
+.chk-summary-card {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 28px;
+}
+
+.chk-summary-title {
+    font-family: var(--font-main);
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 20px;
+}
+
+.chk-review-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.chk-review-table tbody tr.chk-review-row {
+    border-bottom: 1px solid #EEF0F3;
+}
+
+.chk-review-table td {
+    padding: 14px 0;
+    vertical-align: top;
+}
+
+.chk-review-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chk-review-thumb img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #F0F1F4;
+    border: 1px solid #EEF0F3;
+}
+
+.chk-review-name {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    font-weight: var(--weight-medium);
+    line-height: 1.4;
+}
+
+.chk-review-qty {
+    color: var(--color-body);
+    font-weight: var(--weight-regular);
+}
+
+.chk-review-subtotal {
+    text-align: right;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    white-space: nowrap;
+}
+
+.chk-review-table tfoot tr {
+    border-top: 1px solid #EEF0F3;
+}
+
+.chk-review-table tfoot th,
+.chk-review-table tfoot td {
+    padding: 12px 0;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: var(--weight-regular);
+    color: var(--color-body);
+    text-align: left;
+}
+
+/* Solo las filas de importes (subtotal, descuento, impuestos, total) van
+   alineadas a la derecha — la fila de envío tiene su propia lista de
+   métodos y no debe heredar text-align:right (rompe el wrap del label). */
+.chk-review-table tfoot tr.cart-subtotal td,
+.chk-review-table tfoot tr.cart-discount td,
+.chk-review-table tfoot tr.fee td,
+.chk-review-table tfoot tr.tax-rate td,
+.chk-review-table tfoot tr.tax-total td,
+.chk-review-table tfoot tr.chk-review-total td {
+    text-align: right;
+    color: var(--color-heading);
+}
+
+.chk-review-table tfoot tr.chk-review-total th,
+.chk-review-table tfoot tr.chk-review-total td {
+    padding-top: 16px;
+    font-family: var(--font-main);
+    font-size: 22px;
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+}
+
+/* Métodos de envío (flat rate / retiro en tienda) dentro del resumen */
+.chk-review-table ul#shipping_method {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.chk-review-table ul#shipping_method li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+}
+
+.chk-review-table ul#shipping_method li label {
+    flex: 1;
+}
+
+.chk-review-table ul#shipping_method input[type="radio"] {
+    accent-color: var(--color-eyebrow-blue);
+    width: 16px;
+    height: 16px;
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+/* ===== Métodos de pago ===== */
+#payment.woocommerce-checkout-payment {
+    margin-top: 24px;
+    border-top: 1px solid #EEF0F3;
+    padding-top: 24px;
+}
+
+.wc_payment_methods.payment_methods.methods {
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.wc_payment_method {
+    border: 1px solid #D9D9D9;
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+
+.wc_payment_method label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    cursor: pointer;
+    margin: 0;
+}
+
+.wc_payment_method img {
+    height: 20px;
+    width: auto;
+}
+
+.wc_payment_method .payment_box {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: #F7F8FA;
+    border-radius: 10px;
+    font-size: var(--text-small);
+    color: var(--color-body);
+}
+
+.wc_payment_method .payment_box p {
+    margin: 0;
+}
+
+/* ===== Botón de pagar ===== */
+.form-row.place-order {
+    margin-top: 20px;
+}
+
+#place_order {
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: 16px;
+    letter-spacing: -0.002em;
+    padding: 17px 32px;
+    border-radius: 999px;
+    border: none;
+    background: var(--color-lime);
+    color: var(--color-heading);
+    width: 100%;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+#place_order:hover {
+    opacity: 0.85;
+}
+
+#place_order:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===== Thank you page ===== */
+.chk-thankyou-container {
+    max-width: 640px;
+}
+
+.chk-thankyou-card {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+}
+
+.chk-thankyou-icon {
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: var(--color-lime);
+    color: var(--color-heading);
+    font-size: 24px;
+    font-weight: var(--weight-bold);
+}
+
+.chk-thankyou-icon-error {
+    background: #FCE4E7;
+    color: var(--color-red);
+}
+
+.chk-thankyou-title {
+    font-family: var(--font-main);
+    font-size: 32px;
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 12px;
+}
+
+.chk-thankyou-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--text-subtitle);
+    color: var(--color-body);
+    margin: 0 0 28px;
+    line-height: var(--line-height-normal);
+}
+
+.chk-thankyou-overview {
+    list-style: none;
+    margin: 0;
+    padding: 24px 0 0;
+    border-top: 1px solid #EEF0F3;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+}
+
+.chk-thankyou-overview li {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-body);
+}
+
+.chk-thankyou-overview li strong {
+    color: var(--color-heading);
+    font-weight: var(--weight-medium);
+}
+
+.chk-thankyou-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 0;
+}

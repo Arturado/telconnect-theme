@@ -105,6 +105,107 @@ if ( ! isset( $content_width ) ) {
     $content_width = 1200;
 }
 
+// Assets del checkout (solo se cargan en esa página, a diferencia de las secciones de la landing)
+function telconnect_enqueue_checkout_assets() {
+    if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+        return;
+    }
+
+    wp_enqueue_style(
+        'telconnect-checkout',
+        get_template_directory_uri() . '/assets/css/checkout.css',
+        array( 'telconnect-main' ),
+        '1.0.0'
+    );
+
+    wp_enqueue_script(
+        'telconnect-checkout',
+        get_template_directory_uri() . '/assets/js/checkout.js',
+        array(),
+        '1.0.0',
+        true
+    );
+}
+add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_checkout_assets' );
+
+// Assets del carrito
+function telconnect_enqueue_cart_assets() {
+    if ( ! function_exists( 'is_cart' ) || ! is_cart() ) {
+        return;
+    }
+
+    // Los cross-sells reusan .dp-card/.plp-grid (mismo criterio que el PDP con relacionados).
+    wp_enqueue_style(
+        'telconnect-plp',
+        get_template_directory_uri() . '/assets/css/plp.css',
+        array( 'telconnect-main', 'telconnect-devices-products' ),
+        '1.0.0'
+    );
+
+    wp_enqueue_style(
+        'telconnect-cart',
+        get_template_directory_uri() . '/assets/css/cart.css',
+        array( 'telconnect-main', 'telconnect-plp' ),
+        '1.0.0'
+    );
+}
+add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_cart_assets' );
+
+// Assets del PLP (tienda / categorías de producto)
+function telconnect_enqueue_plp_assets() {
+    if ( ! function_exists( 'is_shop' ) || ! ( is_shop() || is_product_taxonomy() ) ) {
+        return;
+    }
+
+    // Depende de telconnect-devices-products porque reusa .dp-card (definida ahí) como base.
+    wp_enqueue_style(
+        'telconnect-plp',
+        get_template_directory_uri() . '/assets/css/plp.css',
+        array( 'telconnect-main', 'telconnect-devices-products' ),
+        '1.0.0'
+    );
+}
+add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_plp_assets' );
+
+// Assets del PDP (ficha de producto individual)
+function telconnect_enqueue_pdp_assets() {
+    if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+        return;
+    }
+
+    // El PDP también usa .dp-card / .plp-card (relacionados) y .plp-grid.
+    wp_enqueue_style(
+        'telconnect-plp',
+        get_template_directory_uri() . '/assets/css/plp.css',
+        array( 'telconnect-main', 'telconnect-devices-products' ),
+        '1.0.0'
+    );
+
+    wp_enqueue_style(
+        'telconnect-pdp',
+        get_template_directory_uri() . '/assets/css/pdp.css',
+        array( 'telconnect-main', 'telconnect-plp' ),
+        '1.0.0'
+    );
+}
+add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_pdp_assets' );
+
+/**
+ * Header flotante SOLO en la home (ver header.css .site-header).
+ * El Hero de front-page.php tiene su propia foto + overlay oscuro
+ * calibrados para que el header transparente se vea bien superpuesto.
+ * Cualquier página nueva sin ese tipo de fondo NO debe agregar esta
+ * clase — así el header se comporta como uno normal (empuja el
+ * contenido) y no hace falta compensar con padding-top a mano.
+ */
+function telconnect_body_classes( $classes ) {
+    if ( is_front_page() ) {
+        $classes[] = 'has-floating-header';
+    }
+    return $classes;
+}
+add_filter( 'body_class', 'telconnect_body_classes' );
+
 // Ancho del wrapper de WooCommerce (evita que quede pegado a los bordes)
 remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
 add_action( 'woocommerce_before_main_content', 'telconnect_wc_wrapper_start', 10 );
@@ -219,3 +320,171 @@ function tc_save_features_metabox( $post_id ) {
     update_post_meta( $post_id, '_dp_features', implode( "\n", $items ) );
 }
 add_action( 'save_post_product', 'tc_save_features_metabox' );
+
+/**
+ * ============================================================
+ * Checkout — RUT y documento tributario (boleta / factura)
+ * ============================================================
+ * Chile exige RUT para emitir boleta o factura electrónica al SII.
+ * Se agregan como campos de billing custom; "Razón social" reusa el
+ * campo nativo billing_company (solo se pide/exige cuando es factura),
+ * y se suma "Giro comercial" como campo nuevo.
+ */
+
+function tc_add_checkout_fields( $fields ) {
+    // Prioridad 21/23: justo después de apellidos (20) para no romper el
+    // emparejamiento flotante form-row-first/form-row-last de Nombre+Apellidos.
+    $fields['billing']['billing_document_type'] = array(
+        'type'        => 'select',
+        'label'       => __( 'Tipo de documento', 'telconnect' ),
+        'options'     => array(
+            'boleta'  => __( 'Boleta electrónica', 'telconnect' ),
+            'factura' => __( 'Factura electrónica', 'telconnect' ),
+        ),
+        'required'    => true,
+        'class'       => array( 'form-row-wide', 'chk-field-document-type' ),
+        'priority'    => 21,
+    );
+
+    $fields['billing']['billing_rut'] = array(
+        'type'        => 'text',
+        'label'       => __( 'RUT', 'telconnect' ),
+        'placeholder' => '12.345.678-9',
+        'required'    => true,
+        'class'       => array( 'form-row-wide', 'chk-field-rut' ),
+        'priority'    => 23,
+    );
+
+    // Razón social: reusa el campo nativo billing_company, relabeled.
+    if ( isset( $fields['billing']['billing_company'] ) ) {
+        $fields['billing']['billing_company']['label']    = __( 'Razón social', 'telconnect' );
+        $fields['billing']['billing_company']['class']    = array( 'form-row-wide', 'chk-field-factura' );
+        $fields['billing']['billing_company']['priority'] = 31;
+    }
+
+    $fields['billing']['billing_giro'] = array(
+        'type'        => 'text',
+        'label'       => __( 'Giro comercial', 'telconnect' ),
+        'required'    => false,
+        'class'       => array( 'form-row-wide', 'chk-field-factura' ),
+        'priority'    => 33,
+    );
+
+    return $fields;
+}
+add_filter( 'woocommerce_checkout_fields', 'tc_add_checkout_fields' );
+
+// Validación server-side: RUT bien formado, y Razón social + Giro obligatorios si es factura.
+function tc_validate_checkout_fields() {
+    $rut = isset( $_POST['billing_rut'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_rut'] ) ) : '';
+
+    if ( $rut && class_exists( 'WoocommercePlugin\\helpers\\RutValidator' ) ) {
+        if ( ! \WoocommercePlugin\helpers\RutValidator::validate( $rut ) ) {
+            wc_add_notice( __( 'El RUT ingresado no es válido. Revisa el formato (ej: 12345678-9).', 'telconnect' ), 'error' );
+        }
+    }
+
+    $document_type = isset( $_POST['billing_document_type'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_document_type'] ) ) : '';
+
+    if ( 'factura' === $document_type ) {
+        $razon_social = isset( $_POST['billing_company'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_company'] ) ) : '';
+        $giro         = isset( $_POST['billing_giro'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_giro'] ) ) : '';
+
+        if ( ! $razon_social ) {
+            wc_add_notice( __( 'La Razón social es obligatoria para emitir factura.', 'telconnect' ), 'error' );
+        }
+        if ( ! $giro ) {
+            wc_add_notice( __( 'El Giro comercial es obligatorio para emitir factura.', 'telconnect' ), 'error' );
+        }
+    }
+}
+add_action( 'woocommerce_after_checkout_validation', 'tc_validate_checkout_fields' );
+
+// Guardar RUT, tipo de documento y giro en la orden (no son props nativas de WC_Order).
+function tc_save_checkout_fields_to_order( $order_id ) {
+    if ( isset( $_POST['billing_rut'] ) ) {
+        update_post_meta( $order_id, '_billing_rut', sanitize_text_field( wp_unslash( $_POST['billing_rut'] ) ) );
+    }
+    if ( isset( $_POST['billing_document_type'] ) ) {
+        update_post_meta( $order_id, '_billing_document_type', sanitize_text_field( wp_unslash( $_POST['billing_document_type'] ) ) );
+    }
+    if ( isset( $_POST['billing_giro'] ) ) {
+        update_post_meta( $order_id, '_billing_giro', sanitize_text_field( wp_unslash( $_POST['billing_giro'] ) ) );
+    }
+}
+add_action( 'woocommerce_checkout_update_order_meta', 'tc_save_checkout_fields_to_order' );
+
+// Sumar el RUT a la dirección de facturación formateada (aparece en emails, admin y thank-you).
+function tc_append_rut_to_formatted_address( $address, $order ) {
+    $rut = $order->get_meta( '_billing_rut' );
+    if ( $rut ) {
+        $address['rut'] = 'RUT: ' . $rut;
+    }
+    return $address;
+}
+add_filter( 'woocommerce_order_formatted_billing_address', 'tc_append_rut_to_formatted_address', 10, 2 );
+
+function tc_add_rut_to_address_format( $formats ) {
+    $formats['default'] .= "\n{rut}";
+    return $formats;
+}
+add_filter( 'woocommerce_localisation_address_formats', 'tc_add_rut_to_address_format' );
+
+// Mostrar RUT / tipo de documento / giro en el panel de admin del pedido.
+function tc_display_rut_admin_order_meta( $order ) {
+    $rut           = $order->get_meta( '_billing_rut' );
+    $document_type = $order->get_meta( '_billing_document_type' );
+    $giro          = $order->get_meta( '_billing_giro' );
+
+    if ( ! $rut && ! $document_type && ! $giro ) {
+        return;
+    }
+
+    echo '<p><strong>' . esc_html__( 'RUT:', 'telconnect' ) . '</strong> ' . esc_html( $rut ) . '</p>';
+    echo '<p><strong>' . esc_html__( 'Documento:', 'telconnect' ) . '</strong> ' . esc_html( 'factura' === $document_type ? 'Factura electrónica' : 'Boleta electrónica' ) . '</p>';
+    if ( $giro ) {
+        echo '<p><strong>' . esc_html__( 'Giro:', 'telconnect' ) . '</strong> ' . esc_html( $giro ) . '</p>';
+    }
+}
+add_action( 'woocommerce_admin_order_data_after_billing_address', 'tc_display_rut_admin_order_meta' );
+
+/**
+ * ============================================================
+ * PDP — checklist de características (_dp_features) en la ficha
+ * ============================================================
+ * Reusa el mismo custom field que ya alimenta las cards de la home
+ * (ver metabox más arriba). Se muestra entre el precio y el botón
+ * de agregar al carro, con el mismo look que .dp-card-features.
+ */
+function tc_pdp_features_checklist() {
+    global $product;
+
+    if ( ! $product instanceof WC_Product ) {
+        return;
+    }
+
+    $features = get_post_meta( $product->get_id(), '_dp_features', true );
+    if ( ! $features ) {
+        return;
+    }
+
+    $features_list = explode( "\n", trim( $features ) );
+    echo '<ul class="dp-card-features pdp-features">';
+    foreach ( $features_list as $feature ) {
+        if ( trim( $feature ) ) {
+            echo '<li>' . esc_html( trim( $feature ) ) . '</li>';
+        }
+    }
+    echo '</ul>';
+}
+add_action( 'woocommerce_single_product_summary', 'tc_pdp_features_checklist', 25 );
+
+// Nota "+ IVA" bajo el precio del PDP (mismo texto que ya se usa en .dp-price-note de las cards).
+function tc_pdp_price_note() {
+    global $product;
+    if ( ! $product instanceof WC_Product ) {
+        return;
+    }
+    echo '<span class="pdp-price-note">' . esc_html__( 'Precio + IVA', 'telconnect' ) . '</span>';
+}
+add_action( 'woocommerce_single_product_summary', 'tc_pdp_price_note', 11 );

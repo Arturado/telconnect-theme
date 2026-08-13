@@ -41,6 +41,20 @@
     height: 96px;
     display: flex;
     align-items: center;
+}
+
+/* Header flotante (transparente, superpuesto al contenido de abajo) SOLO
+   en la home vía el margin-bottom negativo: el Hero tiene su propia foto
+   + overlay oscuro calibrados para que el header se vea bien encima.
+   En cualquier otra página el header NO lleva este margin negativo, así
+   que se comporta como un header normal: reserva sus 96px y empuja el
+   contenido hacia abajo — ninguna página nueva (PLP, PDP, checkout,
+   carrito, páginas de contenido futuras) necesita compensar manualmente
+   con padding-top para que el header no le tape el título.
+   La clase .has-floating-header se agrega vía body_class() en
+   functions.php solo cuando is_front_page() — ver esa función antes de
+   copiar este patrón a una página nueva que sí tenga su propio Hero. */
+body.has-floating-header .site-header {
     margin-bottom: -96px;
 }
 

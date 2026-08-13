@@ -1,0 +1,351 @@
+/* =====================================================
+   PDP — Ficha de producto individual.
+   Reusa la galería/add-to-cart/tabs nativas de WooCommerce
+   (JS de zoom/lightbox/slider ya viene de wc-product-gallery-*
+   declarado en functions.php) — acá solo se define el layout
+   de 2 columnas y el skin sobre las clases que WC ya genera.
+   Sin Figma real todavía — iterar con Copy-as-CSS cuando exista.
+   ===================================================== */
+
+.pdp-page {
+    padding: 48px 24px 96px;
+    background: #fff;
+}
+
+.pdp-container {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.pdp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+    margin-bottom: 64px;
+}
+
+@media (max-width: 900px) {
+    .pdp-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
+
+/* ===== Galería (markup/JS 100% de WooCommerce) ===== */
+/* La galería también carga la clase legada .images, sobre la que WC aplica
+   float:left;width:48% con más especificidad (.woocommerce div.product
+   div.images) — se neutraliza acá para que ocupe toda la columna del grid. */
+.pdp-page .pdp-gallery-col .woocommerce-product-gallery.images {
+    float: none;
+    width: 100%;
+}
+
+.pdp-gallery-col .woocommerce-product-gallery {
+    position: relative;
+}
+
+.pdp-gallery-col .woocommerce-product-gallery__wrapper {
+    border-radius: 20px;
+    overflow: hidden;
+    background: #F0F1F4;
+    border: 1px solid #EEF0F3;
+}
+
+/* !important necesario: el zoom nativo de WC (jquery.zoom.js) fija
+   width/height como estilo inline sobre la imagen al inicializarse. */
+.pdp-gallery-col .woocommerce-product-gallery__image img {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+}
+
+.pdp-gallery-col .flex-control-nav {
+    display: flex;
+    gap: 10px;
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+}
+
+.pdp-gallery-col .flex-control-nav li {
+    width: 72px;
+    height: 72px;
+}
+
+.pdp-gallery-col .flex-control-nav img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1.5px solid #EEF0F3;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.pdp-gallery-col .flex-control-nav .flex-active img {
+    border-color: var(--color-eyebrow-blue);
+}
+
+.pdp-gallery-col span.onsale {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: var(--color-lime);
+    color: var(--color-heading);
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    z-index: 1;
+}
+
+/* Mismo problema que la galería: WC aplica float:right;width:48% a
+   div.summary con más especificidad — se neutraliza acá. */
+.pdp-page .pdp-summary-col .summary.entry-summary {
+    float: none;
+    width: 100%;
+    clear: none;
+}
+
+/* ===== Resumen (título, precio, features, add to cart, meta) ===== */
+.pdp-summary-col .product_title.entry-title {
+    font-family: var(--font-main);
+    font-size: 38px;
+    font-weight: var(--weight-medium);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--color-heading);
+    margin: 0 0 14px;
+}
+
+.pdp-summary-col p.price {
+    font-family: var(--font-main);
+    font-size: 34px;
+    font-weight: var(--weight-medium);
+    line-height: 40px;
+    letter-spacing: -0.005em;
+    color: var(--color-heading);
+    margin: 0;
+}
+
+.pdp-summary-col p.price ins {
+    text-decoration: none;
+}
+
+.pdp-summary-col p.price del {
+    font-size: 22px;
+    color: var(--color-body);
+    opacity: 0.7;
+    margin-right: 8px;
+}
+
+.pdp-price-note {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-body);
+    margin: 2px 0 20px;
+}
+
+.pdp-summary-col .pdp-features {
+    margin: 0 0 24px;
+}
+
+.pdp-summary-col .woocommerce-product-details__short-description {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-body);
+    margin: 0 0 20px;
+}
+
+.pdp-summary-col .woocommerce-product-details__short-description p {
+    margin: 0 0 10px;
+}
+
+/* Stock badge */
+.pdp-summary-col p.stock {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin: 0 0 20px;
+}
+
+.pdp-summary-col p.stock.in-stock {
+    background: #E7F6EC;
+    color: #1E7A3D;
+}
+
+.pdp-summary-col p.stock.out-of-stock {
+    background: #FCE4E7;
+    color: var(--color-red);
+}
+
+/* Form de agregar al carro */
+.pdp-summary-col form.cart {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 28px;
+    flex-wrap: wrap;
+}
+
+.pdp-summary-col .quantity {
+    display: block;
+}
+
+.pdp-summary-col .quantity .qty {
+    width: 80px;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    border: 1px solid #D9D9D9;
+    border-radius: 12px;
+    padding: 13px 16px;
+    text-align: center;
+}
+
+.pdp-summary-col .quantity .qty:focus {
+    outline: none;
+    border-color: var(--color-eyebrow-blue);
+}
+
+/* Especificidad reforzada (3 clases) a propósito: la regla nativa de WC
+   para .button.alt (.woocommerce button.button.alt) también pesa 3 clases
+   y, al cargar después, le ganaba a esta si iba con solo 2. */
+.pdp-summary-col button.single_add_to_cart_button.button {
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: 16px;
+    letter-spacing: -0.002em;
+    padding: 16px 32px;
+    border: none;
+    border-radius: 999px;
+    background: var(--color-lime);
+    color: var(--color-heading);
+    cursor: pointer;
+    flex: 1;
+    min-width: 200px;
+    transition: opacity 0.2s ease;
+}
+
+.pdp-summary-col button.single_add_to_cart_button.button:hover {
+    background: var(--color-lime);
+    opacity: 0.85;
+}
+
+.pdp-summary-col button.single_add_to_cart_button.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Meta: SKU / categoría / etiquetas */
+.pdp-summary-col .product_meta {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--color-body);
+    padding-top: 20px;
+    border-top: 1px solid #EEF0F3;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pdp-summary-col .product_meta a {
+    color: var(--color-eyebrow-blue);
+    text-decoration: none;
+}
+
+.pdp-summary-col .product_meta a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Tabs (descripción / info adicional / reseñas) ===== */
+.pdp-below .woocommerce-tabs.wc-tabs-wrapper {
+    margin-bottom: 64px;
+}
+
+.pdp-below ul.tabs.wc-tabs {
+    list-style: none;
+    display: flex;
+    gap: 8px;
+    margin: 0 0 24px;
+    padding: 0;
+    border-bottom: 1px solid #EEF0F3;
+}
+
+.pdp-below ul.tabs.wc-tabs li {
+    margin: 0;
+}
+
+.pdp-below ul.tabs.wc-tabs li a {
+    display: inline-block;
+    padding: 12px 4px;
+    margin-right: 20px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: var(--weight-medium);
+    color: var(--color-body);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+}
+
+.pdp-below ul.tabs.wc-tabs li.active a {
+    color: var(--color-heading);
+    border-bottom-color: var(--color-eyebrow-blue);
+}
+
+.pdp-below .woocommerce-Tabs-panel {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-body);
+    max-width: 760px;
+}
+
+.pdp-below .woocommerce-Tabs-panel h2 {
+    font-family: var(--font-main);
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 16px;
+}
+
+.pdp-below .woocommerce-product-attributes {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.pdp-below .woocommerce-product-attributes th,
+.pdp-below .woocommerce-product-attributes td {
+    padding: 10px 0;
+    border-bottom: 1px solid #EEF0F3;
+    text-align: left;
+    font-size: var(--text-small);
+}
+
+.pdp-below .woocommerce-product-attributes th {
+    width: 200px;
+    color: var(--color-heading);
+    font-weight: var(--weight-medium);
+}
+
+/* ===== Relacionados ===== */
+.pdp-related {
+    padding-top: 48px;
+    border-top: 1px solid #EEF0F3;
+}
+
+.pdp-related-title {
+    font-family: var(--font-main);
+    font-size: 28px;
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 24px;
+}
