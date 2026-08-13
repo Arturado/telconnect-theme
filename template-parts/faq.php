@@ -5,12 +5,6 @@
 
         <div class="faq-list">
             <?php
-            /**
-             * Respuestas: solo tenía las preguntas visibles en el Figma (colapsadas).
-             * Reemplaza el texto de 'answer' con el copy real del cliente/diseñador
-             * apenas lo tengan definido — por ahora dejé respuestas breves y genéricas
-             * para que el acordeón no se vea vacío al abrir.
-             */
             $faqs = array(
                 array(
                     'q' => '¿Comprar con Telconnect cuesta más que comprar directo en TUU?',
@@ -38,8 +32,10 @@
                 ?>
                 <details class="faq-item"<?php echo 0 === $i ? ' open' : ''; ?>>
                     <summary>
-                        <span><?php echo esc_html( $faq['q'] ); ?></span>
-                        <span class="faq-icon" aria-hidden="true"></span>
+                        <span class="faq-question"><?php echo esc_html( $faq['q'] ); ?></span>
+                        <span class="faq-toggle" aria-hidden="true">
+                            <span class="faq-toggle-sign"></span>
+                        </span>
                     </summary>
                     <div class="faq-answer">
                         <p><?php echo esc_html( $faq['a'] ); ?></p>
