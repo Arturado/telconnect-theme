@@ -190,6 +190,33 @@ function telconnect_enqueue_pdp_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_pdp_assets' );
 
+// Assets de Mi Cuenta (dashboard, pedidos, direcciones, login/registro, etc.)
+function telconnect_enqueue_account_assets() {
+    if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
+        return;
+    }
+
+    wp_enqueue_style(
+        'telconnect-account',
+        get_template_directory_uri() . '/assets/css/account.css',
+        array( 'telconnect-main' ),
+        '1.0.0'
+    );
+
+    // Reusa checkout.js sin cambios: el formulario "Editar dirección de
+    // facturación" de Mi Cuenta usa los mismos IDs de campo
+    // (billing_document_type, billing_rut) que el checkout, así que el
+    // toggle de Factura y la validación de RUT funcionan igual acá.
+    wp_enqueue_script(
+        'telconnect-checkout',
+        get_template_directory_uri() . '/assets/js/checkout.js',
+        array(),
+        '1.0.0',
+        true
+    );
+}
+add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_account_assets' );
+
 /**
  * Header flotante SOLO en la home (ver header.css .site-header).
  * El Hero de front-page.php tiene su propia foto + overlay oscuro
@@ -331,56 +358,86 @@ add_action( 'save_post_product', 'tc_save_features_metabox' );
  * y se suma "Giro comercial" como campo nuevo.
  */
 
-function tc_add_checkout_fields( $fields ) {
+/**
+ * Definición compartida de los 3 campos custom de billing — reusada en
+ * el checkout (woocommerce_checkout_fields) Y en Mi Cuenta > Direcciones >
+ * Editar dirección de facturación (woocommerce_billing_fields, un filtro
+ * DISTINTO — WC_Countries::get_address_fields() no pasa por
+ * woocommerce_checkout_fields). Antes solo estaban en checkout, así que
+ * el cliente no podía corregir su RUT/tipo de documento desde Mi Cuenta
+ * sin volver a pasar por una compra. Los IDs (billing_document_type,
+ * billing_rut) son los mismos en los 2 formularios, así que checkout.js
+ * (toggle Factura + validación de RUT) funciona en ambos sin duplicar JS.
+ */
+function tc_get_billing_extra_fields() {
     // Prioridad 21/23: justo después de apellidos (20) para no romper el
     // emparejamiento flotante form-row-first/form-row-last de Nombre+Apellidos.
-    $fields['billing']['billing_document_type'] = array(
-        'type'        => 'select',
-        'label'       => __( 'Tipo de documento', 'telconnect' ),
-        'options'     => array(
-            'boleta'  => __( 'Boleta electrónica', 'telconnect' ),
-            'factura' => __( 'Factura electrónica', 'telconnect' ),
+    return array(
+        'billing_document_type' => array(
+            'type'     => 'select',
+            'label'    => __( 'Tipo de documento', 'telconnect' ),
+            'options'  => array(
+                'boleta'  => __( 'Boleta electrónica', 'telconnect' ),
+                'factura' => __( 'Factura electrónica', 'telconnect' ),
+            ),
+            'required' => true,
+            'class'    => array( 'form-row-wide', 'chk-field-document-type' ),
+            'priority' => 21,
         ),
-        'required'    => true,
-        'class'       => array( 'form-row-wide', 'chk-field-document-type' ),
-        'priority'    => 21,
+        'billing_rut'            => array(
+            'type'        => 'text',
+            'label'       => __( 'RUT', 'telconnect' ),
+            'placeholder' => '12.345.678-9',
+            'required'    => true,
+            'class'       => array( 'form-row-wide', 'chk-field-rut' ),
+            'priority'    => 23,
+        ),
+        'billing_giro'           => array(
+            'type'     => 'text',
+            'label'    => __( 'Giro comercial', 'telconnect' ),
+            'required' => false,
+            'class'    => array( 'form-row-wide', 'chk-field-factura' ),
+            'priority' => 33,
+        ),
     );
+}
 
-    $fields['billing']['billing_rut'] = array(
-        'type'        => 'text',
-        'label'       => __( 'RUT', 'telconnect' ),
-        'placeholder' => '12.345.678-9',
-        'required'    => true,
-        'class'       => array( 'form-row-wide', 'chk-field-rut' ),
-        'priority'    => 23,
-    );
-
-    // Razón social: reusa el campo nativo billing_company, relabeled.
-    if ( isset( $fields['billing']['billing_company'] ) ) {
-        $fields['billing']['billing_company']['label']    = __( 'Razón social', 'telconnect' );
-        $fields['billing']['billing_company']['class']    = array( 'form-row-wide', 'chk-field-factura' );
-        $fields['billing']['billing_company']['priority'] = 31;
+// Razón social: reusa el campo nativo billing_company, relabeled — solo
+// visible cuando se elige Factura. Misma relabel en checkout y en Mi Cuenta.
+function tc_relabel_billing_company( array $fields ) {
+    if ( isset( $fields['billing_company'] ) ) {
+        $fields['billing_company']['label']    = __( 'Razón social', 'telconnect' );
+        $fields['billing_company']['class']    = array( 'form-row-wide', 'chk-field-factura' );
+        $fields['billing_company']['priority'] = 31;
     }
+    return $fields;
+}
 
-    $fields['billing']['billing_giro'] = array(
-        'type'        => 'text',
-        'label'       => __( 'Giro comercial', 'telconnect' ),
-        'required'    => false,
-        'class'       => array( 'form-row-wide', 'chk-field-factura' ),
-        'priority'    => 33,
-    );
-
+function tc_add_checkout_fields( $fields ) {
+    $fields['billing'] = array_merge( $fields['billing'], tc_get_billing_extra_fields() );
+    $fields['billing'] = tc_relabel_billing_company( $fields['billing'] );
     return $fields;
 }
 add_filter( 'woocommerce_checkout_fields', 'tc_add_checkout_fields' );
 
-// Validación server-side: RUT bien formado, y Razón social + Giro obligatorios si es factura.
-function tc_validate_checkout_fields() {
+// Mismos campos en Mi Cuenta > Direcciones > Editar dirección de facturación.
+function tc_add_account_billing_address_fields( $address_fields ) {
+    $address_fields = array_merge( $address_fields, tc_get_billing_extra_fields() );
+    $address_fields = tc_relabel_billing_company( $address_fields );
+    return $address_fields;
+}
+add_filter( 'woocommerce_billing_fields', 'tc_add_account_billing_address_fields' );
+
+// Validación server-side compartida: RUT bien formado, y Razón social +
+// Giro obligatorios si es factura. Se usa tanto en el checkout como al
+// guardar la dirección de facturación desde Mi Cuenta (mismos $_POST keys
+// en los 2 formularios).
+function tc_validate_rut_and_document_fields() {
     $rut = isset( $_POST['billing_rut'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_rut'] ) ) : '';
 
     if ( $rut && class_exists( 'WoocommercePlugin\\helpers\\RutValidator' ) ) {
         if ( ! \WoocommercePlugin\helpers\RutValidator::validate( $rut ) ) {
-            wc_add_notice( __( 'El RUT ingresado no es válido. Revisa el formato (ej: 12345678-9).', 'telconnect' ), 'error' );
+            wc_add_notice( __( 'El RUT ingresado no es válido. Revisa el formato (ej: 12345678-9).', 'telconnect' ), 'error', array( 'id' => 'billing_rut' ) );
         }
     }
 
@@ -391,14 +448,25 @@ function tc_validate_checkout_fields() {
         $giro         = isset( $_POST['billing_giro'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_giro'] ) ) : '';
 
         if ( ! $razon_social ) {
-            wc_add_notice( __( 'La Razón social es obligatoria para emitir factura.', 'telconnect' ), 'error' );
+            wc_add_notice( __( 'La Razón social es obligatoria para emitir factura.', 'telconnect' ), 'error', array( 'id' => 'billing_company' ) );
         }
         if ( ! $giro ) {
-            wc_add_notice( __( 'El Giro comercial es obligatorio para emitir factura.', 'telconnect' ), 'error' );
+            wc_add_notice( __( 'El Giro comercial es obligatorio para emitir factura.', 'telconnect' ), 'error', array( 'id' => 'billing_giro' ) );
         }
     }
 }
+
+function tc_validate_checkout_fields() {
+    tc_validate_rut_and_document_fields();
+}
 add_action( 'woocommerce_after_checkout_validation', 'tc_validate_checkout_fields' );
+
+function tc_validate_account_billing_address_fields( $user_id, $address_type ) {
+    if ( 'billing' === $address_type ) {
+        tc_validate_rut_and_document_fields();
+    }
+}
+add_action( 'woocommerce_after_save_address_validation', 'tc_validate_account_billing_address_fields', 10, 2 );
 
 // Guardar RUT, tipo de documento y giro en la orden (no son props nativas de WC_Order).
 function tc_save_checkout_fields_to_order( $order_id ) {
@@ -414,21 +482,33 @@ function tc_save_checkout_fields_to_order( $order_id ) {
 }
 add_action( 'woocommerce_checkout_update_order_meta', 'tc_save_checkout_fields_to_order' );
 
-// Sumar el RUT a la dirección de facturación formateada (aparece en emails, admin y thank-you).
-function tc_append_rut_to_formatted_address( $address, $order ) {
+/**
+ * Sumar el RUT a la dirección de facturación formateada del pedido
+ * (aparece en emails, admin y en el detalle de pedido de Mi Cuenta).
+ *
+ * BUG ENCONTRADO Y CORREGIDO (el enfoque anterior no funcionaba): se
+ * intentaba inyectar `$address['rut']` ANTES de formatear y confiar en
+ * que `{rut}` en el template de formato lo reemplazara. Pero
+ * WC_Countries::get_formatted_address() solo reemplaza un whitelist fijo
+ * de tokens ({name}, {company}, {address_1}, etc — ver class-wc-countries.php)
+ * e ignora cualquier key desconocida como 'rut' en silencio. Encima, el
+ * `{rut}` se había agregado solo al formato 'default', pero Chile tiene su
+ * propio formato explícito en $formats['CL'] (línea ~604 de
+ * class-wc-countries.php) que NO pasa por 'default' — o sea que para
+ * cualquier pedido con country=CL (100% de los pedidos de esta tienda) el
+ * RUT nunca se mostraba, Y para un pedido con country vacío (bug de datos,
+ * no de template) el texto "{rut}" quedaba impreso tal cual sin reemplazar.
+ * Se cambia a un filtro que corre DESPUÉS del formateo (recibe el string ya
+ * armado), evitando pelear con el sistema de tokens/formato por país.
+ */
+function tc_append_rut_to_formatted_address( $address, $raw_address, $order ) {
     $rut = $order->get_meta( '_billing_rut' );
-    if ( $rut ) {
-        $address['rut'] = 'RUT: ' . $rut;
+    if ( $rut && $address ) {
+        $address .= '<br/>' . esc_html__( 'RUT:', 'telconnect' ) . ' ' . esc_html( $rut );
     }
     return $address;
 }
-add_filter( 'woocommerce_order_formatted_billing_address', 'tc_append_rut_to_formatted_address', 10, 2 );
-
-function tc_add_rut_to_address_format( $formats ) {
-    $formats['default'] .= "\n{rut}";
-    return $formats;
-}
-add_filter( 'woocommerce_localisation_address_formats', 'tc_add_rut_to_address_format' );
+add_filter( 'woocommerce_order_get_formatted_billing_address', 'tc_append_rut_to_formatted_address', 10, 3 );
 
 // Mostrar RUT / tipo de documento / giro en el panel de admin del pedido.
 function tc_display_rut_admin_order_meta( $order ) {
@@ -447,6 +527,36 @@ function tc_display_rut_admin_order_meta( $order ) {
     }
 }
 add_action( 'woocommerce_admin_order_data_after_billing_address', 'tc_display_rut_admin_order_meta' );
+
+/**
+ * ============================================================
+ * Mi Cuenta
+ * ============================================================
+ */
+
+// Modificador de color del badge de estado (.acc-badge--*, ver account.css)
+// para un status interno de WC ('pending', 'processing', etc, sin el
+// prefijo 'wc-'). Reusado en myaccount/orders.php y myaccount/view-order.php.
+// Si algún plugin agrega un estado custom no listado acá, el badge cae al
+// estilo base .acc-badge sin color (no rompe, solo queda neutro).
+function tc_get_order_status_badge_class( $status ) {
+    $status = str_replace( 'wc-', '', $status );
+    $known  = array( 'pending', 'processing', 'on-hold', 'completed', 'cancelled', 'refunded', 'failed' );
+
+    return in_array( $status, $known, true ) ? 'acc-badge acc-badge--' . $status : 'acc-badge';
+}
+
+// Sin productos descargables en este negocio (venta de POS físico) — se
+// oculta la pestaña "Descargas" del menú de Mi Cuenta para no mostrar un
+// tab siempre vacío. El endpoint /mi-cuenta/downloads/ sigue existiendo
+// (no es un problema de seguridad visitarlo a mano), solo se quita del
+// menú. Si en el futuro se venden productos descargables (manuales,
+// software), quitar este unset().
+function tc_remove_account_downloads_tab( $items ) {
+    unset( $items['downloads'] );
+    return $items;
+}
+add_filter( 'woocommerce_account_menu_items', 'tc_remove_account_downloads_tab' );
 
 /**
  * ============================================================

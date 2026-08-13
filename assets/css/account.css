@@ -1,0 +1,1061 @@
+/* =====================================================
+   Mi Cuenta — sin Figma real todavía, layout construido
+   sobre los tokens y patrones ya establecidos (card style
+   de .dp-card/.chk-summary-card, botón .btn-primary, grid
+   sticky de checkout/carrito). Iterar con Copy-as-CSS
+   cuando exista el diseño real.
+   ===================================================== */
+
+.acc-page {
+    padding: 56px 24px 96px;
+    background: #F7F8FA;
+}
+
+.acc-container {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.acc-eyebrow {
+    display: block;
+    color: var(--color-eyebrow-blue);
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.acc-title {
+    font-family: var(--font-main);
+    font-size: 36px;
+    font-weight: var(--weight-medium);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--color-heading);
+    margin: 0 0 32px;
+}
+
+/* ===== Notices (dirección guardada, error de login, etc.) =====
+   Mismo criterio que checkout.css/cart.css: se oculta el ícono ::before
+   del core (fuente "WooCommerce") en vez de recalcular el padding que
+   reserva — el resto del sitio no usa iconografía de fuente en notices. */
+.acc-container .woocommerce-error,
+.acc-container .woocommerce-message,
+.acc-container .woocommerce-info {
+    list-style: none;
+    margin: 0 0 24px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--color-red);
+    color: var(--color-heading);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+}
+
+.acc-container .woocommerce-message,
+.acc-container .woocommerce-info {
+    border-color: #D9D9D9;
+}
+
+.acc-container .woocommerce-error::before,
+.acc-container .woocommerce-message::before,
+.acc-container .woocommerce-info::before {
+    display: none;
+}
+
+/* ===== Layout: sidebar (nav) + contenido ===== */
+.acc-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .acc-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.acc-sidebar {
+    position: sticky;
+    top: 24px;
+}
+
+/* ===== Nav (restylea woocommerce/myaccount/navigation.php nativo,
+   no se overridea ese template) =====
+   Bug de especificidad encontrado acá (mismo patrón que .col2-set .col-1/
+   .col-2 en §8.4/§10, pero en una regla distinta del core): WC aplica
+   ".woocommerce-MyAccount-navigation { float:left; width:30% }" y
+   ".woocommerce-MyAccount-content { float:right; width:68% }" — 1 sola
+   clase cada una, pero como acá nunca se resetean, el <nav> nativo quedaba
+   angosto a ~30% de .acc-nav-card (rompía el wrap de "Detalles de la
+   cuenta"/"Cerrar sesión" a 2-3 líneas) y .woocommerce-MyAccount-content
+   quedaba a 68% de .acc-content (forzaba scroll horizontal innecesario en
+   la tabla de pedidos). Se neutraliza con selectores de 2 clases. */
+.acc-content .woocommerce-MyAccount-content {
+    float: none;
+    width: 100%;
+}
+
+.acc-nav-card {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 12px;
+}
+
+.acc-nav-card .woocommerce-MyAccount-navigation {
+    float: none;
+    width: 100%;
+}
+
+.acc-nav-card .woocommerce-MyAccount-navigation ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.acc-nav-card .woocommerce-MyAccount-navigation-link a {
+    display: block;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: var(--weight-medium);
+    color: var(--color-body);
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.acc-nav-card .woocommerce-MyAccount-navigation-link a:hover {
+    background: #F7F8FA;
+    color: var(--color-heading);
+}
+
+.acc-nav-card .woocommerce-MyAccount-navigation-link.is-active a {
+    background: var(--color-badge-dark);
+    color: #fff;
+}
+
+.acc-nav-card .woocommerce-MyAccount-navigation-link--customer-logout {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #EEF0F3;
+}
+
+.acc-nav-card .woocommerce-MyAccount-navigation-link--customer-logout a {
+    color: var(--color-red);
+}
+
+.acc-nav-card .woocommerce-MyAccount-navigation-link--customer-logout a:hover {
+    background: #FCE4E7;
+    color: var(--color-red);
+}
+
+/* ===== Contenido genérico (cards blancas reusadas por dashboard,
+   pedidos, direcciones, formularios) ===== */
+.acc-panel {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 32px;
+}
+
+.acc-panel + .acc-panel {
+    margin-top: 24px;
+}
+
+.acc-panel-title {
+    font-family: var(--font-main);
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 20px;
+}
+
+/* ===== Dashboard ===== */
+.acc-welcome-title {
+    font-family: var(--font-main);
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 8px;
+}
+
+.acc-welcome-text {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-body);
+    line-height: var(--line-height-normal);
+    margin: 0;
+}
+
+.acc-welcome-text a {
+    color: var(--color-eyebrow-blue);
+    font-weight: var(--weight-medium);
+    text-decoration: underline;
+}
+
+.acc-quicklinks {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+}
+
+@media (max-width: 720px) {
+    .acc-quicklinks {
+        grid-template-columns: 1fr;
+    }
+}
+
+.acc-quicklink-card {
+    display: block;
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 16px;
+    padding: 24px;
+    text-decoration: none;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.acc-quicklink-card:hover {
+    border-color: var(--color-eyebrow-blue);
+    transform: translateY(-2px);
+}
+
+.acc-quicklink-title {
+    font-family: var(--font-main);
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 6px;
+}
+
+.acc-quicklink-desc {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--color-body);
+    line-height: var(--line-height-normal);
+    margin: 0 0 16px;
+}
+
+.acc-quicklink-arrow {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    color: var(--color-eyebrow-blue);
+}
+
+/* ===== Badges de estado de pedido ===== */
+.acc-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+}
+
+.acc-badge--pending {
+    background: #FFF4DE;
+    color: #B4690E;
+}
+
+.acc-badge--processing {
+    background: #E8EDFD;
+    color: var(--color-eyebrow-blue);
+}
+
+.acc-badge--on-hold {
+    background: #F1F2F4;
+    color: #4B5563;
+}
+
+.acc-badge--completed {
+    background: #E3F9E5;
+    color: #1B8A3D;
+}
+
+.acc-badge--cancelled,
+.acc-badge--failed {
+    background: #FCE4E7;
+    color: var(--color-red);
+}
+
+.acc-badge--refunded {
+    background: #EEF2FF;
+    color: #4338CA;
+}
+
+/* ===== Listado de pedidos ===== */
+.acc-orders-panel {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 8px 32px 32px;
+    overflow-x: auto;
+}
+
+.acc-orders-panel .woocommerce-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.acc-orders-panel .woocommerce-orders-table__header {
+    text-align: left;
+    padding: 20px 12px 16px 0;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    color: var(--color-body);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #EEF0F3;
+    white-space: nowrap;
+}
+
+.acc-orders-panel .woocommerce-orders-table__row td,
+.acc-orders-panel .woocommerce-orders-table__row th {
+    padding: 18px 12px 18px 0;
+    vertical-align: middle;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    border-bottom: 1px solid #EEF0F3;
+    font-weight: var(--weight-regular);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.acc-orders-panel .woocommerce-orders-table__row:last-child td,
+.acc-orders-panel .woocommerce-orders-table__row:last-child th {
+    border-bottom: none;
+}
+
+.acc-orders-panel .woocommerce-orders-table__cell-order-number a {
+    color: var(--color-heading);
+    font-weight: var(--weight-medium);
+    text-decoration: none;
+}
+
+.acc-orders-panel .woocommerce-orders-table__cell-order-number a:hover {
+    text-decoration: underline;
+}
+
+.acc-orders-panel .woocommerce-orders-table__cell-order-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.acc-orders-panel .woocommerce-orders-table__cell-order-actions a.button {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: var(--text-small);
+    padding: 8px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    border: 1px solid #D9D9D9;
+    color: var(--color-heading);
+    background: #fff;
+    transition: border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.acc-orders-panel .woocommerce-orders-table__cell-order-actions a.button:hover {
+    border-color: var(--color-eyebrow-blue);
+}
+
+.acc-orders-panel .woocommerce-orders-table__cell-order-actions a.button.pay {
+    background: var(--color-lime);
+    border-color: var(--color-lime);
+    color: var(--color-heading);
+}
+
+.acc-orders-panel .woocommerce-orders-table__cell-order-actions a.button.pay:hover {
+    opacity: 0.85;
+}
+
+.acc-orders-panel .woocommerce-orders-table__cell-order-actions a.button.cancel {
+    border-color: #FCE4E7;
+    color: var(--color-red);
+}
+
+.acc-orders-panel .woocommerce-orders-table__cell-order-actions a.button.cancel:hover {
+    border-color: var(--color-red);
+}
+
+.acc-orders-panel .woocommerce-pagination {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.acc-orders-panel .woocommerce-pagination a {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 999px;
+    border: 1px solid #D9D9D9;
+    color: var(--color-heading);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+}
+
+.acc-orders-panel .woocommerce-pagination a:hover {
+    border-color: var(--color-eyebrow-blue);
+}
+
+/* woocommerce-smallscreen.css (carga solo bajo 768px) apila la tabla en
+   filas "label: valor" vía ::before{content:attr(data-title)} en los <td>,
+   pero explícitamente oculta cualquier <th> ("tbody th{display:none}") —
+   como la celda de "Pedido #" usa <th scope="row"> (así lo genera el
+   core), el número de pedido desaparecía por completo en mobile y solo
+   quedaba visible por fecha/total. Se reactiva con el mismo tratamiento
+   que los <td> vecinos. */
+@media (max-width: 768px) {
+    .acc-orders-panel table.shop_table_responsive tbody th.woocommerce-orders-table__cell-order-number {
+        display: block;
+        text-align: right;
+        padding: 12px 0;
+        border-bottom: 1px solid #EEF0F3;
+    }
+
+    .acc-orders-panel table.shop_table_responsive tbody th.woocommerce-orders-table__cell-order-number::before {
+        content: attr(data-title) ": ";
+        font-weight: var(--weight-medium);
+        float: left;
+    }
+}
+
+/* ===== Estado vacío (pedidos, direcciones) ===== */
+.acc-empty-state {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+}
+
+.acc-empty-state-title {
+    font-family: var(--font-main);
+    font-size: 22px;
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 10px;
+}
+
+.acc-empty-state-text {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-body);
+    line-height: var(--line-height-normal);
+    margin: 0 0 24px;
+}
+
+/* ===== Detalle de pedido ===== */
+.acc-order-back {
+    display: inline-block;
+    margin-bottom: 20px;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    color: var(--color-eyebrow-blue);
+    text-decoration: none;
+}
+
+.acc-order-back:hover {
+    text-decoration: underline;
+}
+
+.acc-order-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.acc-order-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.acc-order-number {
+    font-family: var(--font-main);
+    font-size: 22px;
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+}
+
+.acc-order-date {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--color-body);
+}
+
+/* Notas del pedido */
+.acc-panel .woocommerce-OrderUpdates {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.acc-panel .woocommerce-OrderUpdate-inner {
+    background: #F7F8FA;
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+
+.acc-panel .woocommerce-OrderUpdate-meta {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--color-body);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 6px;
+}
+
+.acc-panel .woocommerce-OrderUpdate-description p {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    margin: 0;
+}
+
+/* ===== Tabla de detalle de pedido (order/order-details.php,
+   sin overridear — bien estructurada, se restylea vía CSS) ===== */
+.woocommerce-order-details {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #EEF0F3;
+}
+
+.woocommerce-order-details__title {
+    font-family: var(--font-main);
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 16px;
+}
+
+.woocommerce-table--order-details {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.woocommerce-table--order-details th,
+.woocommerce-table--order-details td {
+    padding: 14px 12px 14px 0;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    border-bottom: 1px solid #EEF0F3;
+    text-align: left;
+}
+
+.woocommerce-table--order-details thead th {
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    color: var(--color-body);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.woocommerce-table--order-details .product-total,
+.woocommerce-table--order-details th.woocommerce-table__product-table {
+    text-align: right;
+}
+
+.woocommerce-table--order-details tfoot th,
+.woocommerce-table--order-details tfoot td {
+    text-align: right;
+}
+
+.woocommerce-table--order-details tfoot tr:last-child th,
+.woocommerce-table--order-details tfoot tr:last-child td {
+    font-family: var(--font-main);
+    font-size: 18px;
+    font-weight: var(--weight-medium);
+    border-bottom: none;
+}
+
+.woocommerce-table--order-details .product-quantity {
+    color: var(--color-body);
+    font-weight: var(--weight-regular);
+}
+
+.order-actions-button {
+    display: inline-block;
+    margin-right: 8px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid #D9D9D9;
+    color: var(--color-heading);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+}
+
+.order-actions-button:hover {
+    border-color: var(--color-eyebrow-blue);
+}
+
+/* Direcciones dentro del detalle de pedido (order/order-details-customer.php).
+   Mismo bug de especificidad ya documentado en pdp.css/§8.4: el core aplica
+   ".woocommerce .col2-set .col-1/.col-2 { float:left/right; width:48% }"
+   (3 clases). Se neutraliza con selectores de 4 clases y se pasa a grid. */
+.woocommerce-customer-details {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #EEF0F3;
+}
+
+.acc-panel .woocommerce-customer-details .col2-set.addresses {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.acc-panel .woocommerce-customer-details .col2-set .col-1,
+.acc-panel .woocommerce-customer-details .col2-set .col-2 {
+    float: none;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    .acc-panel .woocommerce-customer-details .col2-set.addresses {
+        grid-template-columns: 1fr;
+    }
+}
+
+.woocommerce-customer-details .woocommerce-column__title {
+    font-family: var(--font-main);
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 12px;
+}
+
+.woocommerce-customer-details address {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-body);
+    line-height: var(--line-height-relaxed);
+    font-style: normal;
+}
+
+/* ===== Direcciones (myaccount/my-address.php) ===== */
+.acc-address-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 700px) {
+    .acc-address-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.acc-address-card {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 28px;
+}
+
+.acc-address-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.acc-address-card-title {
+    font-family: var(--font-main);
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0;
+}
+
+.acc-address-edit-link {
+    flex-shrink: 0;
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid #D9D9D9;
+    color: var(--color-heading);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    transition: border-color 0.2s ease;
+}
+
+.acc-address-edit-link:hover {
+    border-color: var(--color-eyebrow-blue);
+}
+
+.acc-address-card address {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-body);
+    line-height: var(--line-height-relaxed);
+    font-style: normal;
+}
+
+.acc-address-empty {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-body);
+    font-style: italic;
+}
+
+/* ===== Formularios (edit-account, edit-address) — restylea el markup
+   nativo de WC sin overridear los templates ===== */
+.acc-panel form .form-row,
+.acc-panel form p.form-row {
+    margin: 0 0 16px;
+}
+
+.acc-panel form label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin-bottom: 6px;
+}
+
+.acc-panel form label .required {
+    color: var(--color-red);
+    text-decoration: none;
+}
+
+.acc-panel form input.input-text,
+.acc-panel form select,
+.acc-panel form textarea,
+.acc-panel form .select2-container .select2-selection--single {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 12px;
+    padding: 13px 16px;
+    height: auto;
+    transition: border-color 0.2s ease;
+}
+
+.acc-panel form .select2-container .select2-selection--single {
+    display: flex;
+    align-items: center;
+}
+
+.acc-panel form .select2-selection__rendered {
+    padding: 0 !important;
+    line-height: normal !important;
+}
+
+.acc-panel form .select2-selection__arrow {
+    top: 10px !important;
+    right: 10px !important;
+}
+
+.acc-panel form input.input-text:focus,
+.acc-panel form select:focus,
+.acc-panel form textarea:focus,
+.acc-panel form .select2-container--focus .select2-selection--single {
+    outline: none;
+    border-color: var(--color-eyebrow-blue);
+}
+
+.acc-panel form input.input-text.chk-input-invalid {
+    border-color: var(--color-red);
+}
+
+/* Toggle Factura (Razón social/Giro) y validación de RUT: reusa las
+   clases/IDs de checkout.js (billing_document_type, billing_rut son los
+   mismos en el formulario de Editar dirección de facturación de Mi Cuenta,
+   así que el mismo JS funciona sin duplicar lógica — ver functions.php). */
+.acc-panel form .chk-field-factura {
+    display: none;
+}
+
+.acc-panel form .chk-field-factura.is-visible {
+    display: block;
+}
+
+.acc-panel form .chk-field-rut-error {
+    color: var(--color-red);
+    font-size: 12px;
+    margin: -12px 0 16px;
+    display: none;
+}
+
+.acc-panel form .chk-field-rut-error.is-visible {
+    display: block;
+}
+
+.acc-panel form fieldset {
+    border: none;
+    padding: 0;
+    margin: 24px 0 0;
+}
+
+.acc-panel form fieldset legend {
+    font-family: var(--font-main);
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    padding: 0;
+    margin: 0 0 16px;
+    width: 100%;
+    border-top: 1px solid #EEF0F3;
+    padding-top: 24px;
+}
+
+.acc-panel form .clear {
+    display: none;
+}
+
+.acc-panel form button[type="submit"] {
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: 16px;
+    letter-spacing: -0.002em;
+    padding: 15px 32px;
+    border-radius: 999px;
+    border: none;
+    background: var(--color-lime);
+    color: var(--color-heading);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    margin-top: 8px;
+}
+
+.acc-panel form button[type="submit"]:hover {
+    opacity: 0.85;
+}
+
+/* Título "Dirección de facturación" / "Dirección de envío" que imprime
+   form-edit-address.php dentro del panel */
+.acc-panel form > h2 {
+    font-family: var(--font-main);
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 20px;
+}
+
+/* ===== Login / Registro (myaccount/form-login.php) ===== */
+.acc-auth-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+/* Registro desactivado (woocommerce_enable_myaccount_registration = no):
+   solo se imprime la card de login, se limita el ancho para que no quede
+   estirada a todo el .acc-container. */
+.acc-auth-grid--single {
+    grid-template-columns: 1fr;
+    max-width: 460px;
+}
+
+@media (max-width: 700px) {
+    .acc-auth-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.acc-auth-card {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 32px;
+}
+
+.acc-auth-card h2 {
+    font-family: var(--font-main);
+    font-size: var(--text-card-title);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin: 0 0 20px;
+}
+
+.acc-auth-card .form-row {
+    margin: 0 0 16px;
+}
+
+.acc-auth-card label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin-bottom: 6px;
+}
+
+.acc-auth-card input.input-text {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 12px;
+    padding: 13px 16px;
+    transition: border-color 0.2s ease;
+}
+
+.acc-auth-card input.input-text:focus {
+    outline: none;
+    border-color: var(--color-eyebrow-blue);
+}
+
+.acc-auth-card .woocommerce-form-login__rememberme {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--color-body);
+    font-weight: var(--weight-regular);
+    cursor: pointer;
+    margin-bottom: 16px;
+}
+
+.acc-auth-card input[type="checkbox"] {
+    accent-color: var(--color-eyebrow-blue);
+    width: 16px;
+    height: 16px;
+}
+
+.acc-auth-card button[type="submit"] {
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: 16px;
+    padding: 14px 28px;
+    border-radius: 999px;
+    border: none;
+    background: var(--color-lime);
+    color: var(--color-heading);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.acc-auth-card button[type="submit"]:hover {
+    opacity: 0.85;
+}
+
+.acc-auth-card .woocommerce-LostPassword {
+    margin: 16px 0 0;
+}
+
+.acc-auth-card .woocommerce-LostPassword a {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--color-eyebrow-blue);
+    text-decoration: underline;
+}
+
+.acc-auth-card p {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--color-body);
+    line-height: var(--line-height-normal);
+}
+
+/* ===== Cards simples (olvidé mi contraseña / restablecer / confirmación) ===== */
+.acc-simple-container {
+    max-width: 520px;
+}
+
+.acc-simple-card {
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 32px;
+}
+
+.acc-simple-card .form-row {
+    margin: 0 0 16px;
+}
+
+.acc-simple-card label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    margin-bottom: 6px;
+}
+
+.acc-simple-card input.input-text {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-heading);
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 12px;
+    padding: 13px 16px;
+}
+
+.acc-simple-card input.input-text:focus {
+    outline: none;
+    border-color: var(--color-eyebrow-blue);
+}
+
+.acc-simple-card p {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: var(--color-body);
+    line-height: var(--line-height-normal);
+    margin: 0 0 20px;
+}
+
+.acc-simple-card button[type="submit"] {
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: 16px;
+    padding: 14px 28px;
+    border-radius: 999px;
+    border: none;
+    background: var(--color-lime);
+    color: var(--color-heading);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.acc-simple-card button[type="submit"]:hover {
+    opacity: 0.85;
+}
+
+.acc-simple-card .clear {
+    display: none;
+}
