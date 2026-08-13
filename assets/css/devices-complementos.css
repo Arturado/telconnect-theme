@@ -1,19 +1,70 @@
-/* ===== Devices Complementos (variante simple) ===== */
+/* ===== Devices Complementos ===== */
 .devices-complementos {
-    padding: 80px 0 100px;
+    padding: 80px 80px 48px;
     background: #fff;
     text-align: center;
 }
 
-.devices-complementos .dp-title {
-    margin-bottom: 48px;
+.dc-container {
+    max-width: 1280px;
+    margin: 0 auto;
 }
 
-.dp-card-simple .dp-card-desc {
-    min-height: auto;
-    margin-bottom: 20px;
+.dc-eyebrow {
+    display: block;
+    color: var(--color-eyebrow-blue);
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
 }
 
-.dp-card-simple .dp-card-price {
-    margin-bottom: 20px;
+.dc-title {
+    font-family: var(--font-main);
+    font-size: var(--text-section-title);
+    font-weight: var(--weight-medium);
+    line-height: 58px;
+    letter-spacing: -0.01em;
+    color: #0D0F15;
+    max-width: 846px;
+    margin: 0 auto 16px;
+}
+
+.dc-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--text-subtitle);
+    color: var(--color-body);
+    max-width: 846px;
+    margin: 0 auto 32px;
+    line-height: 1.5;
+}
+
+/* La card reutiliza .dp-card (mismo padding/border/radius que Devices Products),
+   solo la imagen cambia: sin border-radius y proporción distinta */
+.dc-card-image {
+    width: 100%;
+    aspect-ratio: 362 / 240;
+    background: #F0F1F4;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dc-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 900px) {
+    .devices-complementos {
+        padding: 48px 20px;
+    }
+    .dc-title {
+        font-size: 32px;
+        line-height: 1.3;
+    }
 }

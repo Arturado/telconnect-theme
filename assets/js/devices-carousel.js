@@ -1,23 +1,21 @@
 (function () {
-    document.addEventListener('DOMContentLoaded', function () {
-        var grid = document.getElementById('dp-grid');
-        var dotsWrap = document.getElementById('dp-dots');
-        var prevBtn = document.getElementById('dp-prev');
-        var nextBtn = document.getElementById('dp-next');
+    function initProductCarousel(gridId, dotsId, prevId, nextId) {
+        var grid = document.getElementById(gridId);
+        var dotsWrap = document.getElementById(dotsId);
+        var prevBtn = document.getElementById(prevId);
+        var nextBtn = document.getElementById(nextId);
 
         if (!grid) return;
 
         var cards = Array.prototype.slice.call(grid.querySelectorAll('.dp-card'));
         if (cards.length === 0) return;
 
-        // Solo mostrar nav (flechas + dots) si hay más de 1 producto
-        var carouselNav = document.querySelector('.dp-carousel-nav');
+        var carouselNav = prevBtn ? prevBtn.closest('.dp-carousel-nav') : null;
         if (cards.length <= 1) {
             if (carouselNav) carouselNav.style.display = 'none';
             return;
         }
 
-        // Generar dots dinámicamente según cantidad de productos
         cards.forEach(function (card, i) {
             var dot = document.createElement('span');
             if (i === 0) dot.classList.add('is-active');
@@ -68,5 +66,10 @@
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(updateActiveDot, 100);
         });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initProductCarousel('dp-grid', 'dp-dots', 'dp-prev', 'dp-next');
+        initProductCarousel('dc-grid', 'dc-dots', 'dc-prev', 'dc-next');
     });
 })();
