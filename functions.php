@@ -34,6 +34,17 @@ function telconnect_enqueue_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_scripts' );
 
+function telconnect_enqueue_ecosystem_js() {
+    wp_enqueue_script(
+        'telconnect-ecosystem',
+        get_template_directory_uri() . '/assets/js/ecosystem.js',
+        array(),
+        '1.0.0',
+        true
+    );
+}
+add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_ecosystem_js' );
+
 // Soporte básico del theme
 function telconnect_setup() {
     add_theme_support( 'title-tag' );
