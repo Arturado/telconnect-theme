@@ -1,149 +1,249 @@
 /* ===== Testimonials ===== */
 .testimonials {
-    padding: 100px 0;
-    background: #F7F8FA;
-    overflow: hidden;
+    padding: 104px 0;
+    background: #F3F3F3;
 }
 
 .ts-container {
-    max-width: 1280px;
+    max-width: 1440px;
     margin: 0 auto;
-    padding: 0 40px;
 }
 
-.ts-header {
+.ts-head {
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-bottom: 40px;
+    align-items: center;
+    gap: 40px;
+    max-width: 1280px;
+    margin: 0 auto 48px;
+    padding: 0 80px;
 }
 
 .ts-title {
+    flex: 1;
     font-family: var(--font-main);
     font-size: var(--text-section-title);
     font-weight: var(--weight-medium);
     line-height: 58px;
     letter-spacing: -0.01em;
-    line-height: 1.3;
-    color: var(--color-heading);
+    color: #0D0F15;
     margin: 0;
 }
 
-.ts-social {
+.ts-proof {
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
+    align-items: center;
+    gap: 8px;
 }
 
 .ts-avatars {
-    display: flex;
+    position: relative;
+    width: 148px;
+    height: 40px;
 }
 
 .ts-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #C7CCD6;
-    border: 2px solid #F7F8FA;
-    margin-left: -8px;
+    position: absolute;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 2.5px solid #F3F3F3;
     object-fit: cover;
-    display: block;
+    background: #F0F0F0;
 }
 
-.ts-avatar:first-child {
-    margin-left: 0;
-}
+.ts-avatar:nth-child(1) { left: 0; z-index: 4; }
+.ts-avatar:nth-child(2) { left: 30px; z-index: 3; }
+.ts-avatar:nth-child(3) { left: 60px; z-index: 2; }
 
 .ts-avatar-count {
-    background: #0F172A;
+    left: 90px;
+    z-index: 1;
+    background: var(--color-eyebrow-blue);
     color: #fff;
-    font-size: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: var(--weight-regular);
 }
 
 .ts-stars {
-    color: var(--color-lime);
+    color: var(--color-eyebrow-blue);
     font-size: 12px;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
 }
 
-.ts-social-label {
-    font-size: 12px;
-    color: #8A93A3;
+.ts-proof-caption {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--color-body);
+}
+
+/* Vitrina animada: viewport recorta, track se traslada infinito */
+.ts-viewport {
+    overflow: hidden;
+    padding: 0 80px;
 }
 
 .ts-track {
     display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: 8px;
-    margin: 0 -40px;
-    padding-left: 40px;
-    padding-right: 40px;
+    gap: 24px;
+    width: max-content;
+    animation: ts-marquee 45s linear infinite;
 }
 
-.ts-track::-webkit-scrollbar {
-    height: 6px;
+.ts-viewport:hover .ts-track {
+    animation-play-state: paused;
 }
 
-.ts-track::-webkit-scrollbar-thumb {
-    background: #D9DCE3;
-    border-radius: 999px;
+@keyframes ts-marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        /* Se traslada exactamente el ancho de UN set (la mitad del track, ya que está duplicado) */
+        transform: translateX(calc(-50% - 12px));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ts-track {
+        animation: none;
+    }
 }
 
 .ts-card {
-    flex: 0 0 280px;
-    scroll-snap-align: start;
-    background: linear-gradient(160deg, #1A1F2E 0%, #0B0E17 100%);
-    border-radius: 20px;
-    padding: 24px;
-    min-height: 340px;
+    position: relative;
+    flex: 0 0 411px;
+    height: 520px;
+    box-sizing: border-box;
+    padding: 32px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    background: #0D0F15;
+    border-radius: 28px;
+    overflow: hidden;
+    scroll-snap-align: start;
+}
+
+.ts-card-scrim-top {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 234px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.ts-card-scrim-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 374px;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.84) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.ts-card-header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 8px;
+}
+
+.ts-card-name {
+    font-family: var(--font-body);
+    font-size: 20px;
+    font-weight: var(--weight-medium);
+    line-height: 27px;
     color: #fff;
 }
 
-.ts-card-head strong {
-    font-size: 14px;
-    font-weight: 700;
+.ts-card-dot {
+    font-family: var(--font-body);
+    font-size: 20px;
+    font-weight: var(--weight-medium);
+    color: #fff;
+    opacity: 0.6;
 }
 
-.ts-card-head span {
-    font-size: 13px;
-    color: rgba(255,255,255,0.5);
+.ts-card-biz {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 23px;
+    color: #fff;
+    opacity: 0.75;
 }
 
-.ts-stat {
+.ts-card-grow {
+    flex: 1;
+}
+
+.ts-card-result {
+    position: relative;
+    z-index: 2;
+}
+
+.ts-card-stat {
     font-family: var(--font-main);
-    font-size: 32px;
-    font-weight: 800;
-    margin-bottom: 8px;
+    font-size: 52px;
+    font-weight: var(--weight-medium);
+    line-height: 57px;
+    color: #fff;
+    margin-bottom: 10px;
 }
 
-.ts-card-body p {
-    font-size: 14px;
-    line-height: 1.6;
-    color: rgba(255,255,255,0.85);
+.ts-card-desc {
+    font-family: var(--font-body);
+    font-size: 20px;
+    line-height: 28px;
+    color: #fff;
+    opacity: 0.85;
     margin: 0;
 }
 
-@media (max-width: 700px) {
-    .ts-title {
-        font-size: 24px;
+.ts-card-quote {
+    font-family: var(--font-main);
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    line-height: 34px;
+    color: #fff;
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+    .testimonials {
+        padding: 60px 0;
     }
-    .ts-header {
-        align-items: flex-start;
+    .ts-head {
         flex-direction: column;
-    }
-    .ts-social {
         align-items: flex-start;
+        padding: 0 20px;
+        gap: 20px;
+    }
+    .ts-title {
+        font-size: 28px;
+        line-height: 1.3;
+    }
+    .ts-proof {
+        align-items: flex-start;
+    }
+    .ts-viewport {
+        padding: 0 20px;
+    }
+    .ts-card {
+        flex: 0 0 320px;
+        height: 460px;
     }
 }

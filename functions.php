@@ -45,6 +45,7 @@ function telconnect_enqueue_ecosystem_js() {
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_ecosystem_js' );
 
+
 // Soporte básico del theme
 function telconnect_setup() {
     add_theme_support( 'title-tag' );
