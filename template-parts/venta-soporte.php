@@ -16,7 +16,7 @@
                     <li>Coordinación de entrega e instalación</li>
                 </ul>
                 <span class="vs-hours">Lunes a viernes 9:00–19:00 · Sábados 10:00–14:00</span>
-                <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="btn btn-primary-blue btn-block">Escribir a Ventas</a>
+                <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="vs-btn-primary">Escribir a Ventas</a>
             </div>
 
             <!-- Card Soporte -->
@@ -31,7 +31,7 @@
                     <li>Gestión de garantías y recambios</li>
                 </ul>
                 <span class="vs-hours">Atención prioritaria para clientes Telconnect</span>
-                <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="btn btn-outline-dark btn-block">Escribir a Soporte</a>
+                <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="vs-btn-outline">Escribir a Soporte</a>
             </div>
         </div>
     </div>
