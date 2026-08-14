@@ -45,6 +45,65 @@ function telconnect_enqueue_ecosystem_js() {
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_ecosystem_js' );
 
+/**
+ * ============================================================
+ * Addon "Firma electrónica" en la PDP
+ * ============================================================
+ * Lista los productos de la categoría 'firma-electronica' para
+ * mostrarlos como opción adicional en la ficha de producto.
+ * Crear esa categoría en Productos > Categorías y asignarle los
+ * productos correspondientes — aparecen acá automáticamente,
+ * sin tocar código.
+ */
+function tc_get_signature_addon_products() {
+    $products = wc_get_products( array(
+        'category' => array( 'firma-electronica' ),
+        'status'   => 'publish',
+        'limit'    => -1,
+        'orderby'  => 'price',
+        'order'    => 'ASC',
+    ) );
+
+    $addons = array();
+    foreach ( $products as $product ) {
+        $addons[] = array(
+            'id'    => $product->get_id(),
+            'name'  => $product->get_name(),
+            'price' => (float) $product->get_price(),
+        );
+    }
+
+    return $addons;
+}
+
+/**
+ * Si el comprador eligió un addon de firma electrónica en el <select>
+ * de la PDP, lo agrega como un segundo ítem al carrito en el mismo
+ * request que agrega el producto principal.
+ */
+function tc_maybe_add_signature_addon( $cart_item_key, $product_id, $quantity ) {
+    if ( empty( $_POST['tc_addon_signature'] ) ) {
+        return;
+    }
+
+    $addon_id = absint( $_POST['tc_addon_signature'] );
+
+    if ( ! $addon_id || $addon_id === $product_id ) {
+        return;
+    }
+
+    $addon_product = wc_get_product( $addon_id );
+    if ( ! $addon_product || ! $addon_product->is_purchasable() ) {
+        return;
+    }
+
+    // Evita loop infinito: este hook no debe reaccionar a la propia
+    // llamada de abajo que agrega el addon.
+    remove_action( 'woocommerce_add_to_cart', 'tc_maybe_add_signature_addon', 10 );
+    WC()->cart->add_to_cart( $addon_id, 1 );
+    add_action( 'woocommerce_add_to_cart', 'tc_maybe_add_signature_addon', 10, 3 );
+}
+add_action( 'woocommerce_add_to_cart', 'tc_maybe_add_signature_addon', 10, 3 );
 
 // Soporte básico del theme
 function telconnect_setup() {
@@ -243,6 +302,28 @@ add_action( 'woocommerce_after_main_content', 'telconnect_wc_wrapper_end', 10 );
 function telconnect_wc_wrapper_end() {
     echo '</div>';
 }
+/**
+ * ============================================================
+ * Fixes PDP v2 — agregar a functions.php
+ * ============================================================
+ */
+
+// Fix bug 1: quita el breadcrumb default de WooCommerce (duplicaba
+// el breadcrumb custom .pdp-breadcrumb de content-single-product.php).
+// Aplica en todo el sitio, no solo PDP — no queremos el breadcrumb
+// nativo sin estilo en ningún lado ya que tenemos el nuestro donde
+// hace falta.
+remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
+
+// Fix bug 2: quita la pestaña "Descripción" de los tabs nativos —
+// esa descripción ya se muestra en el accordion "Información adicional"
+// del lado izquierdo de la PDP. Deja "Valoraciones" y cualquier otra
+// pestaña (atributos, etc) intacta.
+function tc_remove_description_tab( $tabs ) {
+    unset( $tabs['description'] );
+    return $tabs;
+}
+add_filter( 'woocommerce_product_tabs', 'tc_remove_description_tab', 98 );
 
 /**
  * ============================================================
