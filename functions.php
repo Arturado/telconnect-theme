@@ -80,6 +80,15 @@ function tc_get_signature_addon_products() {
  * Si el comprador eligió un addon de firma electrónica en el <select>
  * de la PDP, lo agrega como un segundo ítem al carrito en el mismo
  * request que agrega el producto principal.
+ *
+ * El addon se taguea con el cart item data 'tc_parent_cart_item_key'
+ * (la key del producto principal recién agregado) para que el template
+ * del carrito lo pueda detectar y renderizarlo anidado bajo su producto
+ * padre en vez de como fila independiente — ver tc_get_cart_children_map()
+ * y woocommerce/cart/cart.php. La key no se muestra en el carrito
+ * (wc_get_formatted_cart_item_data() solo imprime lo que el filtro
+ * woocommerce_get_item_data agregue explícitamente, así que un cart_item_data
+ * custom sin ese filtro queda invisible por defecto).
  */
 function tc_maybe_add_signature_addon( $cart_item_key, $product_id, $quantity ) {
     if ( empty( $_POST['tc_addon_signature'] ) ) {
@@ -100,10 +109,234 @@ function tc_maybe_add_signature_addon( $cart_item_key, $product_id, $quantity ) 
     // Evita loop infinito: este hook no debe reaccionar a la propia
     // llamada de abajo que agrega el addon.
     remove_action( 'woocommerce_add_to_cart', 'tc_maybe_add_signature_addon', 10 );
-    WC()->cart->add_to_cart( $addon_id, 1 );
+    WC()->cart->add_to_cart(
+        $addon_id,
+        1,
+        0,
+        array(),
+        array( 'tc_parent_cart_item_key' => $cart_item_key )
+    );
     add_action( 'woocommerce_add_to_cart', 'tc_maybe_add_signature_addon', 10, 3 );
 }
 add_action( 'woocommerce_add_to_cart', 'tc_maybe_add_signature_addon', 10, 3 );
+
+/**
+ * Mapa parent_key => array de child cart_item_keys, para los addons de
+ * firma electrónica anidados. Un item se considera "hijo" solo si su
+ * 'tc_parent_cart_item_key' apunta a otro item que sigue existiendo en
+ * el carrito — si el padre fue eliminado, el addon queda huérfano y se
+ * trata como top-level (fallback razonable: WooCommerce no borra en
+ * cascada los cart items relacionados, así que igual debe poder verse
+ * y eliminarse por su cuenta).
+ */
+function tc_get_cart_children_map() {
+    $cart = WC()->cart->get_cart();
+    $map  = array();
+
+    foreach ( $cart as $key => $item ) {
+        if ( empty( $item['tc_parent_cart_item_key'] ) ) {
+            continue;
+        }
+        $parent_key = $item['tc_parent_cart_item_key'];
+        if ( ! isset( $cart[ $parent_key ] ) ) {
+            continue; // padre eliminado: el addon se trata como top-level.
+        }
+        $map[ $parent_key ][] = $key;
+    }
+
+    return $map;
+}
+
+/**
+ * Cart items "top-level" — excluye los addons de firma electrónica que
+ * tienen un padre válido todavía presente en el carrito (esos se
+ * renderizan anidados, no como fila propia). Es el mismo criterio que
+ * define "N productos" en el header y "Productos (N)" del resumen.
+ */
+function tc_get_top_level_cart_items() {
+    $cart       = WC()->cart->get_cart();
+    $children   = tc_get_cart_children_map();
+    $child_keys = array();
+    foreach ( $children as $keys ) {
+        $child_keys = array_merge( $child_keys, $keys );
+    }
+
+    $top_level = array();
+    foreach ( $cart as $key => $item ) {
+        if ( in_array( $key, $child_keys, true ) ) {
+            continue;
+        }
+        $top_level[ $key ] = $item;
+    }
+
+    return $top_level;
+}
+
+/**
+ * Desglose fiscal del pedido (Productos/Firma electrónica/Despacho/Neto/
+ * IVA/Total) — extraído de cart-totals.php (v2, §8.7) para reusarlo tal
+ * cual en review-order.php del checkout (wizard de 2 pasos, §8.8). Nada
+ * de aritmética propia de precios: todo sale de WC()->cart / WC_Tax, así
+ * que carrito y checkout siempre muestran el mismo cálculo real (con IVA
+ * activado, ver §8.7) sin duplicar lógica entre los 2 templates.
+ *
+ * @return array {
+ *     @type int         $products_count
+ *     @type float        $products_subtotal
+ *     @type string        $addon_label      Vacío si no hay addons en el carrito.
+ *     @type float        $addon_subtotal
+ *     @type string|null  $shipping_label    Null si no aplica envío.
+ *     @type string|null  $shipping_html     HTML ya formateado ("Gratis" o wc_price()).
+ *     @type float|null   $shipping_cost
+ *     @type float        $net_total
+ *     @type float        $total_tax
+ *     @type string       $tax_label         Nombre + tasa real de WC_Tax::get_rates().
+ *     @type float        $total
+ * }
+ */
+function tc_get_order_summary_breakdown() {
+    $top_level_items = tc_get_top_level_cart_items();
+    $children_map     = tc_get_cart_children_map();
+    $cart             = WC()->cart->get_cart();
+
+    // ----- Productos (top-level, excluye addons anidados) -----
+    $products_count    = count( $top_level_items );
+    $products_subtotal = 0;
+    foreach ( $top_level_items as $item ) {
+        $products_subtotal += (float) $item['line_subtotal'];
+    }
+
+    // ----- Addons de firma electrónica (líneas hijas) -----
+    $addon_keys = array();
+    foreach ( $children_map as $keys ) {
+        $addon_keys = array_merge( $addon_keys, $keys );
+    }
+
+    $addon_subtotal = 0;
+    $addon_label    = '';
+    if ( ! empty( $addon_keys ) ) {
+        $addon_names = array();
+        foreach ( $addon_keys as $addon_key ) {
+            if ( ! isset( $cart[ $addon_key ] ) ) {
+                continue;
+            }
+            $addon_subtotal += (float) $cart[ $addon_key ]['line_subtotal'];
+            $addon_names[]   = $cart[ $addon_key ]['data']->get_name();
+        }
+        $addon_names = array_unique( $addon_names );
+        // Un solo tipo de addon en el carrito (el caso normal): se usa su
+        // nombre real de producto. Si hubiera más de un tipo, se agrupan
+        // bajo una etiqueta genérica con el conteo, mismo criterio que
+        // "Productos (N)".
+        $addon_label = ( 1 === count( $addon_names ) )
+            ? $addon_names[0]
+            : sprintf(
+                /* translators: %d es la cantidad de addons de firma electrónica distintos en el carrito */
+                esc_html__( 'Firma electrónica (%d)', 'telconnect' ),
+                count( $addon_names )
+            );
+    }
+
+    // ----- Despacho: método real elegido/disponible, sin hardcodear -----
+    $shipping_label     = null;
+    $shipping_html      = null;
+    $shipping_cost      = null;
+    $shipping_method_id = null;
+    $shipping_rate_id   = null; // ej. "free_shipping:3" — la key completa, no solo el method_id. Ver mirror en review-order.php/checkout.js.
+    if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) {
+        $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
+        foreach ( WC()->shipping()->get_packages() as $package_index => $package ) {
+            if ( empty( $package['rates'] ) ) {
+                continue;
+            }
+            $rate = ( isset( $chosen_methods[ $package_index ], $package['rates'][ $chosen_methods[ $package_index ] ] ) )
+                ? $package['rates'][ $chosen_methods[ $package_index ] ]
+                : reset( $package['rates'] );
+
+            $shipping_label     = $rate->get_label();
+            $shipping_cost      = (float) $rate->get_cost();
+            $shipping_html      = $shipping_cost > 0 ? wc_price( $shipping_cost ) : esc_html__( 'Gratis', 'telconnect' );
+            $shipping_method_id = $rate->get_method_id(); // ej. "local_pickup" o "flat_rate" — usado para saber si mostrar la dirección real o el local.
+            $shipping_rate_id   = $rate->get_id();
+            break; // Un solo package en este negocio (sin envíos a múltiples direcciones).
+        }
+    }
+
+    // ----- Neto / IVA / Total: 100% de WC_Cart, nada calculado a mano -----
+    $total     = (float) WC()->cart->get_total( 'edit' );
+    $total_tax = (float) WC()->cart->get_total_tax();
+    $net_total = $total - $total_tax;
+
+    $tax_label = esc_html__( 'IVA', 'telconnect' );
+    if ( $total_tax > 0 ) {
+        $rates = WC_Tax::get_rates();
+        $rate  = reset( $rates );
+        if ( $rate ) {
+            $tax_label = sprintf( '%s (%s%%)', $rate['label'], rtrim( rtrim( number_format( (float) $rate['rate'], 2 ), '0' ), '.' ) );
+        }
+    }
+
+    return array(
+        'products_count'     => $products_count,
+        'products_subtotal'  => $products_subtotal,
+        'addon_label'        => $addon_label,
+        'addon_subtotal'     => $addon_subtotal,
+        'shipping_label'     => $shipping_label,
+        'shipping_html'      => $shipping_html,
+        'shipping_cost'      => $shipping_cost,
+        'shipping_method_id' => $shipping_method_id,
+        'shipping_rate_id'   => $shipping_rate_id,
+        'net_total'          => $net_total,
+        'total_tax'          => $total_tax,
+        'tax_label'          => $tax_label,
+        'total'              => $total,
+    );
+}
+
+/**
+ * "Proceed to checkout" -> "Ir a pagar" (texto exacto del Figma del
+ * carrito). No se overridea cart/proceed-to-checkout-button.php (mismo
+ * criterio del §8.2: restylear/retextear sin tocar el template) — el
+ * string original en inglés es estable entre locales, a diferencia de
+ * comparar contra la traducción ya aplicada.
+ */
+function tc_translate_proceed_to_checkout_text( $translated, $original, $domain ) {
+    if ( 'woocommerce' === $domain && 'Proceed to checkout' === $original ) {
+        return __( 'Ir a pagar', 'telconnect' );
+    }
+    return $translated;
+}
+add_filter( 'gettext', 'tc_translate_proceed_to_checkout_text', 10, 3 );
+
+/**
+ * Checkout wizard (§8.8): la card "Despacho" reemplaza el concepto de
+ * "¿Enviar a una dirección distinta?" del core — acá SIEMPRE se
+ * recolecta una dirección de envío propia (shipping_*), sea para
+ * despacho a domicilio o, aunque no la use, para retiro en tienda.
+ * Se fuerza el checkbox nativo a "marcado" (así el core renderiza
+ * .shipping_address con los campos) y se lo oculta vía CSS
+ * (#ship-to-different-address) — no tiene sentido mostrarlo, no hay
+ * ninguna "dirección de facturación" que ofrecer como alternativa (la
+ * card de billing ya no pide dirección, ver
+ * tc_reorder_billing_fields_for_checkout_wizard()).
+ */
+add_filter( 'woocommerce_ship_to_different_address_checked', '__return_true' );
+
+/**
+ * Retextea la descripción del gateway TUU para que calce con el Figma
+ * del paso Pago ("Pago inmediato. Puedes pagar en cuotas.") — el string
+ * original ("Paga con tarjetas de débito, crédito y prepago.") está
+ * hardcodeado en el constructor de WCPluginGateway (plugin de terceros,
+ * no se toca su código). $gateway->description es una property pública
+ * de WC_Payment_Gateway pensada para poder overridearse así.
+ */
+function tc_retext_tuu_gateway_description( $gateways ) {
+    if ( isset( $gateways['wcplugingateway'] ) ) {
+        $gateways['wcplugingateway']->description = __( 'Pago inmediato. Puedes pagar en cuotas.', 'telconnect' );
+    }
+    return $gateways;
+}
+add_filter( 'woocommerce_available_payment_gateways', 'tc_retext_tuu_gateway_description' );
 
 // Soporte básico del theme
 function telconnect_setup() {
@@ -177,10 +410,14 @@ function telconnect_enqueue_checkout_assets() {
         '1.0.0'
     );
 
+    // Depende de jquery (§8.8): el wizard escucha el evento
+    // "updated_checkout" que WooCommerce dispara vía jQuery.trigger()
+    // tras cada actualización AJAX de totales — un addEventListener()
+    // nativo no lo captura, hace falta jQuery(...).on(...).
     wp_enqueue_script(
         'telconnect-checkout',
         get_template_directory_uri() . '/assets/js/checkout.js',
-        array(),
+        array( 'jquery' ),
         '1.0.0',
         true
     );
@@ -206,6 +443,14 @@ function telconnect_enqueue_cart_assets() {
         get_template_directory_uri() . '/assets/css/cart.css',
         array( 'telconnect-main', 'telconnect-plp' ),
         '1.0.0'
+    );
+
+    wp_enqueue_script(
+        'telconnect-cart',
+        get_template_directory_uri() . '/assets/js/cart.js',
+        array(),
+        '1.0.0',
+        true
     );
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_cart_assets' );
@@ -266,10 +511,14 @@ function telconnect_enqueue_account_assets() {
     // facturación" de Mi Cuenta usa los mismos IDs de campo
     // (billing_document_type, billing_rut) que el checkout, así que el
     // toggle de Factura y la validación de RUT funcionan igual acá.
+    // Depende de jquery (§8.8): el wizard escucha el evento
+    // "updated_checkout" que WooCommerce dispara vía jQuery.trigger()
+    // tras cada actualización AJAX de totales — un addEventListener()
+    // nativo no lo captura, hace falta jQuery(...).on(...).
     wp_enqueue_script(
         'telconnect-checkout',
         get_template_directory_uri() . '/assets/js/checkout.js',
-        array(),
+        array( 'jquery' ),
         '1.0.0',
         true
     );
@@ -500,6 +749,294 @@ function tc_add_checkout_fields( $fields ) {
     return $fields;
 }
 add_filter( 'woocommerce_checkout_fields', 'tc_add_checkout_fields' );
+
+/**
+ * ============================================================
+ * Checkout wizard (§8.8) — reordenar/ocultar campos SOLO en checkout
+ * ============================================================
+ * No toca tc_get_billing_extra_fields()/tc_relabel_billing_company()
+ * (esas siguen alimentando también el formulario de Mi Cuenta >
+ * Direcciones, §8.5, que debe mantener su layout original) — este
+ * filtro corre DESPUÉS de tc_add_checkout_fields() (prioridad 20 > 10)
+ * y solo reacomoda lo que ya existe para el checkout.
+ *
+ * La card "Datos del cliente" del Figma (recursos/checkout-datos/) solo
+ * muestra 4 campos: "Nombre y apellido" (un input, no 2), Teléfono,
+ * Correo, RUT. Decisiones tomadas donde el Figma no alcanza a cubrir
+ * el caso (documentadas en detalle en CONTEXT.md §8.8):
+ * - "Nombre y apellido" reusa billing_first_name tal cual (recibe el
+ *   nombre completo) — billing_last_name se oculta y deja de ser
+ *   requerido. No se hace un split automático por espacio: los
+ *   apellidos compuestos son la norma en Chile (ej. "Guerra Vásquez")
+ *   y un split ingenuo los partiría mal.
+ * - Dirección de facturación (address_1/2/city/state/postcode) no
+ *   aparece en el Figma — se ocultan y dejan de ser obligatorias. La
+ *   dirección real de envío se recolecta en la card "Despacho" vía
+ *   shipping_* (ver tc_add_shipping_fields_for_checkout_wizard()).
+ *   billing_country se mantiene oculto pero con su valor default (CL)
+ *   intacto — no rompe nada porque el IVA se calcula según la
+ *   dirección de SHIPPING (woocommerce_tax_based_on = shipping), no
+ *   billing.
+ * - Boleta/Factura (billing_document_type + Razón social/Giro) NO
+ *   aparece en el Figma provisto — pero es una capacidad de negocio ya
+ *   validada (§8.1, factura para empresas) que no hay motivo para
+ *   eliminar solo porque el mockup no la capturó. Se mantiene, solo se
+ *   le baja la prioridad visual (después del RUT). Anotado para
+ *   confirmar con el cliente si el Figma la omitió a propósito.
+ */
+function tc_reorder_billing_fields_for_checkout_wizard( $fields ) {
+    $overrides = array(
+        'billing_first_name'    => array(
+            'label'    => __( 'Nombre y apellido', 'telconnect' ),
+            'priority' => 10,
+            'class'    => array( 'form-row-first' ),
+        ),
+        'billing_last_name'     => array(
+            'required' => false,
+            'priority' => 11,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        'billing_phone'         => array(
+            'required' => true,
+            'priority' => 20,
+            'class'    => array( 'form-row-last' ),
+        ),
+        'billing_email'         => array(
+            'priority' => 30,
+            'class'    => array( 'form-row-first' ),
+        ),
+        'billing_rut'           => array(
+            'priority' => 35,
+            'class'    => array( 'form-row-last', 'chk-field-rut' ),
+        ),
+        'billing_country'       => array(
+            'required' => false,
+            'priority' => 40,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        'billing_address_1'     => array(
+            'required' => false,
+            'priority' => 41,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        'billing_address_2'     => array(
+            'required' => false,
+            'priority' => 42,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        'billing_city'          => array(
+            'required' => false,
+            'priority' => 43,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        'billing_state'         => array(
+            'required' => false,
+            'priority' => 44,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        'billing_postcode'      => array(
+            'required' => false,
+            'priority' => 45,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        'billing_document_type' => array(
+            'priority' => 50,
+            'class'    => array( 'form-row-wide', 'chk-field-document-type' ),
+        ),
+        'billing_company'       => array(
+            'priority' => 51,
+            'class'    => array( 'form-row-wide', 'chk-field-factura' ),
+        ),
+        'billing_giro'          => array(
+            'priority' => 52,
+            'class'    => array( 'form-row-wide', 'chk-field-factura' ),
+        ),
+    );
+
+    foreach ( $overrides as $key => $override ) {
+        if ( isset( $fields['billing'][ $key ] ) ) {
+            $fields['billing'][ $key ] = array_merge( $fields['billing'][ $key ], $override );
+        }
+    }
+
+    return $fields;
+}
+add_filter( 'woocommerce_checkout_fields', 'tc_reorder_billing_fields_for_checkout_wizard', 20 );
+
+/**
+ * Card "Despacho": agrega shipping_rut y shipping_comuna (nuevos, sin
+ * equivalente nativo en WooCommerce) y reordena/relabela los campos de
+ * shipping nativos para que calcen con el Figma. shipping_state SÍ es
+ * nativo y ya trae las 16 regiones de Chile con los códigos correctos
+ * (CL-RM, CL-VS, etc. — ver WC()->countries->get_states('CL')), así
+ * que "Región" lo reusa tal cual, sin inventar un dataset propio.
+ *
+ * "Comuna" no existe en WooCommerce para Chile — es un <select> nuevo
+ * con un placeholder server-side; las opciones reales las puebla
+ * checkout.js según la Región elegida (cascading select, dataset de
+ * comunas ahí mismo). Ver CONTEXT.md §8.8 por el alcance del dataset.
+ *
+ * Ambos campos nuevos solo son obligatorios cuando el método de envío
+ * elegido es "Despacho a domicilio" (flat_rate) — el toggle visual/
+ * required lo maneja checkout.js (mismo patrón que chk-field-factura),
+ * y tc_validate_shipping_fields() abajo lo refuerza server-side.
+ */
+function tc_add_shipping_fields_for_checkout_wizard( $fields ) {
+    $fields['shipping']['shipping_rut'] = array(
+        'type'        => 'text',
+        'label'       => __( 'RUT receptor', 'telconnect' ),
+        'placeholder' => '12.345.678-9',
+        // required=false ACÁ a propósito, aunque en la práctica casi
+        // siempre haga falta (domicilio es el método por defecto): la
+        // validación "required" de WooCommerce (WC_Checkout::validate_posted_data())
+        // es INCONDICIONAL — si se pone true acá, WC exige este campo
+        // SIEMPRE, incluso cuando el comprador elige "Retiro en tienda"
+        // (donde el campo ni se muestra). Lo condicional (solo exigir
+        // si el método elegido es a domicilio) vive en
+        // tc_validate_shipping_fields() más abajo, enganchado a
+        // woocommerce_after_checkout_validation — ese sí lee qué método
+        // se eligió antes de exigir el campo. El "(opcional)" que
+        // aparece en el label mientras tanto es un costo cosmético
+        // aceptado: se oculta por CSS (.chk-field-domicilio .optional)
+        // en vez de reventar la validación real por prolijidad visual.
+        'required'    => false,
+        'class'       => array( 'form-row-first', 'chk-field-rut', 'chk-field-domicilio', 'chk-field-domicilio-required' ),
+        'priority'    => 5,
+    );
+
+    $fields['shipping']['shipping_comuna'] = array(
+        'type'              => 'select',
+        'label'             => __( 'Comuna', 'telconnect' ),
+        'options'           => array( '' => __( 'Selecciona una región primero', 'telconnect' ) ),
+        'required'          => false, // ver comentario extenso en shipping_rut arriba — mismo criterio.
+        'class'             => array( 'form-row-last', 'chk-field-domicilio', 'chk-field-domicilio-required' ),
+        // checkout.js puebla las opciones reales según la Región elegida
+        // (cascading select) — este data-attribute le pasa el valor ya
+        // guardado (si el checkout se recarga tras un error de validación)
+        // para que la repueble seleccionada en vez de perderla.
+        'custom_attributes' => array(
+            'data-selected' => (string) WC()->checkout()->get_value( 'shipping_comuna' ),
+        ),
+        'priority'          => 31,
+    );
+
+    $shipping_overrides = array(
+        'shipping_first_name' => array(
+            'label'    => __( 'Nombre de quien recibe', 'telconnect' ),
+            'required' => false, // idem shipping_rut — condicional server-side, no acá.
+            'priority' => 10,
+            'class'    => array( 'form-row-last', 'chk-field-domicilio', 'chk-field-domicilio-required' ),
+        ),
+        'shipping_last_name'  => array(
+            'required' => false,
+            'priority' => 11,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        'shipping_address_1'  => array(
+            'label'    => __( 'Dirección', 'telconnect' ),
+            'required' => false, // idem shipping_rut — condicional server-side, no acá.
+            'priority' => 20,
+            'class'    => array( 'form-row-first', 'chk-field-domicilio', 'chk-field-domicilio-required' ),
+        ),
+        'shipping_address_2'  => array(
+            'label'    => __( 'Número / depto. u oficina', 'telconnect' ),
+            'priority' => 21,
+            'class'    => array( 'form-row-last', 'chk-field-domicilio' ),
+        ),
+        'shipping_state'      => array(
+            'label'    => __( 'Región', 'telconnect' ),
+            'required' => false, // idem shipping_rut — condicional server-side, no acá.
+            'priority' => 30,
+            'class'    => array( 'form-row-first', 'chk-field-domicilio', 'chk-field-domicilio-required', 'chk-field-region' ),
+        ),
+        'shipping_country'    => array(
+            'required' => false,
+            'priority' => 40,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        'shipping_city'       => array(
+            'required' => false,
+            'priority' => 41,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        'shipping_postcode'   => array(
+            'required' => false,
+            'priority' => 42,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        // Nativos que el Figma no muestra en absoluto — mismo criterio
+        // que billing_company/address_1/etc en la card "Datos del
+        // cliente" (tc_reorder_billing_fields_for_checkout_wizard()).
+        'shipping_company'    => array(
+            'required' => false,
+            'priority' => 43,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+        'shipping_phone'      => array(
+            'required' => false,
+            'priority' => 44,
+            'class'    => array( 'chk-field-hidden' ),
+        ),
+    );
+
+    foreach ( $shipping_overrides as $key => $override ) {
+        if ( isset( $fields['shipping'][ $key ] ) ) {
+            $fields['shipping'][ $key ] = array_merge( $fields['shipping'][ $key ], $override );
+        }
+    }
+
+    return $fields;
+}
+add_filter( 'woocommerce_checkout_fields', 'tc_add_shipping_fields_for_checkout_wizard', 20 );
+
+/**
+ * Refuerzo server-side: si el método de envío elegido es "Despacho a
+ * domicilio" (flat_rate), exige RUT receptor válido, nombre, dirección,
+ * región y comuna. Si es "Retiro en tienda" (local_pickup), no exige
+ * nada de esto — mismo criterio condicional que ya usa checkout.js en
+ * el cliente (defensa en profundidad: el toggle visual no es la única
+ * validación).
+ */
+function tc_validate_shipping_fields() {
+    $chosen_method = isset( $_POST['shipping_method'][0] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_method'][0] ) ) : '';
+    $is_delivery   = 0 === strpos( $chosen_method, 'flat_rate' );
+
+    if ( ! $is_delivery ) {
+        return;
+    }
+
+    $shipping_rut = isset( $_POST['shipping_rut'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_rut'] ) ) : '';
+    if ( ! $shipping_rut ) {
+        wc_add_notice( __( 'El RUT de quien recibe es obligatorio para el despacho a domicilio.', 'telconnect' ), 'error', array( 'id' => 'shipping_rut' ) );
+    } elseif ( class_exists( 'WoocommercePlugin\\helpers\\RutValidator' ) && ! \WoocommercePlugin\helpers\RutValidator::validate( $shipping_rut ) ) {
+        wc_add_notice( __( 'El RUT de quien recibe no es válido. Revisa el formato (ej: 12345678-9).', 'telconnect' ), 'error', array( 'id' => 'shipping_rut' ) );
+    }
+
+    if ( empty( $_POST['shipping_first_name'] ) ) {
+        wc_add_notice( __( 'El nombre de quien recibe es obligatorio para el despacho a domicilio.', 'telconnect' ), 'error', array( 'id' => 'shipping_first_name' ) );
+    }
+    if ( empty( $_POST['shipping_address_1'] ) ) {
+        wc_add_notice( __( 'La dirección es obligatoria para el despacho a domicilio.', 'telconnect' ), 'error', array( 'id' => 'shipping_address_1' ) );
+    }
+    if ( empty( $_POST['shipping_state'] ) ) {
+        wc_add_notice( __( 'La región es obligatoria para el despacho a domicilio.', 'telconnect' ), 'error', array( 'id' => 'shipping_state' ) );
+    }
+    if ( empty( $_POST['shipping_comuna'] ) ) {
+        wc_add_notice( __( 'La comuna es obligatoria para el despacho a domicilio.', 'telconnect' ), 'error', array( 'id' => 'shipping_comuna' ) );
+    }
+}
+add_action( 'woocommerce_after_checkout_validation', 'tc_validate_shipping_fields' );
+
+// shipping_rut/shipping_comuna no son props nativas de WC_Order — se guardan como meta.
+function tc_save_shipping_fields_to_order( $order_id ) {
+    if ( isset( $_POST['shipping_rut'] ) ) {
+        update_post_meta( $order_id, '_shipping_rut', sanitize_text_field( wp_unslash( $_POST['shipping_rut'] ) ) );
+    }
+    if ( isset( $_POST['shipping_comuna'] ) ) {
+        update_post_meta( $order_id, '_shipping_comuna', sanitize_text_field( wp_unslash( $_POST['shipping_comuna'] ) ) );
+    }
+}
+add_action( 'woocommerce_checkout_update_order_meta', 'tc_save_shipping_fields_to_order' );
 
 // Mismos campos en Mi Cuenta > Direcciones > Editar dirección de facturación.
 function tc_add_account_billing_address_fields( $address_fields ) {

@@ -2,37 +2,85 @@
 /**
  * Override de yourtheme/woocommerce/cart/cart.php
  * Base: woocommerce/templates/cart/cart.php (v11.0.0)
- * Mismo árbol de hooks que el core (tabla de items, acciones,
- * collaterals) — solo se reestructura el markup en 2 columnas con
- * clases .crt-*, mismo patrón que .chk-form-col/.chk-summary-col
- * del checkout.
+ *
+ * v2 — rediseño completo contra Figma real (recursos/carrito/), mismo
+ * criterio que la PDP v2 (§8.4b de CONTEXT.md): el layout de Figma es
+ * un listado de cards, no la tabla <table> del core, así que se
+ * abandona el markup <table>/<tr>/<td> y se construye a mano — pero
+ * se preservan los filtros de WC (woocommerce_cart_item_*, etc.) donde
+ * tiene sentido llamarlos igual, solo que envueltos en <div> en vez de
+ * <td>. Se verificó (grep sobre wp-content/plugins) que ningún plugin
+ * activo, incluido el gateway TUU, engancha nada a los hooks que se
+ * dejan de usar acá (woocommerce_after_cart_item_name, etc.) más allá
+ * de lo que ya hacía el propio WooCommerce core.
+ *
+ * Ítems anidados (addon "Firma electrónica"): un cart item con
+ * 'tc_parent_cart_item_key' (ver tc_maybe_add_signature_addon() en
+ * functions.php) NO se renderiza como fila propia — tc_get_top_level_cart_items()
+ * ya lo excluye — se dibuja dentro de la fila de su producto padre
+ * (ver tc_get_cart_children_map()).
  *
  * Nota sobre `woocommerce_cart_collaterals`: el core registra
  * `woocommerce_cross_sell_display` y `woocommerce_cart_totals` como
  * dos callbacks separados sobre ese mismo hook (wc-template-hooks.php).
- * Se verificó que ningún plugin activo (incluido el gateway TUU) engancha
- * nada más ahí, así que en vez de un solo do_action() combinado se llaman
- * ambas funciones por separado — permite poner cross-sells en la columna
- * de items y el total en la columna sticky, igual que hacía el Cart Block
- * de Gutenberg que este template reemplaza. Ambas son funciones "pluggable"
- * de WooCommerce (wrapeadas en function_exists), pensadas para poder
- * llamarse directo.
+ * Se verificó que ningún plugin activo engancha nada más ahí, así que
+ * se llaman ambas funciones por separado — permite poner cross-sells
+ * en la columna de items y el total en la columna sticky.
  *
- * Nota sobre `woocommerce_before_cart`: el core lo engancha a
- * woocommerce_output_all_notices (avisos de "producto agregado", errores,
- * etc.). Se llama DENTRO de .crt-container (después del título) en vez de
- * antes del wrapper como hacía el cart.php original, para que el aviso no
- * quede fuera de la shell de la página y se solape con el header. Mismo
- * criterio que form-checkout.php con woocommerce_before_checkout_form.
+ * Nota sobre `woocommerce_before_cart`: se llama DENTRO de
+ * .crt-container (después del header) para que el aviso de "producto
+ * agregado"/errores no quede fuera de la shell de la página.
  */
 
 defined( 'ABSPATH' ) || exit;
+
+$crt_top_level_items = tc_get_top_level_cart_items();
+$crt_children_map    = tc_get_cart_children_map();
+$crt_product_count   = count( $crt_top_level_items );
 ?>
 
 <div class="crt-page">
     <div class="crt-container">
-        <span class="crt-eyebrow"><?php esc_html_e( 'Tu selección', 'telconnect' ); ?></span>
-        <h1 class="crt-title"><?php esc_html_e( 'Carrito', 'telconnect' ); ?></h1>
+
+        <div class="crt-header">
+            <div class="crt-title-row">
+                <h1 class="crt-title"><?php esc_html_e( 'Tu carrito', 'telconnect' ); ?></h1>
+                <span class="crt-count">
+                    <?php
+                    /* translators: %d es la cantidad de productos top-level (sin contar addons anidados) */
+                    echo esc_html( sprintf( _n( '%d producto', '%d productos', $crt_product_count, 'telconnect' ), $crt_product_count ) );
+                    ?>
+                </span>
+            </div>
+
+            <?php
+            /**
+             * Stepper de 3 pasos — puramente decorativo por ahora (sin
+             * lógica de multi-step real). El checkout sigue siendo una
+             * sola página ([woocommerce_checkout], §8.1), así que "Datos"
+             * y "Pago" no son rutas separadas todavía — es solo el
+             * indicador visual que pide el Figma. Decisión documentada
+             * en CONTEXT.md §8.6/§8.7: no repartir el checkout en 2 pasos
+             * reales para esto.
+             */
+            ?>
+            <div class="crt-steps" aria-hidden="true">
+                <div class="crt-step crt-step--active">
+                    <span class="crt-step-num">1</span>
+                    <span class="crt-step-label"><?php esc_html_e( 'Carrito', 'telconnect' ); ?></span>
+                </div>
+                <span class="crt-step-sep"></span>
+                <div class="crt-step">
+                    <span class="crt-step-num">2</span>
+                    <span class="crt-step-label"><?php esc_html_e( 'Datos', 'telconnect' ); ?></span>
+                </div>
+                <span class="crt-step-sep"></span>
+                <div class="crt-step">
+                    <span class="crt-step-num">3</span>
+                    <span class="crt-step-label"><?php esc_html_e( 'Pago', 'telconnect' ); ?></span>
+                </div>
+            </div>
+        </div>
 
         <?php do_action( 'woocommerce_before_cart' ); ?>
 
@@ -42,148 +90,164 @@ defined( 'ABSPATH' ) || exit;
             <div class="crt-grid">
                 <div class="crt-items-col">
 
-                    <table class="shop_table shop_table_responsive cart woocommerce-cart-form__contents crt-table" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="product-remove"><span class="screen-reader-text"><?php esc_html_e( 'Remove item', 'woocommerce' ); ?></span></th>
-                                <th scope="col" class="product-thumbnail"><span class="screen-reader-text"><?php esc_html_e( 'Thumbnail image', 'woocommerce' ); ?></span></th>
-                                <th scope="col" class="product-name"><?php esc_html_e( 'Producto', 'telconnect' ); ?></th>
-                                <th scope="col" class="product-price"><?php esc_html_e( 'Precio', 'telconnect' ); ?></th>
-                                <th scope="col" class="product-quantity"><?php esc_html_e( 'Cantidad', 'telconnect' ); ?></th>
-                                <th scope="col" class="product-subtotal"><?php esc_html_e( 'Subtotal', 'telconnect' ); ?></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php do_action( 'woocommerce_before_cart_contents' ); ?>
+                    <div class="crt-items-card">
+                        <?php do_action( 'woocommerce_before_cart_contents' ); ?>
 
-                            <?php
-                            foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
-                                $_product   = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
-                                $product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
-                                $visible    = apply_filters( 'woocommerce_cart_item_visible', true, $cart_item, $cart_item_key );
+                        <?php
+                        foreach ( $crt_top_level_items as $cart_item_key => $cart_item ) {
+                            $_product   = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
+                            $product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
+                            $visible    = apply_filters( 'woocommerce_cart_item_visible', true, $cart_item, $cart_item_key );
 
-                                if ( $_product instanceof WC_Product && $_product->exists() && $cart_item['quantity'] > 0 && $visible ) {
-                                    $product_name      = apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key );
-                                    $product_permalink = apply_filters( 'woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink( $cart_item ) : '', $cart_item, $cart_item_key );
-                                    ?>
-                                    <tr class="woocommerce-cart-form__cart-item <?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
-
-                                        <td class="product-remove">
-                                            <?php
-                                                echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                                                    'woocommerce_cart_item_remove_link',
-                                                    sprintf(
-                                                        '<a role="button" href="%s" class="remove crt-remove" aria-label="%s" data-product_id="%s" data-product_sku="%s">&times;</a>',
-                                                        esc_url( wc_get_cart_remove_url( $cart_item_key ) ),
-                                                        /* translators: %s is the product name */
-                                                        esc_attr( sprintf( __( 'Remove %s from cart', 'woocommerce' ), wp_strip_all_tags( $product_name ) ) ),
-                                                        esc_attr( $product_id ),
-                                                        esc_attr( $_product->get_sku() )
-                                                    ),
-                                                    $cart_item_key
-                                                );
-                                            ?>
-                                        </td>
-
-                                        <td class="product-thumbnail">
-                                        <?php
-                                        $thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
-
-                                        if ( ! $product_permalink ) {
-                                            echo $thumbnail; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                                        } else {
-                                            printf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $thumbnail ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                                        }
-                                        ?>
-                                        </td>
-
-                                        <td role="rowheader" class="product-name" data-title="<?php esc_attr_e( 'Producto', 'telconnect' ); ?>">
-                                        <?php
-                                        if ( ! $product_permalink ) {
-                                            echo wp_kses_post( $product_name . '&nbsp;' );
-                                        } else {
-                                            echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', sprintf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $_product->get_name() ), $cart_item, $cart_item_key ) );
-                                        }
-
-                                        do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
-
-                                        echo wc_get_formatted_cart_item_data( $cart_item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
-                                        if ( $_product->backorders_require_notification() && $_product->is_on_backorder( $cart_item['quantity'] ) ) {
-                                            echo wp_kses_post( apply_filters( 'woocommerce_cart_item_backorder_notification', '<p class="backorder_notification">' . esc_html__( 'Available on backorder', 'woocommerce' ) . '</p>', $product_id ) );
-                                        }
-                                        ?>
-                                        </td>
-
-                                        <td class="product-price" data-title="<?php esc_attr_e( 'Precio', 'telconnect' ); ?>">
-                                            <?php echo apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                                        </td>
-
-                                        <td class="product-quantity" data-title="<?php esc_attr_e( 'Cantidad', 'telconnect' ); ?>">
-                                        <?php
-                                        if ( $_product->is_sold_individually() ) {
-                                            $min_quantity = 1;
-                                            $max_quantity = 1;
-                                        } else {
-                                            $min_quantity = 0;
-                                            $max_quantity = $_product->get_max_purchase_quantity();
-                                        }
-
-                                        $product_quantity = woocommerce_quantity_input(
-                                            array(
-                                                'input_name'   => "cart[{$cart_item_key}][qty]",
-                                                'input_value'  => $cart_item['quantity'],
-                                                'max_value'    => $max_quantity,
-                                                'min_value'    => $min_quantity,
-                                                'product_name' => $product_name,
-                                            ),
-                                            $_product,
-                                            false
-                                        );
-
-                                        echo apply_filters( 'woocommerce_cart_item_quantity', $product_quantity, $cart_item_key, $cart_item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                                        ?>
-                                        </td>
-
-                                        <td class="product-subtotal" data-title="<?php esc_attr_e( 'Subtotal', 'telconnect' ); ?>">
-                                            <?php echo apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                                        </td>
-                                    </tr>
-                                    <?php
-                                }
+                            if ( ! ( $_product instanceof WC_Product ) || ! $_product->exists() || $cart_item['quantity'] <= 0 || ! $visible ) {
+                                continue;
                             }
+
+                            $product_name      = apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key );
+                            $product_permalink = apply_filters( 'woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink( $cart_item ) : '', $cart_item, $cart_item_key );
+                            $child_keys        = isset( $crt_children_map[ $cart_item_key ] ) ? $crt_children_map[ $cart_item_key ] : array();
                             ?>
+                            <div class="crt-item <?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
 
-                            <?php do_action( 'woocommerce_cart_contents' ); ?>
+                                <div class="crt-item-photo">
+                                    <?php
+                                    $thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
 
-                            <tr>
-                                <td colspan="6" class="actions">
+                                    if ( ! $product_permalink ) {
+                                        echo $thumbnail; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                                    } else {
+                                        printf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $thumbnail ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                                    }
+                                    ?>
+                                </div>
 
-                                    <?php if ( wc_coupons_enabled() ) { ?>
-                                        <div class="coupon">
-                                            <label for="coupon_code" class="screen-reader-text"><?php esc_html_e( 'Coupon:', 'woocommerce' ); ?></label>
-                                            <input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Código de cupón', 'telconnect' ); ?>" />
-                                            <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_html_e( 'Aplicar cupón', 'telconnect' ); ?></button>
-                                            <?php do_action( 'woocommerce_cart_coupon' ); ?>
+                                <div class="crt-item-info">
+                                    <div class="crt-item-name">
+                                        <?php
+                                        if ( ! $product_permalink ) {
+                                            echo wp_kses_post( $product_name );
+                                        } else {
+                                            echo wp_kses_post( sprintf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $product_name ) );
+                                        }
+                                        ?>
+                                    </div>
+
+                                    <?php if ( $_product->get_short_description() ) : ?>
+                                        <p class="crt-item-desc"><?php echo wp_kses_post( $_product->get_short_description() ); ?></p>
+                                    <?php endif; ?>
+
+                                    <?php echo wc_get_formatted_cart_item_data( $cart_item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+
+                                    <?php if ( $_product->backorders_require_notification() && $_product->is_on_backorder( $cart_item['quantity'] ) ) : ?>
+                                        <p class="backorder_notification"><?php esc_html_e( 'Available on backorder', 'woocommerce' ); ?></p>
+                                    <?php endif; ?>
+
+                                    <?php foreach ( $child_keys as $child_key ) :
+                                        $child_item    = WC()->cart->get_cart_item( $child_key );
+                                        $child_product = $child_item ? $child_item['data'] : null;
+                                        if ( ! $child_product instanceof WC_Product ) {
+                                            continue;
+                                        }
+                                        ?>
+                                        <div class="crt-item-addon">
+                                            <span class="crt-item-addon-icon">
+                                                <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/icons/receipt-lines.svg' ); ?>" alt="">
+                                            </span>
+                                            <span class="crt-item-addon-label"><?php echo esc_html( $child_product->get_name() ); ?></span>
+                                            <span class="crt-item-addon-price"><?php echo wp_kses_post( WC()->cart->get_product_price( $child_product ) ); ?></span>
                                         </div>
-                                    <?php } ?>
+                                    <?php endforeach; ?>
+                                </div>
 
-                                    <button type="submit" class="button" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Actualizar carrito', 'telconnect' ); ?></button>
+                                <div class="crt-item-control">
+                                    <div class="crt-item-price">
+                                        <span class="crt-item-price-amount"><?php echo apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+                                        <span class="crt-item-price-iva"><?php esc_html_e( '+ IVA', 'telconnect' ); ?></span>
+                                    </div>
 
-                                    <?php do_action( 'woocommerce_cart_actions' ); ?>
+                                    <?php
+                                    if ( $_product->is_sold_individually() ) {
+                                        $min_quantity = 1;
+                                        $max_quantity = 1;
+                                    } else {
+                                        $min_quantity = 0;
+                                        $max_quantity = $_product->get_max_purchase_quantity();
+                                    }
 
-                                    <?php wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce' ); ?>
-                                </td>
-                            </tr>
+                                    $product_quantity = woocommerce_quantity_input(
+                                        array(
+                                            'input_name'   => "cart[{$cart_item_key}][qty]",
+                                            'input_value'  => $cart_item['quantity'],
+                                            'max_value'    => $max_quantity,
+                                            'min_value'    => $min_quantity,
+                                            'product_name' => $product_name,
+                                        ),
+                                        $_product,
+                                        false
+                                    );
+                                    ?>
+                                    <div class="crt-qty-stepper">
+                                        <button type="button" class="crt-qty-btn crt-qty-minus" aria-label="<?php esc_attr_e( 'Restar', 'telconnect' ); ?>"><span></span></button>
+                                        <?php echo apply_filters( 'woocommerce_cart_item_quantity', $product_quantity, $cart_item_key, $cart_item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                        <button type="button" class="crt-qty-btn crt-qty-plus" aria-label="<?php esc_attr_e( 'Sumar', 'telconnect' ); ?>"><span></span></button>
+                                    </div>
 
-                            <?php do_action( 'woocommerce_after_cart_contents' ); ?>
-                        </tbody>
-                    </table>
+                                    <?php
+                                    echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                                        'woocommerce_cart_item_remove_link',
+                                        sprintf(
+                                            '<a role="button" href="%s" class="crt-item-remove" aria-label="%s" data-product_id="%s" data-product_sku="%s"><img src="%s" alt="">%s</a>',
+                                            esc_url( wc_get_cart_remove_url( $cart_item_key ) ),
+                                            /* translators: %s is the product name */
+                                            esc_attr( sprintf( __( 'Remove %s from cart', 'woocommerce' ), wp_strip_all_tags( $product_name ) ) ),
+                                            esc_attr( $product_id ),
+                                            esc_attr( $_product->get_sku() ),
+                                            esc_url( get_template_directory_uri() . '/assets/img/icons/trash-01.svg' ),
+                                            esc_html__( 'Eliminar', 'telconnect' )
+                                        ),
+                                        $cart_item_key
+                                    );
+                                    ?>
+                                </div>
+                            </div>
+                            <?php
+                        }
+                        ?>
+
+                        <?php do_action( 'woocommerce_cart_contents' ); ?>
+                        <?php do_action( 'woocommerce_after_cart_contents' ); ?>
+
+                        <?php if ( wc_coupons_enabled() ) : ?>
+                            <details class="crt-coupon-toggle">
+                                <summary><?php esc_html_e( '¿Tienes un cupón de descuento?', 'telconnect' ); ?></summary>
+                                <div class="coupon">
+                                    <label for="coupon_code" class="screen-reader-text"><?php esc_html_e( 'Coupon:', 'woocommerce' ); ?></label>
+                                    <input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Código de cupón', 'telconnect' ); ?>" />
+                                    <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_html_e( 'Aplicar cupón', 'telconnect' ); ?></button>
+                                    <?php do_action( 'woocommerce_cart_coupon' ); ?>
+                                </div>
+                            </details>
+                        <?php endif; ?>
+
+                        <?php // Oculto: solo existe como submitter para el auto-submit de cart.js (ver docblock del archivo). ?>
+                        <button type="submit" class="crt-visually-hidden" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Actualizar carrito', 'telconnect' ); ?></button>
+
+                        <?php do_action( 'woocommerce_cart_actions' ); ?>
+                        <?php wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce' ); ?>
+                    </div>
 
                     <?php do_action( 'woocommerce_after_cart_table' ); ?>
 
                     <?php // Ver nota en el docblock: se llama directo en vez de vía do_action('woocommerce_cart_collaterals') combinado. ?>
                     <?php woocommerce_cross_sell_display(); ?>
+
+                    <div class="crt-help-banner">
+                        <div class="crt-help-copy">
+                            <strong><?php esc_html_e( '¿Tienes dudas antes de comprar?', 'telconnect' ); ?></strong>
+                            <p><?php esc_html_e( 'Escríbenos y habla con nosotros y te ayudamos a elegir la máquina.', 'telconnect' ); ?></p>
+                        </div>
+                        <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="crt-help-btn"><?php esc_html_e( 'Escribir a ventas', 'telconnect' ); ?></a>
+                    </div>
                 </div>
 
                 <div class="crt-summary-col">

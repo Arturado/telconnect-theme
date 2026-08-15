@@ -1,40 +1,137 @@
 /* =====================================================
-   Carrito — mismo criterio que checkout.css: sin Figma real
-   todavía, layout construido sobre los tokens y patrones ya
-   establecidos (card style de .dp-card, botón .btn-primary,
-   grid 1fr/400px de .chk-grid). Iterar con Copy-as-CSS cuando
-   exista el diseño real.
+   Carrito — v2, pixel a pixel contra Figma real
+   (recursos/carrito/figma-carrito.css + captura-carrito.png).
+   Reemplaza la v1 "sin Figma todavía" documentada en CONTEXT.md §8.2.
+
+   3 bugs sistemáticos ya conocidos de otras pantallas WooCommerce
+   (§10 de CONTEXT.md) — revisados proactivamente acá:
+   1) float+width% de clases estructurales del core ganando por
+      especificidad a reglas propias de pocas clases.
+   2) Ink-900 (#0D0F15) vs Ink-700/var(--color-heading) (#151A24):
+      este Figma específico usa Ink-900 en casi todo el texto fuerte
+      (título, nombres de producto, precios, cantidad, "Eliminar" no
+      — ese es grayscale-500 — pero sí el resto), igual que la PDP.
+   3) padding fijo del contenedor de página sin override para mobile.
    ===================================================== */
 
 .crt-page {
-    padding: 56px 24px 96px;
+    padding: 36px 80px 88px;
     background: #F7F8FA;
 }
 
+@media (max-width: 900px) {
+    /* Bug #3: mismo patrón que pdp.css/checkout.css/plp.css — el padding
+       horizontal fijo del desktop (80px) deja casi sin ancho real el
+       contenido en mobile si no se agrega un override acá. 24px es el
+       mismo valor que ya usan las demás páginas de WooCommerce del sitio. */
+    .crt-page {
+        padding: 24px 24px 64px;
+    }
+}
+
 .crt-container {
-    max-width: 1180px;
+    max-width: 1280px;
     margin: 0 auto;
 }
 
-.crt-eyebrow {
-    display: block;
-    color: var(--color-eyebrow-blue);
-    font-family: var(--font-body);
-    font-size: var(--text-eyebrow);
-    font-weight: var(--weight-medium);
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
+/* ===== Header: título + contador + stepper de pasos ===== */
+.crt-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 32px;
+}
+
+.crt-title-row {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 12px;
 }
 
 .crt-title {
     font-family: var(--font-main);
-    font-size: 36px;
+    font-size: 34px;
     font-weight: var(--weight-medium);
-    line-height: 1.15;
-    letter-spacing: -0.01em;
-    color: var(--color-heading);
-    margin: 0 0 32px;
+    line-height: 40px;
+    letter-spacing: -0.005em;
+    /* Bug #2: Ink-900 real del Figma, no var(--color-heading) (Ink-700) */
+    color: #0D0F15;
+    margin: 0;
+}
+
+.crt-count {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 22px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+}
+
+.crt-steps {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.crt-step {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 6px 14px 6px 6px;
+    gap: 8px;
+    background: #F3F3F3;
+    border-radius: 100px;
+}
+
+.crt-step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    background: #C6C6C6;
+    border-radius: 22px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 17px;
+    font-weight: var(--weight-medium);
+    color: #848484;
+}
+
+.crt-step-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-medium);
+    color: #848484;
+}
+
+.crt-step--active {
+    background: #EAEFFD;
+}
+
+.crt-step--active .crt-step-num {
+    background: var(--color-eyebrow-blue);
+    color: #fff;
+}
+
+.crt-step--active .crt-step-label {
+    color: var(--color-eyebrow-blue);
+}
+
+.crt-step-sep {
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+    border-top: 1.5px solid #C6C6C6;
+    border-right: 1.5px solid #C6C6C6;
+    transform: rotate(45deg);
 }
 
 /* ===== Notices (cupón inválido, stock, etc.) ===== */
@@ -47,7 +144,7 @@
     border-radius: 12px;
     background: #fff;
     border: 1px solid var(--color-red);
-    color: var(--color-heading);
+    color: #0D0F15;
     font-family: var(--font-body);
     font-size: var(--text-body);
 }
@@ -71,7 +168,7 @@
 .crt-grid {
     display: grid;
     grid-template-columns: 1fr 400px;
-    gap: 32px;
+    gap: 24px;
     align-items: start;
 }
 
@@ -82,130 +179,335 @@
 }
 
 .crt-items-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ===== Card "Lista" ===== */
+.crt-items-card {
+    box-sizing: border-box;
     background: #fff;
     border: 1px solid #D9D9D9;
     border-radius: 20px;
-    padding: 24px;
+    padding: 8px 24px;
 }
 
-/* ===== Tabla de items ===== */
-.crt-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.crt-table thead th {
-    text-align: left;
-    padding: 0 0 16px;
-    font-family: var(--font-body);
-    font-size: var(--text-small);
-    font-weight: var(--weight-medium);
-    color: var(--color-body);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    border-bottom: 1px solid #EEF0F3;
-}
-
-.crt-table tbody tr.woocommerce-cart-form__cart-item {
-    border-bottom: 1px solid #EEF0F3;
-}
-
-.crt-table td {
-    padding: 20px 12px 20px 0;
-    vertical-align: middle;
-    font-family: var(--font-body);
-    font-size: var(--text-body);
-    color: var(--color-heading);
-}
-
-.crt-table .product-remove {
-    width: 32px;
-    padding-right: 4px;
-}
-
-.crt-table .remove.crt-remove {
+.crt-item {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    color: var(--color-body);
-    font-size: 18px;
-    line-height: 1;
-    text-decoration: none;
-    transition: background 0.2s ease, color 0.2s ease;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #EEF0F3;
 }
 
-.crt-table .remove.crt-remove:hover {
-    background: #FCE4E7;
-    color: var(--color-red);
+.crt-item:last-of-type {
+    border-bottom: none;
 }
 
-.crt-table .product-thumbnail img {
-    width: 72px;
-    height: 72px;
+.crt-item-photo {
+    flex-shrink: 0;
+    width: 104px;
+    height: 104px;
+}
+
+.crt-item-photo img,
+.crt-item-photo a {
+    display: block;
+    width: 104px;
+    height: 104px;
+}
+
+.crt-item-photo img {
     object-fit: cover;
-    border-radius: 12px;
-    background: #F0F1F4;
-    border: 1px solid #EEF0F3;
+    border-radius: 14px;
+    border: 1px solid #D9D9D9;
+    background: #F7F8FA;
 }
 
-.crt-table .product-name a {
-    color: var(--color-heading);
+.crt-item-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.crt-item-name {
+    font-family: var(--font-main);
+    font-size: 17px;
+    line-height: 24px;
     font-weight: var(--weight-medium);
+    letter-spacing: -0.005em;
+    /* Bug #2: Ink-900 real del Figma */
+    color: #0D0F15;
+}
+
+.crt-item-name a {
+    color: inherit;
     text-decoration: none;
 }
 
-.crt-table .product-name a:hover {
+.crt-item-name a:hover {
     text-decoration: underline;
 }
 
-.crt-table .product-price,
-.crt-table .product-subtotal {
+.crt-item-desc {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+}
+
+/* ===== Addon anidado ("Firma electrónica") ===== */
+.crt-item-addon {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding-top: 8px;
+}
+
+.crt-item-addon-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: #EAEFFD;
+    border-radius: 22px;
+}
+
+.crt-item-addon-icon img {
+    width: 12px;
+    height: 12px;
+}
+
+.crt-item-addon-label {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+}
+
+.crt-item-addon-price {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
     white-space: nowrap;
 }
 
-.crt-table .product-subtotal {
+/* ===== Columna de control (precio + cantidad + eliminar) ===== */
+.crt-item-control {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+    width: 160px;
+}
+
+.crt-item-price {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.crt-item-price-amount {
+    font-family: var(--font-main);
+    font-size: 18px;
+    line-height: 24px;
     font-weight: var(--weight-medium);
+    letter-spacing: -0.006em;
+    color: #0D0F15;
+    white-space: nowrap;
 }
 
-/* Quantity stepper nativo de WC (woocommerce_quantity_input) */
-.crt-table .quantity .qty {
-    width: 64px;
-    box-sizing: border-box;
+.crt-item-price-amount .amount {
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+}
+
+.crt-item-price-iva {
     font-family: var(--font-body);
-    font-size: var(--text-body);
-    color: var(--color-heading);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+    white-space: nowrap;
+}
+
+/* Stepper +/- de cantidad (mismo patrón que .pdp-qty-stepper, escalado) */
+.crt-qty-stepper {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 112px;
+    height: 40px;
+    padding: 0 5px;
     background: #fff;
-    border: 1px solid #D9D9D9;
-    border-radius: 10px;
-    padding: 8px 10px;
+    border: 1.5px solid #C6C6C6;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.crt-qty-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: #F3F3F3;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.crt-qty-btn span {
+    position: relative;
+    width: 8px;
+    height: 8px;
+}
+
+.crt-qty-minus span::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 8px;
+    height: 1.5px;
+    background: #0D0F15;
+    transform: translate(-50%, -50%);
+}
+
+.crt-qty-plus span::before,
+.crt-qty-plus span::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: #0D0F15;
+    transform: translate(-50%, -50%);
+}
+
+.crt-qty-plus span::before {
+    width: 8px;
+    height: 1.5px;
+}
+
+.crt-qty-plus span::after {
+    width: 1.5px;
+    height: 8px;
+}
+
+.crt-qty-stepper .quantity {
+    display: block;
+}
+
+/* Bug #1 (defensivo): .woocommerce .quantity .qty { width:3.631em } del
+   core tiene especificidad (0,2,0), igual que un selector propio de solo
+   2 clases — empatan, y quién gana pasa a depender del orden de carga.
+   Se suma .crt-page como 3ra clase para no dejarlo a la suerte, mismo
+   criterio que ya validado en pdp.css/account.css. */
+.crt-page .crt-qty-stepper .qty {
+    width: 32px;
+    border: none;
+    background: transparent;
+    box-sizing: border-box;
     text-align: center;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+    -moz-appearance: textfield;
+    padding: 0;
+    margin: 0;
 }
 
-.crt-table .quantity .qty:focus {
-    outline: none;
-    border-color: var(--color-eyebrow-blue);
+.crt-qty-stepper .qty::-webkit-inner-spin-button,
+.crt-qty-stepper .qty::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
-/* Fila de acciones: cupón + actualizar carrito */
-.crt-table tr .actions {
-    padding-top: 20px;
+/* Eliminar */
+.crt-item-remove {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-.crt-table .coupon {
+.crt-item-remove img {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.crt-item-remove span,
+.crt-item-remove {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-medium);
+    color: #848484;
+}
+
+.crt-item-remove:hover {
+    opacity: 0.75;
+}
+
+/* ===== Cupón (oculto por defecto detrás de un <details>, no está en
+   el Figma como bloque visible — se conserva la funcionalidad nativa
+   de WooCommerce sin agregar un elemento que el diseño no contempla).
+   Anotado en CONTEXT.md para decisión del usuario. ===== */
+.crt-coupon-toggle {
+    margin-top: 4px;
+    padding-top: 16px;
+    border-top: 1px solid #EEF0F3;
+}
+
+.crt-coupon-toggle summary {
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-medium);
+    color: var(--color-eyebrow-blue);
+    list-style: none;
+}
+
+.crt-coupon-toggle summary::-webkit-details-marker {
+    display: none;
+}
+
+.crt-coupon-toggle .coupon {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-    margin-bottom: 16px;
+    margin-top: 12px;
 }
 
-.crt-table .coupon .input-text {
+.crt-coupon-toggle .coupon .input-text {
     font-family: var(--font-body);
     font-size: var(--text-body);
-    color: var(--color-heading);
+    color: #0D0F15;
     background: #fff;
     border: 1px solid #D9D9D9;
     border-radius: 10px;
@@ -214,16 +516,16 @@
     max-width: 100%;
 }
 
-.crt-table .coupon .input-text:focus {
+.crt-coupon-toggle .coupon .input-text:focus {
     outline: none;
     border-color: var(--color-eyebrow-blue);
 }
 
-.crt-table button.button {
+.crt-coupon-toggle button.button {
     font-family: var(--font-body);
     font-weight: var(--weight-medium);
     font-size: var(--text-body);
-    color: var(--color-heading);
+    color: #0D0F15;
     background: #fff;
     border: 1px solid #D9D9D9;
     border-radius: 999px;
@@ -232,29 +534,42 @@
     transition: border-color 0.2s ease;
 }
 
-.crt-table button.button:hover {
+.crt-coupon-toggle button.button:hover {
     border-color: var(--color-eyebrow-blue);
 }
 
-/* ===== Cross-sells (reusa .plp-grid / .dp-card) ===== */
+/* Botón "Actualizar carrito" nativo — solo existe como submitter del
+   auto-submit de cart.js al cambiar cantidad (ver docblock de cart.js);
+   el Figma no tiene un botón visible para esto. */
+.crt-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ===== Cross-sells (reusa .plp-grid / .dp-card) — fuera del alcance
+   de este Figma (no aparece en la captura ni en el CSS export, mismo
+   caso que los relacionados de la PDP en §8.4c), se deja funcional. ===== */
 .crt-cross-sells {
-    margin-top: 40px;
-    padding-top: 32px;
-    border-top: 1px solid #EEF0F3;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
 }
 
 .crt-cross-sells-title {
     font-family: var(--font-main);
     font-size: 24px;
     font-weight: var(--weight-medium);
-    color: var(--color-heading);
+    color: #0D0F15;
     margin: 0 0 20px;
 }
 
-/* La grilla genérica .plp-grid es a 3 columnas; los cross-sells del
-   carrito por defecto son solo 2 (woocommerce_cross_sell_display),
-   así que se limita a 2 columnas para que no queden apretados dentro
-   de la columna angosta de items. */
 .crt-cross-sells-grid.plp-grid {
     grid-template-columns: repeat(2, 1fr);
 }
@@ -265,6 +580,66 @@
     }
 }
 
+/* ===== Banner "¿Tienes dudas antes de comprar?" ===== */
+.crt-help-banner {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 18px 20px 18px 24px;
+    gap: 14px;
+    background: #EAEFFD;
+    border: 1.5px solid var(--color-eyebrow-blue);
+    border-radius: 16px;
+    flex-wrap: wrap;
+}
+
+.crt-help-copy {
+    flex: 1;
+    min-width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.crt-help-copy strong {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+}
+
+.crt-help-copy p {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+}
+
+.crt-help-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 16px;
+    background: var(--color-eyebrow-blue);
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-medium);
+    color: #fff;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.crt-help-btn:hover {
+    opacity: 0.85;
+    color: #fff;
+}
+
 /* ===== Columna resumen ===== */
 .crt-summary-col {
     position: sticky;
@@ -272,116 +647,125 @@
 }
 
 .crt-summary-card {
+    box-sizing: border-box;
     background: #fff;
     border: 1px solid #D9D9D9;
     border-radius: 20px;
-    padding: 28px;
+    padding: 24px;
 }
 
 .crt-summary-title {
     font-family: var(--font-main);
-    font-size: var(--text-card-title);
+    font-size: 17px;
+    line-height: 24px;
     font-weight: var(--weight-medium);
-    color: var(--color-heading);
+    letter-spacing: -0.005em;
+    color: #0D0F15;
     margin: 0 0 20px;
 }
 
-.crt-totals-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.crt-totals-table tr th,
-.crt-totals-table tr td {
-    padding: 12px 0;
-    font-family: var(--font-body);
-    font-size: var(--text-body);
-    font-weight: var(--weight-regular);
-    color: var(--color-body);
-    text-align: left;
-    border-bottom: 1px solid #EEF0F3;
-}
-
-.crt-totals-table tr td {
-    text-align: right;
-    color: var(--color-heading);
-}
-
-/* La fila de envío tiene su propia lista de métodos (radios), no debe
-   heredar text-align:right — mismo criterio que .chk-review-table. */
-.crt-totals-table tr.shipping td,
-.crt-totals-table tr.woocommerce-shipping-totals td {
-    text-align: left;
-}
-
-.crt-totals-table ul#shipping_method {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.crt-totals-table ul#shipping_method li {
+.crt-summary-lines {
     display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 18px;
+}
+
+.crt-summary-line {
+    display: flex;
+    flex-direction: row;
     align-items: flex-start;
-    gap: 10px;
-    padding: 8px 0;
+    gap: 12px;
 }
 
-.crt-totals-table ul#shipping_method li label {
+.crt-summary-line span:first-child {
     flex: 1;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: var(--weight-regular);
+    color: #848484;
 }
 
-.crt-totals-table ul#shipping_method input[type="radio"] {
-    accent-color: var(--color-eyebrow-blue);
-    width: 16px;
-    height: 16px;
-    margin-top: 3px;
-    flex-shrink: 0;
-}
-
-.crt-totals-order-total th,
-.crt-totals-order-total td {
-    border-bottom: none;
-    padding-top: 16px;
-    font-family: var(--font-main);
-    font-size: 22px;
+.crt-summary-line span:last-child {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 18px;
     font-weight: var(--weight-medium);
-    color: var(--color-heading);
+    color: #0D0F15;
+    white-space: nowrap;
 }
 
-/* ===== Calculadora de envío ===== */
-.crt-totals-table .shipping-calculator-button {
+.crt-summary-shipping-value--free {
+    color: #16A34A;
+}
+
+.crt-summary-line--discount span:last-child {
+    color: #16A34A;
+}
+
+.crt-summary-total {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #EEF0F3;
+}
+
+.crt-summary-total span:first-child {
+    flex: 1;
+    font-family: var(--font-main);
+    font-size: 17px;
+    line-height: 24px;
+    font-weight: var(--weight-medium);
+    letter-spacing: -0.005em;
+    color: #0D0F15;
+}
+
+.crt-summary-total span:last-child {
+    font-family: var(--font-main);
+    font-size: 26px;
+    line-height: 32px;
+    font-weight: var(--weight-medium);
+    letter-spacing: -0.014em;
+    color: #0D0F15;
+    white-space: nowrap;
+}
+
+/* ===== Calculadora de envío (widget nativo, si el checkout la muestra) ===== */
+.crt-summary-card .shipping-calculator-button {
     color: var(--color-eyebrow-blue);
     font-weight: var(--weight-medium);
     text-decoration: underline;
     cursor: pointer;
 }
 
-.crt-totals-table .shipping-calculator-form .form-row {
+.crt-summary-card .shipping-calculator-form .form-row {
     margin: 0 0 12px;
 }
 
-.crt-totals-table .shipping-calculator-form label {
+.crt-summary-card .shipping-calculator-form label {
     display: block;
     font-size: var(--text-small);
-    color: var(--color-heading);
+    color: #0D0F15;
     margin-bottom: 4px;
 }
 
-.crt-totals-table .shipping-calculator-form select,
-.crt-totals-table .shipping-calculator-form input.input-text {
+.crt-summary-card .shipping-calculator-form select,
+.crt-summary-card .shipping-calculator-form input.input-text {
     width: 100%;
     box-sizing: border-box;
     font-family: var(--font-body);
     font-size: var(--text-body);
-    color: var(--color-heading);
+    color: #0D0F15;
     background: #fff;
     border: 1px solid #D9D9D9;
     border-radius: 10px;
     padding: 10px 12px;
 }
 
-/* ===== Botón "Proceder al pago" ===== */
+/* ===== Botón "Ir a pagar" ===== */
 .crt-proceed-to-checkout {
     margin-top: 20px;
 }
@@ -389,30 +773,60 @@
 /* Especificidad reforzada (.button.alt) a propósito: el core tiene
    ".woocommerce a.button.alt" y ".woocommerce-cart .wc-proceed-to-checkout
    a.checkout-button" (ambas 0,3,1 vía :where()), que le ganaban a una regla
-   de 2 clases — mismo bug de especificidad ya documentado en pdp.css con
-   el botón "Agregar al carrito". */
+   de 2 clases — mismo bug de especificidad ya documentado (Bug #1). */
 .crt-proceed-to-checkout a.checkout-button.button.alt {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     width: 100%;
+    height: 48px;
     box-sizing: border-box;
     margin-bottom: 0;
     font-family: var(--font-body);
     font-weight: var(--weight-medium);
-    font-size: 16px;
-    letter-spacing: -0.002em;
-    padding: 17px 32px;
+    font-size: 15px;
+    line-height: 20px;
+    padding: 14px 24px;
     border-radius: 999px;
-    background-color: var(--color-lime);
-    color: var(--color-heading);
+    background-color: var(--color-eyebrow-blue);
+    color: #fff;
     text-decoration: none;
     transition: opacity 0.2s ease;
 }
 
 .crt-proceed-to-checkout a.checkout-button.button.alt:hover {
     opacity: 0.85;
-    background-color: var(--color-lime);
-    color: var(--color-heading);
+    background-color: var(--color-eyebrow-blue);
+    color: #fff;
+}
+
+/* ===== Nota de confianza ("Pago seguro...") ===== */
+.crt-trust-note {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: #EAEFFD;
+    border-radius: 12px;
+}
+
+.crt-trust-note img {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.crt-trust-note span {
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: var(--weight-regular);
+    color: #1F43A8;
 }
 
 /* ===== Carrito vacío ===== */
@@ -435,4 +849,35 @@
 
 .crt-empty-cta {
     display: inline-block;
+}
+
+/* ===== Mobile: apilar item (foto+info arriba, control abajo) ===== */
+@media (max-width: 640px) {
+    .crt-item {
+        flex-wrap: wrap;
+    }
+
+    .crt-item-control {
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-left: 124px; /* alinea bajo .crt-item-info, igual que el ancho foto+gap */
+    }
+
+    .crt-item-price {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+    }
+
+    .crt-help-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .crt-help-btn {
+        width: 100%;
+    }
 }

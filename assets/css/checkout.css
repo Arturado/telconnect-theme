@@ -1,42 +1,194 @@
 /* =====================================================
-   Checkout — sin Figma real todavía, layout construido
-   sobre los tokens y patrones ya establecidos (card style
-   de .dp-card, botón .btn-primary, tipografía de secciones).
-   Iterar con Copy-as-CSS cuando exista el diseño real.
+   Checkout — v2, wizard de 2 pasos (Datos/Pago) pixel a pixel contra
+   Figma real (recursos/checkout-datos/ + recursos/checkout-pago/).
+   Reemplaza el v1 "sin Figma todavía" (CONTEXT.md §8.1/§8.8).
+
+   3 bugs sistemáticos ya conocidos (§10 CONTEXT.md) — revisados
+   proactivamente:
+   1) float+width% del core: no se overridearon form-billing.php/
+      form-shipping.php/payment.php (solo payment-method.php,
+      selectivo), así que se revisó woocommerce-layout.css en busca de
+      reglas float/width sobre .form-row-first/.form-row-last,
+      .woocommerce-shipping-fields, etc. — ya estaban neutralizadas
+      desde el v1 (selectores propios de 2+ clases dentro de
+      .chk-form-col), se mantienen.
+   2) Ink-900 (#0D0F15) vs Ink-700/var(--color-heading) (#151A24):
+      este Figma también usa Ink-900 en casi todo el texto fuerte
+      (títulos de card, labels, valores del resumen) — igual que
+      carrito/PDP, se hardcodea #0D0F15 en vez de la variable.
+   3) padding fijo sin override mobile: agregado desde el inicio.
    ===================================================== */
 
 .chk-page {
-    padding: 56px 24px 96px;
+    padding: 36px 80px 88px;
     background: #F7F8FA;
 }
 
+@media (max-width: 900px) {
+    .chk-page {
+        padding: 24px 24px 64px;
+    }
+}
+
 .chk-container {
-    max-width: 1180px;
+    max-width: 1280px;
     margin: 0 auto;
 }
 
-.chk-eyebrow {
+/* ===== Header: título + subtítulo + stepper ===== */
+.chk-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 32px;
+}
+
+.chk-title-block[data-panel="pago"] {
+    display: none;
+}
+
+.chk-page[data-step="pago"] .chk-title-block[data-panel="pago"] {
     display: block;
-    color: var(--color-eyebrow-blue);
-    font-family: var(--font-body);
-    font-size: var(--text-eyebrow);
-    font-weight: var(--weight-medium);
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
 }
 
-.chk-title {
+.chk-page[data-step="pago"] .chk-title-block[data-panel="datos"] {
+    display: none;
+}
+
+.chk-title-block .chk-title {
+    display: inline;
     font-family: var(--font-main);
-    font-size: 36px;
+    font-size: 34px;
     font-weight: var(--weight-medium);
-    line-height: 1.15;
-    letter-spacing: -0.01em;
-    color: var(--color-heading);
-    margin: 0 0 32px;
+    line-height: 40px;
+    letter-spacing: -0.005em;
+    /* Bug #2: Ink-900 real del Figma, no var(--color-heading) (Ink-700) */
+    color: #0D0F15;
+    margin: 0;
 }
 
-/* ===== Notices (errores de validación, RUT inválido, etc.) ===== */
+.chk-subtitle {
+    display: inline-block;
+    margin: 0 0 0 12px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 22px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+    vertical-align: baseline;
+}
+
+.chk-steps {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.chk-step {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 6px 14px 6px 6px;
+    gap: 8px;
+    background: #F3F3F3;
+    border-radius: 100px;
+}
+
+.chk-step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    background: #C6C6C6;
+    border-radius: 22px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 17px;
+    font-weight: var(--weight-medium);
+    color: #848484;
+}
+
+.chk-step-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-medium);
+    color: #848484;
+}
+
+/* Paso "en curso" (azul) */
+.chk-step[data-name="datos"],
+.chk-step[data-name="pago"] {
+    background: #F3F3F3;
+}
+
+.chk-page[data-step="datos"] .chk-step[data-name="datos"],
+.chk-page[data-step="pago"] .chk-step[data-name="pago"] {
+    background: #EAEFFD;
+}
+
+.chk-page[data-step="datos"] .chk-step[data-name="datos"] .chk-step-num,
+.chk-page[data-step="pago"] .chk-step[data-name="pago"] .chk-step-num {
+    background: var(--color-eyebrow-blue);
+    color: #fff;
+}
+
+.chk-page[data-step="datos"] .chk-step[data-name="datos"] .chk-step-label,
+.chk-page[data-step="pago"] .chk-step[data-name="pago"] .chk-step-label {
+    color: var(--color-eyebrow-blue);
+}
+
+/* Paso "hecho" (verde con check) — Carrito siempre, Datos cuando se
+   avanza a Pago. */
+.chk-step--done,
+.chk-page[data-step="pago"] .chk-step[data-name="datos"] {
+    background: #fff;
+}
+
+.chk-step--done .chk-step-num,
+.chk-page[data-step="pago"] .chk-step[data-name="datos"] .chk-step-num {
+    background: #16A34A;
+}
+
+.chk-step--done .chk-step-label,
+.chk-page[data-step="pago"] .chk-step[data-name="datos"] .chk-step-label {
+    color: #848484;
+}
+
+/* Checkmark blanco dibujado en CSS (mismo criterio que los íconos +/-
+   de cantidad del carrito/PDP: geometría simple, sin SVG). */
+.chk-step-check {
+    position: relative;
+}
+
+.chk-step-check::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 44%;
+    width: 5px;
+    height: 8px;
+    border-bottom: 1.5px solid #fff;
+    border-right: 1.5px solid #fff;
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.chk-step-sep {
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+    border-top: 1.5px solid #C6C6C6;
+    border-right: 1.5px solid #C6C6C6;
+    transform: rotate(45deg);
+}
+
+/* ===== Notices ===== */
 .chk-container .woocommerce-error,
 .chk-container .woocommerce-message,
 .chk-container .woocommerce-info {
@@ -46,17 +198,11 @@
     border-radius: 12px;
     background: #fff;
     border: 1px solid var(--color-red);
-    color: var(--color-heading);
+    color: #0D0F15;
     font-family: var(--font-body);
     font-size: var(--text-body);
 }
 
-/* El core reserva padding-left:3.5em para el ícono ::before (fuente
-   "WooCommerce") y lo posiciona con left:1.5em absoluto — al resetear
-   el padding a un valor parejo, el ícono queda flotando encima del
-   texto. Se oculta en vez de recalcular el padding: el resto del sitio
-   no usa iconografía de fuente en notices, así que es más consistente
-   que reservar espacio para un ícono que no encaja con el estilo. */
 .chk-container .woocommerce-error::before,
 .chk-container .woocommerce-message::before,
 .chk-container .woocommerce-info::before {
@@ -67,38 +213,11 @@
     border-color: var(--color-eyebrow-blue);
 }
 
-/* ===== Cupón ===== */
-.chk-container .woocommerce-form-coupon-toggle {
-    margin-bottom: 24px;
-}
-
-.chk-container .woocommerce-form-coupon-toggle .woocommerce-info {
-    border-color: #D9D9D9;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.chk-container .showcoupon {
-    color: var(--color-eyebrow-blue);
-    font-weight: var(--weight-medium);
-    text-decoration: underline;
-}
-
-.chk-container .checkout_coupon.woocommerce-form-coupon {
-    background: #fff;
-    border: 1px solid #D9D9D9;
-    border-radius: 16px;
-    padding: 20px;
-    margin: 0 0 24px;
-}
-
 /* ===== Grid principal ===== */
 .chk-grid {
     display: grid;
     grid-template-columns: 1fr 400px;
-    gap: 32px;
+    gap: 24px;
     align-items: start;
 }
 
@@ -109,49 +228,166 @@
 }
 
 .chk-form-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ===== Card genérica (Datos del cliente / Despacho / Forma de pago) ===== */
+.chk-card {
+    box-sizing: border-box;
     background: #fff;
     border: 1px solid #D9D9D9;
     border-radius: 20px;
-    padding: 32px;
+    padding: 26px 28px 28px;
 }
 
-/* ===== Headings de sub-secciones (Detalles de facturación, etc.) ===== */
-.chk-section-billing > h3,
-.chk-section-shipping .woocommerce-shipping-fields > h3,
-.chk-section-shipping .woocommerce-additional-fields > h3 {
-    font-family: var(--font-main);
-    font-size: var(--text-card-title);
-    font-weight: var(--weight-medium);
-    color: var(--color-heading);
-    margin: 0 0 20px;
-    padding-top: 28px;
-    border-top: 1px solid #EEF0F3;
+.chk-card-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
 }
 
-.chk-section-billing > h3 {
-    padding-top: 0;
-    border-top: none;
-}
-
-.chk-section-shipping .woocommerce-shipping-fields > h3 label {
+.chk-card-icon {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 10px;
-    cursor: pointer;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: #EAEFFD;
+    border-radius: 36px;
+}
+
+.chk-card-icon img {
+    width: 17px;
+    height: 17px;
+}
+
+.chk-card-heading {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.chk-card-heading h2 {
+    font-family: var(--font-main);
+    font-size: 17px;
+    line-height: 24px;
+    font-weight: var(--weight-medium);
+    letter-spacing: -0.005em;
+    color: #0D0F15;
+    margin: 0;
+}
+
+.chk-card-heading p {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+}
+
+.chk-card-step {
+    flex-shrink: 0;
+    font-family: var(--font-body);
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #C6C6C6;
+}
+
+/* Headers nativos del core (form-billing.php/form-shipping.php ya
+   traen su propio <h3>) — se ocultan, la card ya tiene su propio
+   header (.chk-card-header) construido a mano. Mismo criterio que
+   §8.1: restylear/ocultar sin overridear esos templates. */
+.chk-section-billing > h3,
+.chk-section-shipping .woocommerce-shipping-fields > h3 {
+    display: none;
 }
 
 /* ===== Campos de formulario ===== */
+/* Bug encontrado con Playwright, NO es el patrón float+width% ya
+   documentado (§10) — es uno nuevo, con 2 síntomas del mismo origen:
+   wc-address-i18n.js (JS del core, normaliza los campos de dirección
+   según el país) reconstruye address_1/address_2/state/postcode/city
+   al cargar la página:
+   1) les vuelve a poner SU PROPIA clase por defecto
+      (WC_Countries::get_default_address_fields(), 'class' =>
+      array('form-row-wide','address-field')), pisando en el DOM las
+      clases form-row-first/form-row-last que
+      tc_add_shipping_fields_for_checkout_wizard() les había puesto.
+   2) además los REORDENA en el DOM siguiendo el formato de dirección
+      de WC_Countries::get_address_format() para Chile (address_1,
+      address_2, state, postcode...) — así que ni el orden con el que
+      se emparejaban (2 por fila, en orden de aparición) coincidía con
+      el que se quería (RUT|Nombre, Dirección|Número, Región|Comuna).
+   Fix: en vez de pelear con esa reconstrucción, el layout se desacopla
+   totalmente del DOM — cada fila fija su tamaño (50%/100%) Y su
+   posición visual (order) por ID, así da igual en qué orden real
+   termine el DOM. El wrapper sigue en flexbox (evita además el float
+   nativo del core, que tampoco se overridea). */
+.chk-form-col .woocommerce-billing-fields__field-wrapper,
+.chk-form-col .woocommerce-shipping-fields__field-wrapper,
+.chk-form-col .woocommerce-additional-fields__field-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 20px;
+}
+
 .chk-form-col .form-row {
-    margin: 0 0 16px;
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin: 0 0 20px;
+}
+
+#billing_first_name_field,
+#billing_phone_field,
+#billing_email_field,
+#billing_rut_field,
+#shipping_rut_field,
+#shipping_first_name_field,
+#shipping_address_1_field,
+#shipping_address_2_field,
+#shipping_state_field,
+#shipping_comuna_field {
+    flex: 0 0 calc(50% - 10px) !important;
+    max-width: calc(50% - 10px) !important;
+}
+
+#billing_first_name_field { order: 1; }
+#billing_phone_field { order: 2; }
+#billing_email_field { order: 3; }
+#billing_rut_field { order: 4; }
+#billing_document_type_field { order: 5; }
+#billing_company_field { order: 6; }
+#billing_giro_field { order: 7; }
+
+#shipping_rut_field { order: 1; }
+#shipping_first_name_field { order: 2; }
+#shipping_address_1_field { order: 3; }
+#shipping_address_2_field { order: 4; }
+#shipping_state_field { order: 5; }
+#shipping_comuna_field { order: 6; }
+
+.chk-form-col .form-row:last-child {
+    margin-bottom: 0;
 }
 
 .chk-form-col label {
     display: block;
     font-family: var(--font-body);
-    font-size: var(--text-small);
+    font-size: 14px;
+    line-height: 18px;
     font-weight: var(--weight-medium);
-    color: var(--color-heading);
-    margin-bottom: 6px;
+    color: #0D0F15;
+    margin-bottom: 8px;
 }
 
 .chk-form-col label .required {
@@ -171,12 +407,12 @@
     width: 100%;
     box-sizing: border-box;
     font-family: var(--font-body);
-    font-size: var(--text-body);
-    color: var(--color-heading);
+    font-size: 16px;
+    color: #0D0F15;
     background: #fff;
     border: 1px solid #D9D9D9;
-    border-radius: 12px;
-    padding: 13px 16px;
+    border-radius: 16px;
+    padding: 15px 18px;
     height: auto;
     transition: border-color 0.2s ease;
 }
@@ -192,8 +428,8 @@
 }
 
 .chk-form-col .select2-selection__arrow {
-    top: 10px !important;
-    right: 10px !important;
+    top: 14px !important;
+    right: 12px !important;
 }
 
 .chk-form-col input.input-text:focus,
@@ -211,7 +447,7 @@
 .chk-field-rut-error {
     color: var(--color-red);
     font-size: 12px;
-    margin: -12px 0 16px;
+    margin: -14px 0 16px;
     display: none;
 }
 
@@ -224,7 +460,6 @@
     resize: vertical;
 }
 
-/* Checkbox / radio (ship to different address, terms, create account) */
 .chk-form-col input[type="checkbox"],
 .chk-form-col input[type="radio"] {
     accent-color: var(--color-eyebrow-blue);
@@ -234,12 +469,31 @@
     margin-right: 4px;
 }
 
-.chk-form-col .woocommerce-form__label-for-checkbox {
-    display: flex;
-    align-items: center;
-    font-weight: var(--weight-regular);
-    color: var(--color-body);
-    cursor: pointer;
+/* Campos ocultos del wizard (billing_last_name, dirección de
+   facturación completa, shipping_last_name, shipping_country/city/
+   postcode — ver tc_reorder_billing_fields_for_checkout_wizard() y
+   tc_add_shipping_fields_for_checkout_wizard() en functions.php). No
+   se borran del formulario (siguen enviándose con su valor default),
+   solo no se muestran — el Figma no las pide. */
+.chk-field-hidden {
+    display: none !important;
+}
+
+/* Campos de "Despacho" que solo aplican si el método elegido es a
+   domicilio (RUT receptor, nombre, dirección, número, región, comuna)
+   — toggle real vía JS (checkout.js: toggleDeliveryFields()). */
+.chk-field-domicilio.chk-field-hidden {
+    display: none;
+}
+
+/* Estos campos son required=false a nivel de WooCommerce a propósito
+   (ver el comentario largo en tc_add_shipping_fields_for_checkout_wizard(),
+   functions.php — required=true ahí exigiría el campo SIEMPRE, incluso
+   con "Retiro en tienda" elegido). El costo cosmético es que WC les
+   agrega un "(opcional)" al label que no corresponde al caso real
+   (domicilio, el método por defecto) — se oculta solo ese texto. */
+.chk-field-domicilio label .optional {
+    display: none;
 }
 
 /* Factura: Razón social + Giro, ocultos hasta elegir "Factura electrónica" */
@@ -251,12 +505,22 @@
     display: block;
 }
 
-/* ===== Notas del pedido / additional info ===== */
+/* Boleta/Factura: el Figma no lo muestra (mantenido por capacidad de
+   negocio, ver CONTEXT.md §8.8) — se le baja el peso visual para que
+   no compita con los 4 campos que sí calzan con el diseño. */
+.chk-field-document-type {
+    max-width: 280px;
+}
+
+.chk-field-document-type select {
+    padding: 10px 14px;
+    font-size: 14px;
+}
+
 .woocommerce-additional-fields {
     margin-top: 8px;
 }
 
-/* ===== Términos y condiciones ===== */
 .chk-form-col .woocommerce-terms-and-conditions-wrapper {
     margin-top: 8px;
 }
@@ -265,183 +529,215 @@
     margin: 0;
 }
 
-/* ===== Columna resumen ===== */
-.chk-summary-col {
-    position: sticky;
-    top: 24px;
-}
-
-.chk-summary-card {
-    background: #fff;
-    border: 1px solid #D9D9D9;
-    border-radius: 20px;
-    padding: 28px;
-}
-
-.chk-summary-title {
-    font-family: var(--font-main);
-    font-size: var(--text-card-title);
-    font-weight: var(--weight-medium);
-    color: var(--color-heading);
-    margin: 0 0 20px;
-}
-
-.chk-review-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.chk-review-table tbody tr.chk-review-row {
-    border-bottom: 1px solid #EEF0F3;
-}
-
-.chk-review-table td {
-    padding: 14px 0;
-    vertical-align: top;
-}
-
-.chk-review-product {
+/* ===== "Despacho": radio cards de método de envío ===== */
+.chk-shipping-methods {
     display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.chk-review-thumb img {
-    width: 56px;
-    height: 56px;
-    object-fit: cover;
-    border-radius: 10px;
-    background: #F0F1F4;
-    border: 1px solid #EEF0F3;
-}
-
-.chk-review-name {
-    font-family: var(--font-body);
-    font-size: var(--text-body);
-    color: var(--color-heading);
-    font-weight: var(--weight-medium);
-    line-height: 1.4;
-}
-
-.chk-review-qty {
-    color: var(--color-body);
-    font-weight: var(--weight-regular);
-}
-
-.chk-review-subtotal {
-    text-align: right;
-    font-family: var(--font-body);
-    font-size: var(--text-body);
-    color: var(--color-heading);
-    white-space: nowrap;
-}
-
-.chk-review-table tfoot tr {
-    border-top: 1px solid #EEF0F3;
-}
-
-.chk-review-table tfoot th,
-.chk-review-table tfoot td {
-    padding: 12px 0;
-    font-family: var(--font-body);
-    font-size: var(--text-body);
-    font-weight: var(--weight-regular);
-    color: var(--color-body);
-    text-align: left;
-}
-
-/* Solo las filas de importes (subtotal, descuento, impuestos, total) van
-   alineadas a la derecha — la fila de envío tiene su propia lista de
-   métodos y no debe heredar text-align:right (rompe el wrap del label). */
-.chk-review-table tfoot tr.cart-subtotal td,
-.chk-review-table tfoot tr.cart-discount td,
-.chk-review-table tfoot tr.fee td,
-.chk-review-table tfoot tr.tax-rate td,
-.chk-review-table tfoot tr.tax-total td,
-.chk-review-table tfoot tr.chk-review-total td {
-    text-align: right;
-    color: var(--color-heading);
-}
-
-.chk-review-table tfoot tr.chk-review-total th,
-.chk-review-table tfoot tr.chk-review-total td {
-    padding-top: 16px;
-    font-family: var(--font-main);
-    font-size: 22px;
-    font-weight: var(--weight-medium);
-    color: var(--color-heading);
-}
-
-/* Métodos de envío (flat rate / retiro en tienda) dentro del resumen */
-.chk-review-table ul#shipping_method {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.chk-review-table ul#shipping_method li {
-    display: flex;
-    align-items: flex-start;
+    flex-direction: column;
     gap: 10px;
-    padding: 10px 0;
+    margin-bottom: 22px;
+}
+
+.chk-shipping-methods-label {
     font-family: var(--font-body);
-    font-size: var(--text-body);
-    color: var(--color-heading);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-medium);
+    color: #848484;
 }
 
-.chk-review-table ul#shipping_method li label {
-    flex: 1;
+.chk-shipping-options {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
-.chk-review-table ul#shipping_method input[type="radio"] {
-    accent-color: var(--color-eyebrow-blue);
-    width: 16px;
-    height: 16px;
-    margin-top: 3px;
+.chk-shipping-option {
+    box-sizing: border-box;
+    flex: 1 1 260px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: #fff;
+    border: 1.5px solid #D9D9D9;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.chk-shipping-option.is-selected {
+    background: #EAEFFD;
+    border: 2px solid var(--color-eyebrow-blue);
+    padding: 15.5px 17.5px; /* compensa el border 1.5->2 para no saltar de tamaño */
+}
+
+.chk-shipping-option input.chk-shipping-radio {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+}
+
+.chk-shipping-dot {
     flex-shrink: 0;
+    box-sizing: border-box;
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    background: #fff;
+    border: 1.5px solid #ADADAD;
+    position: relative;
 }
 
-/* ===== Métodos de pago ===== */
+.chk-shipping-option.is-selected .chk-shipping-dot {
+    border: 6px solid var(--color-eyebrow-blue);
+}
+
+.chk-shipping-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.chk-shipping-title {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+}
+
+.chk-shipping-desc {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+}
+
+.chk-shipping-price {
+    flex-shrink: 0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+}
+
+.chk-shipping-price.is-free {
+    color: #16A34A;
+}
+
+/* ===== "Forma de pago": radio cards (payment-method.php) ===== */
 #payment.woocommerce-checkout-payment {
-    margin-top: 24px;
-    border-top: 1px solid #EEF0F3;
-    padding-top: 24px;
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
 }
 
 .wc_payment_methods.payment_methods.methods {
     list-style: none;
-    margin: 0 0 20px;
+    margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
-.wc_payment_method {
-    border: 1px solid #D9D9D9;
+.chk-payment-option {
+    box-sizing: border-box;
+    flex: 1 1 260px;
+    border: 1.5px solid #D9D9D9;
     border-radius: 14px;
-    padding: 14px 16px;
+    background: #fff;
+    transition: border-color 0.15s ease, background 0.15s ease;
 }
 
-.wc_payment_method label {
+.chk-payment-option.is-selected {
+    background: #EAEFFD;
+    border: 2px solid var(--color-eyebrow-blue);
+}
+
+.chk-payment-option-label {
+    box-sizing: border-box;
     display: flex;
+    flex-direction: row;
     align-items: center;
-    gap: 10px;
-    font-family: var(--font-body);
-    font-size: var(--text-body);
-    font-weight: var(--weight-medium);
-    color: var(--color-heading);
+    gap: 14px;
+    padding: 16px 18px;
+    margin: 0;
     cursor: pointer;
+}
+
+.chk-payment-radio {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
     margin: 0;
 }
 
-.wc_payment_method img {
+.chk-payment-dot {
+    flex-shrink: 0;
+    box-sizing: border-box;
+    width: 20px;
     height: 20px;
+    border-radius: 20px;
+    background: #fff;
+    border: 1.5px solid #ADADAD;
+}
+
+.chk-payment-option.is-selected .chk-payment-dot {
+    border: 6px solid var(--color-eyebrow-blue);
+}
+
+.chk-payment-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.chk-payment-title {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+}
+
+.chk-payment-title img {
+    height: 18px;
     width: auto;
+    vertical-align: middle;
+}
+
+.chk-payment-desc {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+}
+
+.chk-payment-badge {
+    flex-shrink: 0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
 }
 
 .wc_payment_method .payment_box {
-    margin-top: 12px;
+    margin: 0 18px 16px;
     padding: 12px 14px;
     background: #F7F8FA;
     border-radius: 10px;
@@ -453,33 +749,333 @@
     margin: 0;
 }
 
-/* ===== Botón de pagar ===== */
-.form-row.place-order {
-    margin-top: 20px;
+/* Botón real de WooCommerce (#place_order) — oculto visualmente (NO
+   display:none, checkout.js filtra por :visible en algunos puntos),
+   el botón "Pagar" que se ve de verdad vive en .chk-step-actions y le
+   reenvía el click (ver form-checkout.php/checkout.js). El checkbox
+   de términos y condiciones (si algún día se configura una página de
+   términos en WC) queda visible igual, dentro de la card. */
+#payment #place_order,
+#payment .woocommerce-terms-and-conditions-wrapper + .clear,
+#payment noscript {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
-#place_order {
+.form-row.place-order {
+    margin: 16px 18px 0;
+}
+
+/* ===== Botones de acción (Volver / Continuar / Pagar) ===== */
+.chk-step-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 4px;
+}
+
+.chk-btn-secondary,
+.chk-btn-primary {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    padding: 14px 24px;
+    border-radius: 100px;
     font-family: var(--font-body);
     font-weight: var(--weight-medium);
-    font-size: 16px;
-    letter-spacing: -0.002em;
-    padding: 17px 32px;
-    border-radius: 999px;
-    border: none;
-    background: var(--color-lime);
-    color: var(--color-heading);
-    width: 100%;
+    font-size: 15px;
+    line-height: 20px;
     cursor: pointer;
-    transition: opacity 0.2s ease;
+    text-decoration: none;
+    border: none;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
 }
 
-#place_order:hover {
+.chk-btn-secondary {
+    background: #fff;
+    border: 1.5px solid #C6C6C6;
+    color: #0D0F15;
+}
+
+.chk-btn-secondary:hover {
+    border-color: #ADADAD;
+}
+
+.chk-btn-primary {
+    background: var(--color-eyebrow-blue);
+    color: #fff;
+}
+
+.chk-btn-primary:hover {
     opacity: 0.85;
 }
 
-#place_order:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+/* ===== Columna resumen ===== */
+.chk-summary-col {
+    position: sticky;
+    top: 24px;
+}
+
+.chk-summary-card {
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+    padding: 24px;
+}
+
+.chk-summary-title {
+    font-family: var(--font-main);
+    font-size: 17px;
+    line-height: 24px;
+    font-weight: var(--weight-medium);
+    letter-spacing: -0.005em;
+    color: #0D0F15;
+    margin: 0 0 20px;
+}
+
+.chk-summary-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 18px;
+}
+
+.chk-summary-line {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.chk-summary-line span:first-child {
+    flex: 1;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+}
+
+.chk-summary-line span:last-child {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+    white-space: nowrap;
+}
+
+.chk-summary-shipping-value--free {
+    color: #16A34A;
+}
+
+.chk-summary-line--discount span:last-child {
+    color: #16A34A;
+}
+
+.chk-summary-total {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #EEF0F3;
+}
+
+.chk-summary-total span:first-child {
+    flex: 1;
+    font-family: var(--font-main);
+    font-size: 17px;
+    line-height: 24px;
+    font-weight: var(--weight-medium);
+    letter-spacing: -0.005em;
+    color: #0D0F15;
+}
+
+.chk-summary-total span:last-child {
+    font-family: var(--font-main);
+    font-size: 26px;
+    line-height: 32px;
+    font-weight: var(--weight-medium);
+    letter-spacing: -0.014em;
+    color: #0D0F15;
+    white-space: nowrap;
+}
+
+/* Bloque extra del paso Pago (Despacho real/Comisión/Servicio) — solo
+   informativo, visibilidad 100% CSS vía .chk-page[data-step] (ver
+   docblock de review-order.php: este bloque vive dentro de #order_review,
+   que se reemplaza completo en cada AJAX, así que no puede depender de
+   JS para mostrarse/ocultarse). */
+.chk-summary-extra {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 16px;
+    margin-top: 16px;
+    border-top: 1px solid #D9D9D9;
+}
+
+.chk-page[data-step="pago"] .chk-summary-extra {
+    display: flex;
+}
+
+.chk-summary-extra-line {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.chk-summary-extra-line span:first-child {
+    flex-shrink: 0;
+    width: 84px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+}
+
+.chk-summary-extra-line span:last-child {
+    flex: 1;
+    text-align: right;
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 17px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+}
+
+/* ===== Nota de confianza ===== */
+.chk-trust-note {
+    box-sizing: border-box;
+    display: none;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #EAEFFD;
+    border-radius: 12px;
+}
+
+.chk-trust-note[data-panel="datos"] {
+    display: flex;
+}
+
+.chk-page[data-step="pago"] .chk-trust-note[data-panel="datos"] {
+    display: none;
+}
+
+.chk-page[data-step="pago"] .chk-trust-note[data-panel="pago"] {
+    display: flex;
+}
+
+.chk-trust-note img {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.chk-trust-note span {
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: var(--weight-regular);
+    color: #1F43A8;
+}
+
+/* ===== Panel Pago: card + acciones ocultos en el paso Datos ===== */
+.chk-step-panel[data-panel="pago"] {
+    display: none;
+}
+
+.chk-page[data-step="pago"] .chk-step-panel[data-panel="pago"] {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.chk-page[data-step="pago"] .chk-step-panel[data-panel="datos"] {
+    display: none;
+}
+
+.chk-step-panel[data-panel="datos"] {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 640px) {
+    .chk-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .chk-subtitle {
+        margin-left: 0;
+    }
+
+    /* Bug encontrado con Playwright: dentro de flex-direction:column,
+       el "260px" de flex:1 1 260px pasa a leerse como ALTO objetivo en
+       vez de ancho — las cards de despacho/pago quedaban con ~260px de
+       alto vacío en mobile. Se resetea a flex:none + width:100% en vez
+       de heredar el flex-basis pensado para el layout en fila. */
+    .chk-shipping-options,
+    .wc_payment_methods.payment_methods.methods {
+        flex-direction: column;
+    }
+
+    .chk-shipping-option,
+    .chk-payment-option {
+        flex: none;
+        width: 100%;
+    }
+
+    /* Mismo criterio que checkout/cart/plp: en mobile los pares de 2
+       columnas (Nombre|Teléfono, Correo|RUT, RUT receptor|Nombre,
+       Dirección|Número, Región|Comuna) se apilan a 1 columna — a
+       ~350px de ancho real (390px viewport - padding) un input de
+       "50% - 10px" queda demasiado angosto para escribir con comodidad. */
+    #billing_first_name_field,
+    #billing_phone_field,
+    #billing_email_field,
+    #billing_rut_field,
+    #shipping_rut_field,
+    #shipping_first_name_field,
+    #shipping_address_1_field,
+    #shipping_address_2_field,
+    #shipping_state_field,
+    #shipping_comuna_field {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+
+    .chk-step-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .chk-btn-secondary,
+    .chk-btn-primary {
+        width: 100%;
+    }
 }
 
 /* ===== Thank you page ===== */

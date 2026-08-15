@@ -10,14 +10,40 @@
  * salto visual que se quiere evitar. Se mantiene el hook
  * woocommerce_cart_is_empty tal cual (wc_empty_cart_message) y el link
  * a la tienda.
+ *
+ * v2: mismo header (sin eyebrow, título "Tu carrito" Ink-900) y stepper
+ * de 3 pasos decorativo que cart.php, para que la shell sea idéntica
+ * entre el estado vacío y con productos — ver docblock de cart.php.
  */
 
 defined( 'ABSPATH' ) || exit;
 ?>
 <div class="crt-page">
     <div class="crt-container">
-        <span class="crt-eyebrow"><?php esc_html_e( 'Tu selección', 'telconnect' ); ?></span>
-        <h1 class="crt-title"><?php esc_html_e( 'Carrito', 'telconnect' ); ?></h1>
+
+        <div class="crt-header">
+            <div class="crt-title-row">
+                <h1 class="crt-title"><?php esc_html_e( 'Tu carrito', 'telconnect' ); ?></h1>
+                <span class="crt-count"><?php esc_html_e( '0 productos', 'telconnect' ); ?></span>
+            </div>
+
+            <div class="crt-steps" aria-hidden="true">
+                <div class="crt-step crt-step--active">
+                    <span class="crt-step-num">1</span>
+                    <span class="crt-step-label"><?php esc_html_e( 'Carrito', 'telconnect' ); ?></span>
+                </div>
+                <span class="crt-step-sep"></span>
+                <div class="crt-step">
+                    <span class="crt-step-num">2</span>
+                    <span class="crt-step-label"><?php esc_html_e( 'Datos', 'telconnect' ); ?></span>
+                </div>
+                <span class="crt-step-sep"></span>
+                <div class="crt-step">
+                    <span class="crt-step-num">3</span>
+                    <span class="crt-step-label"><?php esc_html_e( 'Pago', 'telconnect' ); ?></span>
+                </div>
+            </div>
+        </div>
 
         <div class="crt-empty">
             <?php
