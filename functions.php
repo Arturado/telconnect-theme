@@ -18,6 +18,30 @@ function tc_whatsapp_url( $message = '' ) {
     return esc_url( $url );
 }
 
+/**
+ * Cache-busting: usa filemtime() del archivo real como versión de
+ * wp_enqueue_style()/wp_enqueue_script(), en vez de un número fijo
+ * ('1.0.0') que nunca cambiaba — eso hacía que los navegadores (y a
+ * veces el hosting) cachearan indefinidamente la misma URL+versión
+ * aunque el archivo en el servidor hubiera cambiado, generando
+ * confusión real más de una vez ("¿es bug de código o es caché?").
+ * La versión ahora cambia sola cada vez que se edita el archivo, sin
+ * depender de acordarse de bumpear un número a mano ni de que el
+ * usuario haga hard refresh.
+ *
+ * $relative_path va desde la raíz del theme, con "/" inicial (ej.
+ * '/assets/css/main.css' o '/style.css'). Si el archivo no existe en
+ * la ruta esperada, filemtime() tira un warning y devuelve false — se
+ * valida con file_exists() antes y se cae a un fallback fijo, para que
+ * un archivo faltante no rompa el enqueue de todo el resto de assets
+ * del sitio (mismo criterio defensivo de "no romper todo por 1 asset"
+ * ya usado en otras partes del theme).
+ */
+function tc_asset_version( $relative_path ) {
+    $full_path = get_template_directory() . $relative_path;
+    return file_exists( $full_path ) ? filemtime( $full_path ) : '1.0.0';
+}
+
 function telconnect_enqueue_fonts() {
     wp_enqueue_style( 'telconnect-fonts', 'https://fonts.googleapis.com/css2?family=Stack+Sans+Headline:wght@200..700&display=swap', array(), null );
 }
@@ -28,7 +52,7 @@ function telconnect_enqueue_scripts() {
         'telconnect-devices-carousel',
         get_template_directory_uri() . '/assets/js/devices-carousel.js',
         array(),
-        '1.0.0',
+        tc_asset_version( '/assets/js/devices-carousel.js' ),
         true
     );
 }
@@ -39,7 +63,7 @@ function telconnect_enqueue_ecosystem_js() {
         'telconnect-ecosystem',
         get_template_directory_uri() . '/assets/js/ecosystem.js',
         array(),
-        '1.0.0',
+        tc_asset_version( '/assets/js/ecosystem.js' ),
         true
     );
 }
@@ -524,8 +548,8 @@ add_action( 'after_setup_theme', 'telconnect_setup' );
 
 // Estilos y scripts
 function telconnect_enqueue_assets() {
-    wp_enqueue_style( 'telconnect-style', get_stylesheet_uri(), array(), '1.0.0' );
-    wp_enqueue_style( 'telconnect-main', get_template_directory_uri() . '/assets/css/main.css', array(), '1.0.0' );
+    wp_enqueue_style( 'telconnect-style', get_stylesheet_uri(), array(), tc_asset_version( '/style.css' ) );
+    wp_enqueue_style( 'telconnect-main', get_template_directory_uri() . '/assets/css/main.css', array(), tc_asset_version( '/assets/css/main.css' ) );
 
     $tc_sections = array(
         'header', 'hero', 'partner-difference', 'devices-products',
@@ -539,7 +563,7 @@ function telconnect_enqueue_assets() {
             'telconnect-' . $section,
             get_template_directory_uri() . '/assets/css/' . $section . '.css',
             array( 'telconnect-main' ),
-            '1.0.0'
+            tc_asset_version( '/assets/css/' . $section . '.css' )
         );
     }
 
@@ -549,7 +573,7 @@ function telconnect_enqueue_assets() {
         'telconnect-header',
         get_template_directory_uri() . '/assets/js/header.js',
         array(),
-        '1.0.0',
+        tc_asset_version( '/assets/js/header.js' ),
         true
     );
 }
@@ -584,7 +608,7 @@ function telconnect_enqueue_checkout_assets() {
         'telconnect-checkout',
         get_template_directory_uri() . '/assets/css/checkout.css',
         array( 'telconnect-main' ),
-        '1.0.0'
+        tc_asset_version( '/assets/css/checkout.css' )
     );
 
     // Depende de jquery (§8.8): el wizard escucha el evento
@@ -595,7 +619,7 @@ function telconnect_enqueue_checkout_assets() {
         'telconnect-checkout',
         get_template_directory_uri() . '/assets/js/checkout.js',
         array( 'jquery' ),
-        '1.0.0',
+        tc_asset_version( '/assets/js/checkout.js' ),
         true
     );
 }
@@ -612,21 +636,21 @@ function telconnect_enqueue_cart_assets() {
         'telconnect-plp',
         get_template_directory_uri() . '/assets/css/plp.css',
         array( 'telconnect-main', 'telconnect-devices-products' ),
-        '1.0.0'
+        tc_asset_version( '/assets/css/plp.css' )
     );
 
     wp_enqueue_style(
         'telconnect-cart',
         get_template_directory_uri() . '/assets/css/cart.css',
         array( 'telconnect-main', 'telconnect-plp' ),
-        '1.0.0'
+        tc_asset_version( '/assets/css/cart.css' )
     );
 
     wp_enqueue_script(
         'telconnect-cart',
         get_template_directory_uri() . '/assets/js/cart.js',
         array(),
-        '1.0.0',
+        tc_asset_version( '/assets/js/cart.js' ),
         true
     );
 }
@@ -643,7 +667,7 @@ function telconnect_enqueue_plp_assets() {
         'telconnect-plp',
         get_template_directory_uri() . '/assets/css/plp.css',
         array( 'telconnect-main', 'telconnect-devices-products' ),
-        '1.0.0'
+        tc_asset_version( '/assets/css/plp.css' )
     );
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_plp_assets' );
@@ -659,14 +683,14 @@ function telconnect_enqueue_pdp_assets() {
         'telconnect-plp',
         get_template_directory_uri() . '/assets/css/plp.css',
         array( 'telconnect-main', 'telconnect-devices-products' ),
-        '1.0.0'
+        tc_asset_version( '/assets/css/plp.css' )
     );
 
     wp_enqueue_style(
         'telconnect-pdp',
         get_template_directory_uri() . '/assets/css/pdp.css',
         array( 'telconnect-main', 'telconnect-plp' ),
-        '1.0.0'
+        tc_asset_version( '/assets/css/pdp.css' )
     );
 
     // Bug preexistente (no de esta sesión): pdp.js (stepper +/- de cantidad)
@@ -677,7 +701,7 @@ function telconnect_enqueue_pdp_assets() {
         'telconnect-pdp',
         get_template_directory_uri() . '/assets/js/pdp.js',
         array(),
-        '1.0.0',
+        tc_asset_version( '/assets/js/pdp.js' ),
         true
     );
 }
@@ -693,7 +717,7 @@ function telconnect_enqueue_account_assets() {
         'telconnect-account',
         get_template_directory_uri() . '/assets/css/account.css',
         array( 'telconnect-main' ),
-        '1.0.0'
+        tc_asset_version( '/assets/css/account.css' )
     );
 
     // Reusa checkout.js sin cambios: el formulario "Editar dirección de
@@ -708,7 +732,7 @@ function telconnect_enqueue_account_assets() {
         'telconnect-checkout',
         get_template_directory_uri() . '/assets/js/checkout.js',
         array( 'jquery' ),
-        '1.0.0',
+        tc_asset_version( '/assets/js/checkout.js' ),
         true
     );
 }
