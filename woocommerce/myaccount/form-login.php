@@ -57,7 +57,7 @@ do_action( 'woocommerce_before_customer_login_form' );
                     </label>
 
                     <?php wp_nonce_field( 'woocommerce-login', 'woocommerce-login-nonce' ); ?>
-                    <button type="submit" class="woocommerce-button button woocommerce-form-login__submit" name="login" value="<?php esc_attr_e( 'Iniciar sesión', 'telconnect' ); ?>"><?php esc_html_e( 'Iniciar sesión', 'telconnect' ); ?></button>
+                    <button type="submit" class="woocommerce-button button woocommerce-form-login__submit" name="login" value="<?php esc_attr_e( 'Iniciar sesión', 'telconnect' ); ?>"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Iniciar sesión', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Iniciar sesión', 'telconnect' ); ?></span></span></button>
 
                     <p class="woocommerce-LostPassword lost_password">
                         <a href="<?php echo esc_url( wp_lostpassword_url() ); ?>"><?php esc_html_e( '¿Olvidaste tu contraseña?', 'telconnect' ); ?></a>
@@ -102,7 +102,7 @@ do_action( 'woocommerce_before_customer_login_form' );
 
                         <p class="woocommerce-form-row form-row">
                             <?php wp_nonce_field( 'woocommerce-register', 'woocommerce-register-nonce' ); ?>
-                            <button type="submit" class="woocommerce-Button woocommerce-button button woocommerce-form-register__submit" name="register" value="<?php esc_attr_e( 'Crear cuenta', 'telconnect' ); ?>"><?php esc_html_e( 'Crear cuenta', 'telconnect' ); ?></button>
+                            <button type="submit" class="woocommerce-Button woocommerce-button button woocommerce-form-register__submit" name="register" value="<?php esc_attr_e( 'Crear cuenta', 'telconnect' ); ?>"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Crear cuenta', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Crear cuenta', 'telconnect' ); ?></span></span></button>
                         </p>
 
                         <?php do_action( 'woocommerce_register_form_end' ); ?>

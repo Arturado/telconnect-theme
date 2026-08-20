@@ -462,4 +462,78 @@
         font-size: 32px;
         line-height: 1.3;
     }
+
+    /* Mismo patrón de bug ya cazado en la PDP (§10): padding fijo de
+       desktop (40px por lado) sin override para mobile, lo que dejaba
+       muy poco ancho real disponible dentro del card. */
+    .pd-card,
+    .pd-card-photo {
+        padding: 32px 24px 0;
+    }
+
+    /* Card 2 (tarifa TUU): los 3 anillos + gaps a tamaño desktop (104/148/104px)
+       no entraban en el ancho del card mobile y se recortaban por el
+       overflow:hidden del card — se reducen tamaños/gap proporcionalmente. */
+    .pd-stats-rings {
+        gap: 14px;
+    }
+    .pd-ring-visual-sm {
+        width: 70px;
+        height: 70px;
+    }
+    .pd-ring-visual-lg {
+        width: 96px;
+        height: 96px;
+    }
+    .pd-ring-visual-sm strong {
+        font-size: 15px;
+    }
+    .pd-ring-visual-lg strong {
+        font-size: 20px;
+    }
+    .pd-ring span {
+        font-size: 11px;
+    }
+    .pd-stats-totals {
+        gap: 10px;
+        padding: 0 16px;
+    }
+    .pd-stats-totals > div {
+        padding: 14px 12px;
+    }
+    .pd-stats-totals strong {
+        font-size: 22px;
+        line-height: 26px;
+        margin-bottom: 8px;
+    }
+    .pd-total-label {
+        font-size: 13px;
+    }
+    .pd-total-note {
+        font-size: 11px;
+    }
+
+    /* Card 3 (abono flotante): mismo problema — ícono 80px + número a 44px
+       no entraban en el ancho angosto del card flotante y se recortaban. */
+    .pd-floating-card {
+        padding: 16px 18px;
+        gap: 12px;
+    }
+    .pd-floating-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+    }
+    .pd-floating-icon img {
+        width: 30px;
+        height: 25px;
+    }
+    .pd-floating-top {
+        flex-wrap: wrap;
+        row-gap: 4px;
+    }
+    .pd-floating-info strong {
+        font-size: 28px;
+        line-height: 32px;
+    }
 }

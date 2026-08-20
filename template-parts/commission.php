@@ -35,7 +35,7 @@
                 <strong>¿Vendes más de $10 millones mensuales?</strong>
                 <p>Escríbenos y armamos una comisión a tu medida según tu ticket promedio.</p>
             </div>
-            <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="cm-cta-btn">Contactar un ejecutivo</a>
+            <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="cm-cta-btn"><span class="btn-label-mask"><span class="btn-label">Contactar un ejecutivo</span><span class="btn-label-ghost" aria-hidden="true">Contactar un ejecutivo</span></span></a>
         </div>
     </div>
 </section>

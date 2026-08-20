@@ -7,8 +7,24 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
     padding: 0 16px;
+}
+
+/* Desktop: se queda centrado y estático (sin recortes, cabe todo el texto) */
+.announcement-viewport {
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.announcement-track {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* El Set 2 (duplicado) solo existe para el loop de la marquesina mobile */
+.announcement-track .announcement-content[aria-hidden="true"] {
+    display: none;
 }
 
 .announcement-content {
@@ -20,6 +36,8 @@
     font-weight: var(--weight-medium);
     line-height: 18px;
     color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .announcement-content .dot {
@@ -83,6 +101,13 @@ body.has-floating-header .site-header {
 
 .logo-pill img {
     height: 18px;
+}
+
+/* Logo completo (isotipo + wordmark) en desktop, solo isotipo en mobile
+   (ver recursos/mobile/hero/, la captura real confirma que en mobile el
+   navbar muestra solo el símbolo azul, sin el texto "telconnect" al lado) */
+.logo-pill-mark {
+    display: none;
 }
 
 /* Menu Pill */
@@ -200,11 +225,251 @@ body.has-floating-header .site-header {
     color: var(--color-heading);
 }
 
+/* Envuelve el carrito (y, solo <900px, el hamburguesa) — en desktop es un
+   passthrough sin estilo propio, así que no cambia el layout de 3 píldoras
+   que ya existía (logo / menu / carrito) */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Hamburguesa — oculto en desktop, la navegación de texto vive en .menu-pill */
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 48px;
+    height: 48px;
+    background: #fff;
+    border: none;
+    border-radius: 999px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.mobile-menu-toggle-line {
+    display: block;
+    width: 17px;
+    height: 2px;
+    background: #0D0F15;
+    border-radius: 1px;
+    transition: transform 0.2s ease, opacity 0.2s ease, width 0.2s ease;
+}
+
+.mobile-menu-toggle-line--short {
+    width: 11px;
+    align-self: flex-start;
+    margin-left: 13px; /* (48 - 2*13 padding real del pill = 22 de área útil; 22 - 11 = 11, mitad 5.5 ≈ centra la barra corta) */
+}
+
+.mobile-menu-toggle[aria-expanded="true"] .mobile-menu-toggle-line--short {
+    width: 17px;
+    margin-left: 0;
+}
+
+/* ===== Overlay del menú mobile ===== */
+.mobile-nav-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(13, 15, 21, 0.6);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.mobile-nav-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+body.mobile-nav-open {
+    overflow: hidden;
+}
+
+.mobile-nav-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(86vw, 360px);
+    height: 100%;
+    background: #fff;
+    box-sizing: border-box;
+    padding: 20px 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+
+.mobile-nav-overlay.is-open .mobile-nav-panel {
+    transform: translateX(0);
+}
+
+.mobile-nav-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+    margin-bottom: 12px;
+}
+
+.mobile-nav-logo {
+    height: 22px;
+    width: auto;
+}
+
+.mobile-nav-close {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #F0F1F4;
+    border: none;
+    border-radius: 999px;
+    padding: 0;
+    cursor: pointer;
+}
+
+.mobile-nav-close-line {
+    position: absolute;
+    width: 16px;
+    height: 2px;
+    background: #0D0F15;
+    border-radius: 1px;
+}
+
+.mobile-nav-close-line:first-child {
+    transform: rotate(45deg);
+}
+
+.mobile-nav-close-line:last-child {
+    transform: rotate(-45deg);
+}
+
+.mobile-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-nav-list li {
+    border-bottom: 1px solid #EEF0F3;
+}
+
+.mobile-nav-list li a {
+    display: block;
+    padding: 16px 4px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: var(--weight-medium);
+    color: var(--color-heading);
+    text-decoration: none;
+}
+
+.mobile-nav-list li.current-menu-item a {
+    color: var(--color-eyebrow-blue);
+}
+
+.mobile-nav-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 14px 24px;
+    border-radius: 999px;
+    background: var(--color-eyebrow-blue);
+    color: #fff;
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: var(--weight-medium);
+}
+
 @media (max-width: 900px) {
-    .menu-pill-list {
+    .menu-pill {
         display: none;
     }
     .header-inner {
         justify-content: space-between;
+        padding: 0 20px;
+    }
+    .logo-pill {
+        width: 48px;
+        height: 48px;
+        padding: 13px;
+        justify-content: center;
+    }
+    .logo-pill-full {
+        display: none;
+    }
+    .logo-pill-mark {
+        display: block;
+        height: 22px;
+        width: auto;
+    }
+    .mobile-menu-toggle {
+        display: flex;
+    }
+
+    /* Cart Pill mobile: círculo 48x48 con solo el ícono (sin "Carrito"),
+       misma huella que la píldora del hamburguesa */
+    .cart-pill {
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        justify-content: center;
+        gap: 0;
+    }
+    .cart-pill-label {
+        display: none;
+    }
+
+    /* Marquesina: el texto entra por la derecha y sale por la izquierda,
+       loop infinito sin salto (mismo patrón que .ts-track en Testimonials) */
+    .announcement-bar {
+        justify-content: flex-start;
+        padding: 0;
+    }
+    .announcement-viewport {
+        width: 100%;
+        padding: 0 16px;
+    }
+    .announcement-track {
+        width: max-content;
+        gap: 40px;
+        animation: announcement-marquee 16s linear infinite;
+    }
+    .announcement-track .announcement-content[aria-hidden="true"] {
+        display: flex;
+    }
+}
+
+@keyframes announcement-marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        /* Se traslada exactamente el ancho de UN set (mitad del track duplicado) */
+        transform: translateX(calc(-50% - 20px));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .announcement-track {
+        animation: none;
     }
 }

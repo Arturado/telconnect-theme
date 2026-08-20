@@ -23,11 +23,11 @@
                         global $product;
                         ?>
                         <div class="dp-card">
-                            <div class="dp-card-image">
+                            <a href="<?php echo esc_url( get_permalink() ); ?>" class="dp-card-image">
                                 <?php echo woocommerce_get_product_thumbnail(); ?>
-                            </div>
+                            </a>
                             <div class="dp-card-body">
-                                <h3><?php the_title(); ?></h3>
+                                <h3><a href="<?php echo esc_url( get_permalink() ); ?>"><?php the_title(); ?></a></h3>
                                 <p class="dp-card-desc"><?php echo esc_html( $product->get_short_description() ); ?></p>
                                 <div class="dp-card-price">
                                     <?php echo $product->get_price_html(); ?>
@@ -46,8 +46,8 @@
                                     echo '</ul>';
                                 endif;
                                 ?>
-                                <a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" class="dp-add-cart" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>">
-                                    Agregar al carro
+                                <a href="<?php echo esc_url( get_permalink() ); ?>" class="dp-add-cart">
+                                    <span class="btn-label-mask"><span class="btn-label">Agregar al carro</span><span class="btn-label-ghost" aria-hidden="true">Agregar al carro</span></span>
                                 </a>
                             </div>
                         </div>
@@ -116,7 +116,7 @@
                 <strong>¿No sabes cuál elegir?</strong>
                 <p>Cuéntanos qué vendes y te recomendamos la correcta en minutos.</p>
             </div>
-            <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="dp-cta-btn">Asesórate por WhatsApp</a>
+            <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="dp-cta-btn"><span class="btn-label-mask"><span class="btn-label">Asesórate por WhatsApp</span><span class="btn-label-ghost" aria-hidden="true">Asesórate por WhatsApp</span></span></a>
         </div>
     </div>
 </section>

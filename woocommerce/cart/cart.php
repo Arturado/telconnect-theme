@@ -196,13 +196,14 @@ $crt_product_count   = count( $crt_top_level_items );
                                     echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                                         'woocommerce_cart_item_remove_link',
                                         sprintf(
-                                            '<a role="button" href="%s" class="crt-item-remove" aria-label="%s" data-product_id="%s" data-product_sku="%s"><img src="%s" alt="">%s</a>',
+                                            '<a role="button" href="%s" class="crt-item-remove" aria-label="%s" data-product_id="%s" data-product_sku="%s"><img src="%s" alt=""><span class="btn-label-mask"><span class="btn-label">%s</span><span class="btn-label-ghost" aria-hidden="true">%s</span></span></a>',
                                             esc_url( wc_get_cart_remove_url( $cart_item_key ) ),
                                             /* translators: %s is the product name */
                                             esc_attr( sprintf( __( 'Remove %s from cart', 'woocommerce' ), wp_strip_all_tags( $product_name ) ) ),
                                             esc_attr( $product_id ),
                                             esc_attr( $_product->get_sku() ),
                                             esc_url( get_template_directory_uri() . '/assets/img/icons/trash-01.svg' ),
+                                            esc_html__( 'Eliminar', 'telconnect' ),
                                             esc_html__( 'Eliminar', 'telconnect' )
                                         ),
                                         $cart_item_key
@@ -223,7 +224,7 @@ $crt_product_count   = count( $crt_top_level_items );
                                 <div class="coupon">
                                     <label for="coupon_code" class="screen-reader-text"><?php esc_html_e( 'Coupon:', 'woocommerce' ); ?></label>
                                     <input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Código de cupón', 'telconnect' ); ?>" />
-                                    <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_html_e( 'Aplicar cupón', 'telconnect' ); ?></button>
+                                    <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Aplicar cupón', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Aplicar cupón', 'telconnect' ); ?></span></span></button>
                                     <?php do_action( 'woocommerce_cart_coupon' ); ?>
                                 </div>
                             </details>
@@ -246,7 +247,7 @@ $crt_product_count   = count( $crt_top_level_items );
                             <strong><?php esc_html_e( '¿Tienes dudas antes de comprar?', 'telconnect' ); ?></strong>
                             <p><?php esc_html_e( 'Escríbenos y habla con nosotros y te ayudamos a elegir la máquina.', 'telconnect' ); ?></p>
                         </div>
-                        <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="crt-help-btn"><?php esc_html_e( 'Escribir a ventas', 'telconnect' ); ?></a>
+                        <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="crt-help-btn"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Escribir a ventas', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Escribir a ventas', 'telconnect' ); ?></span></span></a>
                     </div>
                 </div>
 

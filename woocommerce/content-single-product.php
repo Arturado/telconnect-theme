@@ -140,7 +140,7 @@ $primary_cat = ( $terms && ! is_wp_error( $terms ) ) ? reset( $terms ) : null;
                                 </div>
 
                                 <button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" class="pdp-add-to-cart single_add_to_cart_button button<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : '' ); ?>">
-                                    <?php echo esc_html( $product->single_add_to_cart_text() ); ?>
+                                    <span class="btn-label-mask"><span class="btn-label"><?php echo esc_html( $product->single_add_to_cart_text() ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php echo esc_html( $product->single_add_to_cart_text() ); ?></span></span>
                                 </button>
                             </div>
 

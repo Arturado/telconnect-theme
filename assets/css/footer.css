@@ -136,8 +136,13 @@
     .footer-brand {
         flex: 1 1 100%;
     }
+    /* La base desktop define min-width:195px (arriba) — sin resetearlo acá,
+       2 columnas a 195px mínimo no entran en el ancho mobile disponible y
+       fuerzan un stack de 1 por fila "por accidente". Se deja explícito
+       en vez de depender de ese efecto colateral. */
     .footer-col {
-        flex: 1 1 40%;
+        flex: 1 1 100%;
+        min-width: 0;
     }
     .footer-legal {
         flex-direction: column;

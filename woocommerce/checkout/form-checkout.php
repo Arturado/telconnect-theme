@@ -174,8 +174,8 @@ $chk_total_now = tc_get_order_summary_breakdown()['total'];
                             </div>
 
                             <div class="chk-step-actions">
-                                <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="chk-btn-secondary"><?php esc_html_e( 'Volver al carrito', 'telconnect' ); ?></a>
-                                <button type="button" class="chk-btn-primary chk-next-step"><?php esc_html_e( 'Continuar a pago', 'telconnect' ); ?></button>
+                                <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="chk-btn-secondary"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Volver al carrito', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Volver al carrito', 'telconnect' ); ?></span></span></a>
+                                <button type="button" class="chk-btn-primary chk-next-step"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Continuar a pago', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Continuar a pago', 'telconnect' ); ?></span></span></button>
                             </div>
                         </div>
 
@@ -206,7 +206,7 @@ $chk_total_now = tc_get_order_summary_breakdown()['total'];
                             </div>
 
                             <div class="chk-step-actions">
-                                <button type="button" class="chk-btn-secondary chk-prev-step"><?php esc_html_e( 'Volver a datos', 'telconnect' ); ?></button>
+                                <button type="button" class="chk-btn-secondary chk-prev-step"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Volver a datos', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Volver a datos', 'telconnect' ); ?></span></span></button>
                                 <?php
                                 /**
                                  * "Pagar $X" del Figma vive FUERA de la card (fila de
@@ -222,7 +222,7 @@ $chk_total_now = tc_get_order_summary_breakdown()['total'];
                                  * real vía checkout.js. Cero lógica de submit propia.
                                  */
                                 ?>
-                                <button type="button" class="chk-btn-primary chk-place-order-proxy"><?php esc_html_e( 'Pagar', 'telconnect' ); ?></button>
+                                <button type="button" class="chk-btn-primary chk-place-order-proxy"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Pagar', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Pagar', 'telconnect' ); ?></span></span></button>
                             </div>
                         </div>
 

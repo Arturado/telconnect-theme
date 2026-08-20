@@ -176,6 +176,16 @@
     .crt-grid {
         grid-template-columns: 1fr;
     }
+    /* Bug real de overflow horizontal (no de los 3 ya documentados en §10):
+       por default un item de grid no se achica bajo su min-content, así que
+       aunque el track sea "1fr" el track terminaba resolviendo ~448px (el
+       min-content de descendientes como .crt-help-copy, min-width:220px)
+       en vez de los 342px reales disponibles, empujando toda la página a
+       scroll horizontal. min-width:0 fuerza a respetar el 1fr real. */
+    .crt-items-col,
+    .crt-summary-col {
+        min-width: 0;
+    }
 }
 
 .crt-items-col {
@@ -857,13 +867,20 @@
         flex-wrap: wrap;
     }
 
+    /* Bug real de overflow horizontal: el indent de 124px (pensado para
+       alinear la fila bajo .crt-item-info) le dejaba a esta fila solo
+       ~168px de ancho útil — no entran el stepper (112px fijo) + precio +
+       "Eliminar" lado a lado, y sin flex-wrap el remove terminaba
+       empujado ~100px fuera del viewport. Se quita el indent (más
+       ancho disponible) y se agrega wrap como red de seguridad. */
     .crt-item-control {
         width: 100%;
         flex-direction: row;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        padding-left: 124px; /* alinea bajo .crt-item-info, igual que el ancho foto+gap */
+        row-gap: 10px;
     }
 
     .crt-item-price {

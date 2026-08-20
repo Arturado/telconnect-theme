@@ -32,9 +32,9 @@ defined( 'ABSPATH' ) || exit;
                     <p class="chk-thankyou-subtitle"><?php esc_html_e( 'El banco o medio de pago rechazó la transacción. Intenta nuevamente o escríbenos si el problema persiste.', 'telconnect' ); ?></p>
 
                     <p class="chk-thankyou-actions">
-                        <a href="<?php echo esc_url( $order->get_checkout_payment_url() ); ?>" class="btn btn-primary"><?php esc_html_e( 'Reintentar pago', 'telconnect' ); ?></a>
+                        <a href="<?php echo esc_url( $order->get_checkout_payment_url() ); ?>" class="btn btn-primary"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Reintentar pago', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Reintentar pago', 'telconnect' ); ?></span></span></a>
                         <?php if ( is_user_logged_in() ) : ?>
-                            <a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" class="btn btn-outline-dark"><?php esc_html_e( 'Ir a mi cuenta', 'telconnect' ); ?></a>
+                            <a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" class="btn btn-outline-dark"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Ir a mi cuenta', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Ir a mi cuenta', 'telconnect' ); ?></span></span></a>
                         <?php endif; ?>
                     </p>
 

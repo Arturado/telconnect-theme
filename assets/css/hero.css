@@ -75,3 +75,37 @@
     align-items: center;
     gap: 12px;
 }
+
+/* Valores exactos de recursos/mobile/hero/figma-hero-mobile.css (frame 390px) */
+@media (max-width: 900px) {
+    .hero-content {
+        padding: 0 20px 40px;
+        gap: 18px;
+        align-items: flex-start;
+    }
+
+    .hero-badge {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        line-height: 20px;
+    }
+
+    .hero-title {
+        font-size: 36px;
+        line-height: 40px;
+        max-width: 100%;
+    }
+
+    .hero-text {
+        font-size: 15px;
+        line-height: 22px;
+        max-width: 100%;
+    }
+
+    .hero-cta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}

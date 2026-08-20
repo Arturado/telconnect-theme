@@ -375,6 +375,16 @@ function telconnect_enqueue_assets() {
             '1.0.0'
         );
     }
+
+    // Toggle del menú hamburguesa mobile — el header (con su overlay) se
+    // imprime en TODAS las páginas vía header.php, no solo la home.
+    wp_enqueue_script(
+        'telconnect-header',
+        get_template_directory_uri() . '/assets/js/header.js',
+        array(),
+        '1.0.0',
+        true
+    );
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_assets' );
 

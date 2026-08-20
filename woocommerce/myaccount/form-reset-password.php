@@ -45,7 +45,7 @@ do_action( 'woocommerce_before_reset_password_form' );
 
                 <p class="woocommerce-form-row form-row">
                     <input type="hidden" name="wc_reset_password" value="true" />
-                    <button type="submit" class="woocommerce-Button button" value="<?php esc_attr_e( 'Guardar', 'telconnect' ); ?>"><?php esc_html_e( 'Guardar', 'telconnect' ); ?></button>
+                    <button type="submit" class="woocommerce-Button button" value="<?php esc_attr_e( 'Guardar', 'telconnect' ); ?>"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Guardar', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Guardar', 'telconnect' ); ?></span></span></button>
                 </p>
 
                 <?php wp_nonce_field( 'reset_password', 'woocommerce-reset-password-nonce' ); ?>

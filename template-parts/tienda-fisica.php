@@ -35,7 +35,7 @@
                 </div>
 
                 <a href="https://www.google.com/maps/search/?api=1&query=Vicu%C3%B1a+Mackenna+Poniente+6843,+La+Florida,+Santiago" target="_blank" rel="noopener" class="tf-btn-primary">
-                    Cómo llegar
+                    <span class="btn-label-mask"><span class="btn-label">Cómo llegar</span><span class="btn-label-ghost" aria-hidden="true">Cómo llegar</span></span>
                     <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/icons/icon-dere.svg' ); ?>" alt="" class="tf-btn-arrow">
                 </a>
             </div>
@@ -59,7 +59,7 @@
                 <strong>¿Vas en camino? Avísanos y la dejamos lista antes de que llegues.</strong>
                 <p>Nos mandas el RUT por WhatsApp y cuando entres solo la retiras.</p>
             </div>
-            <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="tf-btn-cta">Escribir por WhatsApp</a>
+            <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="tf-btn-cta"><span class="btn-label-mask"><span class="btn-label">Escribir por WhatsApp</span><span class="btn-label-ghost" aria-hidden="true">Escribir por WhatsApp</span></span></a>
         </div>
     </div>
 </section>

@@ -50,7 +50,8 @@ if ( ! wc_ship_to_billing_address_only() && wc_shipping_enabled() ) {
             <div class="acc-address-card-header">
                 <h2 class="acc-address-card-title"><?php echo esc_html( $address_title ); ?></h2>
                 <a href="<?php echo esc_url( wc_get_endpoint_url( 'edit-address', $name ) ); ?>" class="acc-address-edit-link edit">
-                    <?php echo $address ? esc_html__( 'Editar', 'telconnect' ) : esc_html__( 'Agregar', 'telconnect' ); ?>
+                    <?php $acc_edit_label = $address ? esc_html__( 'Editar', 'telconnect' ) : esc_html__( 'Agregar', 'telconnect' ); ?>
+                    <span class="btn-label-mask"><span class="btn-label"><?php echo $acc_edit_label; ?></span><span class="btn-label-ghost" aria-hidden="true"><?php echo $acc_edit_label; ?></span></span>
                 </a>
             </div>
             <address>

@@ -43,6 +43,10 @@ body {
     color: var(--color-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Defensivo: el panel del menú mobile (header.css) vive fuera de
+       pantalla vía transform mientras está cerrado — esto evita cualquier
+       pan/scroll horizontal accidental en navegadores más permisivos. */
+    overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -116,4 +120,77 @@ p {
 
 .btn-primary-blue:hover {
     opacity: 0.9;
+}
+
+/* ===== Animación "tragamonedas" (text roll) — reutilizable en TODO botón/link del sitio =====
+   Estructura (viene del Copy as CSS original del Hero, nunca implementada
+   hasta ahora): CTA > Surface (el <a>/<button> de siempre) > Label Mask
+   (overflow:hidden) > Label + Label Ghost (copia idéntica, aria-hidden).
+   En reposo se ve Label; en hover, Label sube y sale mientras Label Ghost
+   entra desde abajo — mismo texto, sensación de "carrete".
+
+   Uso — envolver el texto del botón (NO los íconos) en:
+     <span class="btn-label-mask">
+         <span class="btn-label">Texto</span>
+         <span class="btn-label-ghost" aria-hidden="true">Texto</span>
+     </span>
+   Los 2 spans deben tener el texto idéntico. No hace falta ningún CSS
+   extra por sección: el hover se detecta en el <a>/<button> ancestro
+   (el estado :hover de CSS se propaga a toda la cadena de ancestros),
+   así que esta regla ya funciona en cualquier botón nuevo que use el
+   mismo markup, sin tocar CSS por sección. */
+.btn-label-mask {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding: 0 2px;
+    margin: 0 -2px;
+    transition: padding 0.3s ease, margin 0.3s ease;
+}
+
+.btn-label-mask .btn-label,
+.btn-label-mask .btn-label-ghost {
+    display: block;
+    white-space: nowrap;
+    transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.btn-label-mask .btn-label-ghost {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateY(100%);
+}
+
+/* Expansión leve del "Surface" al hacer hover (padding/width), combinada
+   con el roll del texto — ver nota de uso arriba. */
+a:hover .btn-label-mask,
+button:hover .btn-label-mask,
+a:focus-visible .btn-label-mask,
+button:focus-visible .btn-label-mask {
+    padding: 0 6px;
+    margin: 0 -6px;
+}
+
+a:hover .btn-label-mask .btn-label,
+button:hover .btn-label-mask .btn-label,
+a:focus-visible .btn-label-mask .btn-label,
+button:focus-visible .btn-label-mask .btn-label {
+    transform: translateY(-100%);
+}
+
+a:hover .btn-label-mask .btn-label-ghost,
+button:hover .btn-label-mask .btn-label-ghost,
+a:focus-visible .btn-label-mask .btn-label-ghost,
+button:focus-visible .btn-label-mask .btn-label-ghost {
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-label-mask,
+    .btn-label-mask .btn-label,
+    .btn-label-mask .btn-label-ghost {
+        transition: none;
+    }
 }

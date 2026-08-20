@@ -78,7 +78,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
                                             } else {
                                                 $action_aria_label = $action['aria-label'];
                                             }
-                                            echo '<a href="' . esc_url( $action['url'] ) . '" class="woocommerce-button button ' . sanitize_html_class( $key ) . '" aria-label="' . esc_attr( $action_aria_label ) . '">' . esc_html( $action['name'] ) . '</a>';
+                                            echo '<a href="' . esc_url( $action['url'] ) . '" class="woocommerce-button button ' . sanitize_html_class( $key ) . '" aria-label="' . esc_attr( $action_aria_label ) . '"><span class="btn-label-mask"><span class="btn-label">' . esc_html( $action['name'] ) . '</span><span class="btn-label-ghost" aria-hidden="true">' . esc_html( $action['name'] ) . '</span></span></a>';
                                             unset( $action_aria_label );
                                         }
                                     }

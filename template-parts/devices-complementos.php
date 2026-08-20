@@ -26,18 +26,18 @@
                         global $product;
                         ?>
                         <div class="dp-card dc-card">
-                            <div class="dc-card-image">
+                            <a href="<?php echo esc_url( get_permalink() ); ?>" class="dc-card-image">
                                 <?php echo woocommerce_get_product_thumbnail(); ?>
-                            </div>
+                            </a>
                             <div class="dp-card-body">
-                                <h3><?php the_title(); ?></h3>
+                                <h3><a href="<?php echo esc_url( get_permalink() ); ?>"><?php the_title(); ?></a></h3>
                                 <p class="dp-card-desc"><?php echo esc_html( $product->get_short_description() ); ?></p>
                                 <div class="dp-card-price">
                                     <?php echo $product->get_price_html(); ?>
                                     <span class="dp-price-note">+ IVA</span>
                                 </div>
-                                <a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" class="dp-add-cart" data-product_id="<?php echo esc_attr( $product->get_id() ); ?>">
-                                    Agregar al carro
+                                <a href="<?php echo esc_url( get_permalink() ); ?>" class="dp-add-cart">
+                                    <span class="btn-label-mask"><span class="btn-label">Agregar al carro</span><span class="btn-label-ghost" aria-hidden="true">Agregar al carro</span></span>
                                 </a>
                             </div>
                         </div>

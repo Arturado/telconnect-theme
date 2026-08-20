@@ -305,7 +305,19 @@
             function syncProxyLabel() {
                 var totalEl = document.querySelector('.chk-summary-total span:last-child');
                 if (totalEl && totalEl.textContent.trim()) {
-                    placeOrderProxy.textContent = 'Pagar ' + totalEl.textContent.trim();
+                    // No se usa textContent sobre el botón: destruiría el markup
+                    // del roll de texto (.btn-label-mask > .btn-label +
+                    // .btn-label-ghost). Se actualizan los 2 spans por separado,
+                    // con el mismo texto, para que el hover siga funcionando.
+                    var newText = 'Pagar ' + totalEl.textContent.trim();
+                    var label = placeOrderProxy.querySelector('.btn-label');
+                    var ghost = placeOrderProxy.querySelector('.btn-label-ghost');
+                    if (label) {
+                        label.textContent = newText;
+                    }
+                    if (ghost) {
+                        ghost.textContent = newText;
+                    }
                 }
             }
 
