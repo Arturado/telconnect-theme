@@ -39,7 +39,11 @@ $discount_pct  = $on_sale ? round( ( ( $regular_price - $sale_price ) / $regular
 $features_raw = get_post_meta( $product->get_id(), '_dp_features', true );
 $features     = $features_raw ? array_filter( array_map( 'trim', explode( "\n", $features_raw ) ) ) : array();
 
-$signature_addons = tc_get_signature_addon_products();
+// El bloque "Emite boleta electrónica" solo se calcula/muestra si ESTE
+// producto lo tiene activado (metabox "Firma electrónica" en el editor,
+// ver functions.php) — no alcanza con que existan productos reales en
+// la categoría firma-electronica, ambas condiciones son necesarias.
+$signature_addons = tc_product_offers_signature_addon( $product->get_id() ) ? tc_get_signature_addon_products() : array();
 
 // ---- Breadcrumbs ----
 $terms       = get_the_terms( $product->get_id(), 'product_cat' );

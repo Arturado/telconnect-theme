@@ -77,9 +77,149 @@ function tc_get_signature_addon_products() {
 }
 
 /**
- * Si el comprador eligió un addon de firma electrónica en el <select>
- * de la PDP, lo agrega como un segundo ítem al carrito en el mismo
- * request que agrega el producto principal.
+ * Si ESTE producto específico debe mostrar el bloque "Emite boleta
+ * electrónica" en su propia PDP — ver metabox "Firma electrónica" más
+ * abajo. Antes el bloque aparecía en la PDP de todos los productos con
+ * solo confirmar que existieran productos reales en la categoría
+ * 'firma-electronica'; el cliente pidió controlarlo producto por
+ * producto (no todas las máquinas la ofrecen, y no se asume que los
+ * complementos nunca la van a ofrecer tampoco).
+ *
+ * Default para productos que nunca configuraron este meta: NO se
+ * muestra (opt-in explícito) — más seguro que mostrarlo por default en
+ * todo lo ya publicado y obligar al cliente a desactivarlo uno por uno
+ * donde no corresponde.
+ */
+function tc_product_offers_signature_addon( $product_id ) {
+    return 'yes' === get_post_meta( $product_id, '_tc_offers_signature_addon', true );
+}
+
+/**
+ * ============================================================
+ * Metabox "Firma electrónica" en productos
+ * ============================================================
+ * Checkbox simple, mismo patrón sin dependencias que el metabox de
+ * _dp_features más abajo. Guarda '_tc_offers_signature_addon' ('yes'/'no').
+ */
+function tc_add_signature_addon_metabox() {
+    add_meta_box(
+        'tc_signature_addon',
+        'Firma electrónica',
+        'tc_render_signature_addon_metabox',
+        'product',
+        'side',
+        'default'
+    );
+}
+add_action( 'add_meta_boxes', 'tc_add_signature_addon_metabox' );
+
+function tc_render_signature_addon_metabox( $post ) {
+    wp_nonce_field( 'tc_save_signature_addon', 'tc_signature_addon_nonce' );
+
+    $enabled = tc_product_offers_signature_addon( $post->ID );
+    ?>
+    <p>
+        <label>
+            <input type="checkbox" name="tc_offers_signature_addon" value="yes" <?php checked( $enabled ); ?>>
+            ¿Este producto ofrece la opción de agregar firma electrónica?
+        </label>
+    </p>
+    <p class="description">
+        Si está marcado, la ficha de este producto muestra el bloque
+        "Emite boleta electrónica" (siempre que además existan productos
+        reales publicados en la categoría "firma-electronica").
+    </p>
+    <?php
+}
+
+function tc_save_signature_addon_metabox( $post_id ) {
+    if ( ! isset( $_POST['tc_signature_addon_nonce'] ) || ! wp_verify_nonce( $_POST['tc_signature_addon_nonce'], 'tc_save_signature_addon' ) ) {
+        return;
+    }
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
+    }
+    if ( ! current_user_can( 'edit_product', $post_id ) ) {
+        return;
+    }
+
+    $enabled = isset( $_POST['tc_offers_signature_addon'] ) && 'yes' === $_POST['tc_offers_signature_addon'];
+    update_post_meta( $post_id, '_tc_offers_signature_addon', $enabled ? 'yes' : 'no' );
+}
+add_action( 'save_post_product', 'tc_save_signature_addon_metabox' );
+
+/**
+ * Regla de negocio: máximo 1 producto de la categoría 'firma-electronica'
+ * por carrito, sin importar cuál (no pueden coexistir "Firma 1 año" y
+ * "Firma 3 años"). Si el comprador ya tiene una y quiere otra distinta,
+ * se bloquea el agregado — debe eliminar la que tiene primero, no se
+ * reemplaza automáticamente.
+ *
+ * $product_id === el mismo producto ya en el carrito NO cuenta como
+ * conflicto (permite que WooCommerce siga sumando cantidad de la misma
+ * firma con su comportamiento nativo de merge por cart_id — la regla
+ * es sobre no mezclar 2 firmas DISTINTAS, no sobre limitar cantidad).
+ */
+function tc_product_is_signature_addon( $product_id ) {
+    return has_term( 'firma-electronica', 'product_cat', $product_id );
+}
+
+function tc_cart_has_conflicting_signature_addon( $product_id ) {
+    if ( ! WC()->cart ) {
+        return false;
+    }
+
+    foreach ( WC()->cart->get_cart() as $cart_item ) {
+        if ( (int) $cart_item['product_id'] === (int) $product_id ) {
+            continue;
+        }
+
+        if ( tc_product_is_signature_addon( $cart_item['product_id'] ) ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function tc_signature_addon_conflict_message() {
+    return __( 'Ya tienes una Firma electrónica distinta en tu carrito. Elimínala antes de agregar otra.', 'telconnect' );
+}
+
+/**
+ * Camino 1: acceso directo a la PDP del propio producto de firma
+ * electrónica (es un producto real de WooCommerce, navegable como
+ * cualquier otro) y envío del form nativo de agregar al carrito. Ese
+ * submit pasa por WC_Form_Handler::add_to_cart_action(), que sí aplica
+ * este filtro — a diferencia del camino 2 (ver más abajo), que llama a
+ * WC()->cart->add_to_cart() directo y por eso NO pasa por acá.
+ */
+function tc_validate_signature_addon_cart_limit( $passed, $product_id ) {
+    if ( ! $passed ) {
+        return $passed;
+    }
+
+    if ( tc_product_is_signature_addon( $product_id ) && tc_cart_has_conflicting_signature_addon( $product_id ) ) {
+        wc_add_notice( tc_signature_addon_conflict_message(), 'error' );
+        return false;
+    }
+
+    return $passed;
+}
+add_filter( 'woocommerce_add_to_cart_validation', 'tc_validate_signature_addon_cart_limit', 10, 2 );
+
+/**
+ * Camino 2 (el flujo normal): si el comprador eligió un addon de firma
+ * electrónica en el <select> de la PDP de una máquina, lo agrega como
+ * un segundo ítem al carrito en el mismo request que agrega el
+ * producto principal.
+ *
+ * Este método llama a WC()->cart->add_to_cart() directo (no pasa por
+ * WC_Form_Handler ni WC_AJAX), así que NO dispara el filtro
+ * 'woocommerce_add_to_cart_validation' — WC_Cart::add_to_cart() no lo
+ * aplica internamente, solo lo aplican esos 2 callers. Por eso acá hay
+ * que repetir el mismo chequeo de tc_validate_signature_addon_cart_limit()
+ * a mano, antes de la llamada directa.
  *
  * El addon se taguea con el cart item data 'tc_parent_cart_item_key'
  * (la key del producto principal recién agregado) para que el template
@@ -103,6 +243,11 @@ function tc_maybe_add_signature_addon( $cart_item_key, $product_id, $quantity ) 
 
     $addon_product = wc_get_product( $addon_id );
     if ( ! $addon_product || ! $addon_product->is_purchasable() ) {
+        return;
+    }
+
+    if ( tc_cart_has_conflicting_signature_addon( $addon_id ) ) {
+        wc_add_notice( tc_signature_addon_conflict_message(), 'error' );
         return;
     }
 
@@ -146,6 +291,28 @@ function tc_get_cart_children_map() {
 
     return $map;
 }
+
+/**
+ * Eliminación en cascada: si se elimina del carrito un cart item que
+ * tiene un addon de firma electrónica vinculado (via
+ * 'tc_parent_cart_item_key'), el addon se elimina en el mismo momento
+ * — relación unidireccional, eliminar el hijo (el botón propio de
+ * .crt-item-addon-remove en cart.php) nunca dispara esto para el padre.
+ *
+ * Se lee $cart->get_cart() (no tc_get_cart_children_map(), que ya
+ * asume que el padre sigue en el carrito) porque en este momento el
+ * padre YA fue eliminado de $cart->cart_contents (WC_Cart::remove_cart_item()
+ * hace unset() antes de disparar este hook) — se busca directo cualquier
+ * item cuyo tc_parent_cart_item_key sea la key que se acaba de eliminar.
+ */
+function tc_remove_signature_addon_children( $cart_item_key, $cart ) {
+    foreach ( $cart->get_cart() as $key => $item ) {
+        if ( ! empty( $item['tc_parent_cart_item_key'] ) && $item['tc_parent_cart_item_key'] === $cart_item_key ) {
+            $cart->remove_cart_item( $key );
+        }
+    }
+}
+add_action( 'woocommerce_cart_item_removed', 'tc_remove_signature_addon_children', 10, 2 );
 
 /**
  * Cart items "top-level" — excluye los addons de firma electrónica que
@@ -500,6 +667,18 @@ function telconnect_enqueue_pdp_assets() {
         get_template_directory_uri() . '/assets/css/pdp.css',
         array( 'telconnect-main', 'telconnect-plp' ),
         '1.0.0'
+    );
+
+    // Bug preexistente (no de esta sesión): pdp.js (stepper +/- de cantidad)
+    // nunca se enqueueaba — el archivo existía en assets/js/ pero ningún
+    // wp_enqueue_script lo cargaba, así que los botones +/- quedaban sin
+    // listener alguno pese a que el markup/CSS estaban correctos.
+    wp_enqueue_script(
+        'telconnect-pdp',
+        get_template_directory_uri() . '/assets/js/pdp.js',
+        array(),
+        '1.0.0',
+        true
     );
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_pdp_assets' );

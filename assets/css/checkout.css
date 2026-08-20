@@ -818,7 +818,7 @@
 }
 
 .chk-btn-primary:hover {
-    opacity: 0.85;
+    background: var(--color-eyebrow-blue-hover);
 }
 
 /* ===== Columna resumen ===== */

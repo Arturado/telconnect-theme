@@ -155,6 +155,30 @@ $crt_product_count   = count( $crt_top_level_items );
                                             </span>
                                             <span class="crt-item-addon-label"><?php echo esc_html( $child_product->get_name() ); ?></span>
                                             <span class="crt-item-addon-price"><?php echo wp_kses_post( WC()->cart->get_product_price( $child_product ) ); ?></span>
+                                            <?php
+                                            /**
+                                             * Botón "Eliminar" propio del addon — mismo componente visual que
+                                             * .crt-item-remove (ícono + texto), pero elimina SOLO este cart
+                                             * item hijo (relación unidireccional: eliminar el padre se lleva
+                                             * al hijo vía tc_remove_signature_addon_children() en functions.php,
+                                             * pero eliminar el hijo nunca toca al padre).
+                                             */
+                                            echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                                                'woocommerce_cart_item_remove_link',
+                                                sprintf(
+                                                    '<a role="button" href="%s" class="crt-item-remove crt-item-addon-remove" aria-label="%s" data-product_id="%s" data-product_sku="%s"><img src="%s" alt=""><span class="btn-label-mask"><span class="btn-label">%s</span><span class="btn-label-ghost" aria-hidden="true">%s</span></span></a>',
+                                                    esc_url( wc_get_cart_remove_url( $child_key ) ),
+                                                    /* translators: %s is the product name */
+                                                    esc_attr( sprintf( __( 'Remove %s from cart', 'woocommerce' ), wp_strip_all_tags( $child_product->get_name() ) ) ),
+                                                    esc_attr( $child_product->get_id() ),
+                                                    esc_attr( $child_product->get_sku() ),
+                                                    esc_url( get_template_directory_uri() . '/assets/img/icons/trash-01.svg' ),
+                                                    esc_html__( 'Eliminar', 'telconnect' ),
+                                                    esc_html__( 'Eliminar', 'telconnect' )
+                                                ),
+                                                $child_key
+                                            );
+                                            ?>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>

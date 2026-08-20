@@ -316,6 +316,14 @@
     white-space: nowrap;
 }
 
+/* Reusa .crt-item-remove (ícono + texto, mismo componente que el
+   "Eliminar" de un item top-level) — acá solo se ajusta que no se
+   achique dentro de la fila flex del addon (.crt-item-addon-label ya
+   tiene flex:1 y absorbe el espacio disponible). */
+.crt-item-addon-remove {
+    flex-shrink: 0;
+}
+
 /* ===== Columna de control (precio + cantidad + eliminar) ===== */
 .crt-item-control {
     flex-shrink: 0;
@@ -646,7 +654,7 @@
 }
 
 .crt-help-btn:hover {
-    opacity: 0.85;
+    background: var(--color-eyebrow-blue-hover);
     color: #fff;
 }
 
@@ -806,8 +814,7 @@
 }
 
 .crt-proceed-to-checkout a.checkout-button.button.alt:hover {
-    opacity: 0.85;
-    background-color: var(--color-eyebrow-blue);
+    background-color: var(--color-eyebrow-blue-hover);
     color: #fff;
 }
 

@@ -504,8 +504,18 @@
     display: block;
 }
 
-.pdp-qty-stepper .qty {
+/* Bug de especificidad (mismo patrón documentado en §10/cart.css): el
+   core define `.woocommerce .quantity .qty { width:3.631em }` con
+   especificidad (0,2,0) — exactamente empatada con la de acá (también
+   2 clases), así que quién gana dependía del orden de carga de las
+   hojas de estilo. En la práctica WC ganaba, dejando el input a ~58px
+   en vez de 32px — el input más ancho desbordaba `.pdp-qty-stepper`
+   (ancho fijo 124px) y empujaba el botón "+" fuera del pill, dando la
+   sensación de que quedaba "cortado" contra el borde. Se suma
+   `.pdp-page` como 3ra clase, mismo criterio ya usado en cart.css. */
+.pdp-page .pdp-qty-stepper .qty {
     width: 32px;
+    box-sizing: border-box;
     border: none;
     background: transparent;
     text-align: center;
@@ -543,8 +553,19 @@
     transition: opacity 0.2s ease;
 }
 
-.pdp-add-to-cart.single_add_to_cart_button.button:hover {
-    opacity: 0.9;
+/* Bug de especificidad (mismo patrón de §10/§8.4): este botón NO lleva
+   la clase .alt (a diferencia de otros .button.alt del sitio), así que
+   cae en la regla GENÉRICA del core `.woocommerce button.button:hover`
+   (especificidad (0,3,1): .woocommerce + button[elemento] + .button +
+   :hover) — empata en clases con nuestro selector de 3 clases (0,3,0) y
+   gana por el elemento "button" como desempate. Esa regla del core pone
+   background-color:#dcd7e2 y color:#515151, lo que hacía que el texto
+   se viera negro/gris en hover en vez de blanco. Se suma `.pdp-page`
+   como 4ta clase para ganar sin ambigüedad, y se fija `color:#fff`
+   explícito en el propio hover (no alcanza con heredar el color base). */
+.pdp-page .pdp-add-to-cart.single_add_to_cart_button.button:hover {
+    background: var(--color-eyebrow-blue-hover);
+    color: #fff;
 }
 
 .pdp-add-to-cart.single_add_to_cart_button.button:disabled {

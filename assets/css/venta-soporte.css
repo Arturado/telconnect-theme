@@ -145,7 +145,7 @@
 }
 
 .vs-btn-primary:hover {
-    opacity: 0.9;
+    background: var(--color-eyebrow-blue-hover);
 }
 
 .vs-btn-outline {

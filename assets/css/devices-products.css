@@ -201,7 +201,7 @@
 }
 
 .dp-add-cart:hover {
-    opacity: 0.9;
+    background: var(--color-eyebrow-blue-hover);
 }
 
 .dp-empty {
@@ -400,7 +400,7 @@
 }
 
 .dp-cta-btn:hover {
-    opacity: 0.9;
+    background: var(--color-eyebrow-blue-hover);
 }
 
 @media (max-width: 900px) {

@@ -169,7 +169,7 @@ body.has-floating-header .site-header {
 }
 
 .menu-pill-login:hover {
-    opacity: 0.9;
+    background: var(--color-eyebrow-blue-hover);
 }
 
 /* Cart Pill */
@@ -397,6 +397,10 @@ body.mobile-nav-open {
     font-family: var(--font-body);
     font-size: 15px;
     font-weight: var(--weight-medium);
+}
+
+.mobile-nav-login:hover {
+    background: var(--color-eyebrow-blue-hover);
 }
 
 @media (max-width: 900px) {

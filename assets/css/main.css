@@ -1,6 +1,7 @@
 :root {
     --color-primary-blue: #2952E3;
     --color-eyebrow-blue: #2B5EED;
+    --color-eyebrow-blue-hover: #1F43A8;
     --color-badge-dark: #0D0F15;
     --color-lime: #E5FF9E;
     --color-text-muted: #CBD5E1;
@@ -160,6 +161,17 @@ p {
     position: absolute;
     top: 0;
     left: 0;
+    /* El contenedor de posicionamiento de un elemento absolute es el
+       "padding edge" del ancestro relative (acá, .btn-label-mask) — es
+       decir, left:0 ignora el padding-left del mask. .btn-label (flujo
+       normal) en cambio SÍ arranca después de ese padding-left. Como el
+       padding del mask anima (0 2px → 0 6px en hover, ver más abajo),
+       sin este inherit el texto quedaba ~4px más a la izquierda apenas
+       terminaba el roll — bug real, detectado comparando la posición en
+       píxeles del glyph antes/después de la transición. Heredar
+       padding-left del mask mantiene a Ghost sincronizado con dónde
+       arranca Label en todo momento, incluso durante la animación. */
+    padding-left: inherit;
     transform: translateY(100%);
 }
 
