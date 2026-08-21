@@ -31,7 +31,7 @@
                     <div class="pd-stats-rings">
                         <div class="pd-ring pd-ring-sm">
                             <div class="pd-ring-visual pd-ring-visual-sm">
-                                <strong>1,49%</strong>
+                                <strong>1,99%</strong>
                             </div>
                             <span>Comisión</span>
                         </div>
@@ -57,7 +57,7 @@
                         <div>
                             <span class="pd-total-label">Comisión cobrada</span>
                             <strong>$179</strong>
-                            <span class="pd-total-note">1,49% por venta, más IVA</span>
+                            <span class="pd-total-note">1,99% por venta, más IVA</span>
                         </div>
                     </div>
                 </div>

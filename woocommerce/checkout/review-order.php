@@ -136,7 +136,7 @@ if ( ! $chk_is_pickup ) {
      * Despacho (dirección real u "Retiro en tienda"), Comisión y
      * Servicio — 100% informativo, NO se suma al total ni duplica
      * ningún cargo ya calculado arriba (confirmado con el usuario:
-     * es solo un recordatorio de qué incluye la compra). "1,49%" es
+     * es solo un recordatorio de qué incluye la compra). "1,99%" es
      * la misma tarifa "Comisión Estándar" ya publicada en la sección
      * Commission de la home (template-parts/commission.php) — no un
      * número nuevo inventado acá.
@@ -149,7 +149,7 @@ if ( ! $chk_is_pickup ) {
         </div>
         <div class="chk-summary-extra-line">
             <span><?php esc_html_e( 'Comisión', 'telconnect' ); ?></span>
-            <span><?php esc_html_e( 'Estándar · 1,49%', 'telconnect' ); ?></span>
+            <span><?php esc_html_e( 'Estándar · 1,99%', 'telconnect' ); ?></span>
         </div>
         <div class="chk-summary-extra-line">
             <span><?php esc_html_e( 'Servicio', 'telconnect' ); ?></span>

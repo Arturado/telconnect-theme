@@ -47,7 +47,7 @@
                                 endif;
                                 ?>
                                 <a href="<?php echo esc_url( get_permalink() ); ?>" class="dp-add-cart">
-                                    <span class="btn-label-mask"><span class="btn-label">Agregar al carro</span><span class="btn-label-ghost" aria-hidden="true">Agregar al carro</span></span>
+                                    <span class="btn-label-mask"><span class="btn-label">Ir a comprar</span><span class="btn-label-ghost" aria-hidden="true">Ir a comprar</span></span>
                                 </a>
                             </div>
                         </div>

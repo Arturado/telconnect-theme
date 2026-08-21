@@ -179,7 +179,7 @@ $chk_ty_summary = ( $order && ! $order->has_status( array( 'failed', 'cancelled'
                                 </div>
                                 <div class="chk-summary-extra-line">
                                     <span><?php esc_html_e( 'Comisión', 'telconnect' ); ?></span>
-                                    <span><?php esc_html_e( 'Estándar · 1,49%', 'telconnect' ); ?></span>
+                                    <span><?php esc_html_e( 'Estándar · 1,99%', 'telconnect' ); ?></span>
                                 </div>
                                 <div class="chk-summary-extra-line">
                                     <span><?php esc_html_e( 'Servicio', 'telconnect' ); ?></span>

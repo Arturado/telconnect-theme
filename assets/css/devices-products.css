@@ -131,7 +131,7 @@
 }
 
 .dp-card-body h3 a:hover {
-    color: var(--color-eyebrow-blue);
+    color: #0d0f15!important;
 }
 
 .dp-card-desc {

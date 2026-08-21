@@ -20,7 +20,7 @@
                 ),
                 array(
                     'q' => '¿Cuál es la comisión?',
-                    'a' => '1,49% por venta con bono en 1 día hábil, sin IVA. Es la misma tarifa para débito, crédito y prepago nacional. Las tarjetas internacionales tienen tarifas distintas. ',
+                    'a' => '1,99% por venta con bono en 1 día hábil, sin IVA. Es la misma tarifa para débito, crédito y prepago nacional. Las tarjetas internacionales tienen tarifas distintas. ',
                 ),
                 array(
                     'q' => '¿En cuánto tiempo llega?',

@@ -103,11 +103,6 @@ p {
     border-radius: 999px;
     text-decoration: none;
     display: inline-block;
-    transition: opacity 0.2s ease;
-}
-
-.btn:hover {
-    opacity: 0.85;
 }
 
 .btn-primary {
@@ -119,6 +114,11 @@ p {
     background: rgba(255, 255, 255, 0.2);
     color: #fff;
     border: 1.5px solid #fff;
+    transition: background-color 0.2s ease;
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.32);
 }
 
 .btn-block {

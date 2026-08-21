@@ -21,7 +21,7 @@
                     </span>
                     <div class="tf-info-text">
                         <span class="tf-info-label">Horario</span>
-                        <p>Lunes a viernes de 9:00 a 18:30<br>Sábados de 10:00 a 14:00</p>
+                        <p>Lunes a viernes de 10:00 a 18:00<br>Sábados de 10:00 a 14:00</p>
                     </div>
                 </div>
                 <div class="tf-info-row">

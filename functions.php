@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Centralización de contacto — cambiar acá, se propaga a todo el sitio
-define( 'TC_WHATSAPP_NUMBER', '56900000000' ); // TODO: reemplazar con el número real del cliente
+define( 'TC_WHATSAPP_NUMBER', '56999979260' ); // TODO: reemplazar con el número real del cliente
 
 // Destino de las notificaciones por email del modal "Solicita tu prueba"
 // de Parking (tc_ajax_submit_trial_request(), más abajo). Email temporal

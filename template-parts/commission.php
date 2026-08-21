@@ -12,7 +12,7 @@
                     <p class="cm-desc">La mejor si el monto promedio de tus ventas es menor a $9.300.</p>
                 </div>
                 <div class="cm-tarifa">
-                    <div class="cm-rate">1,49%</div>
+                    <div class="cm-rate">1,99%</div>
                     <span class="cm-rate-note">por transacción + IVA</span>
                 </div>
             </div>
@@ -24,7 +24,7 @@
                     <p class="cm-desc">La mejor si el monto promedio de tus ventas es mayor a $9.300.</p>
                 </div>
                 <div class="cm-tarifa">
-                    <div class="cm-rate">0,79% + $65</div>
+                    <div class="cm-rate">1,39% + $75</div>
                     <span class="cm-rate-note">por transacción + IVA</span>
                 </div>
             </div>
