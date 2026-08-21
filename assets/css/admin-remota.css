@@ -83,6 +83,10 @@
     background: rgba(255, 255, 255, 0.22);
 }
 
+.admrem-cap-icon {
+    display: none;
+}
+
 .admrem-cap-item h3 {
     font-family: var(--font-main);
     font-size: 19px;
@@ -135,13 +139,50 @@
         gap: 24px;
     }
     .admrem-cap-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
         padding: 0 !important;
         width: 100%;
     }
     .admrem-cap-item:not(:last-child)::after {
         display: none;
     }
+    .admrem-cap-icon {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        width: 32px;
+        height: 32px;
+        margin-top: 2px;
+        background: rgba(255, 255, 255, 0.16);
+        border-radius: 999px;
+    }
+    .admrem-cap-icon::before {
+        content: '';
+        position: absolute;
+        left: 30%;
+        right: 30%;
+        top: 32%;
+        bottom: 38%;
+        border: 0 solid #fff;
+        border-width: 0 0 1.5px 1.5px;
+        transform: rotate(-45deg) translate(-1px, -1px);
+    }
+    .admrem-cap-body {
+        flex: 1;
+        min-width: 0;
+    }
     .admrem-dashboard-frame {
-        height: 320px;
+        height: auto;
+        border-radius: 24px;
+    }
+    .admrem-dashboard-img {
+        position: static;
+        width: 100%;
+        height: auto;
+        display: block;
     }
 }

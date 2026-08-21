@@ -8,20 +8,32 @@
 
         <div class="admrem-capacidades">
             <div class="admrem-cap-item">
-                <h3>Ocupación en vivo</h3>
-                <p>Cuántos espacios libres tienes ahora mismo, sin llamar a nadie.</p>
+                <span class="admrem-cap-icon" aria-hidden="true"></span>
+                <div class="admrem-cap-body">
+                    <h3>Ocupación en vivo</h3>
+                    <p>Cuántos espacios libres tienes ahora mismo, sin llamar a nadie.</p>
+                </div>
             </div>
             <div class="admrem-cap-item">
-                <h3>Recaudación por hora</h3>
-                <p>Cómo se comporta tu flujo durante el día y en qué franja ganas más.</p>
+                <span class="admrem-cap-icon" aria-hidden="true"></span>
+                <div class="admrem-cap-body">
+                    <h3>Recaudación por hora</h3>
+                    <p>Cómo se comporta tu flujo durante el día y en qué franja ganas más.</p>
+                </div>
             </div>
             <div class="admrem-cap-item">
-                <h3>Turnos por operador</h3>
-                <p>Quién abrió, quién cerró y con cuánto. Con aprobación del administrador.</p>
+                <span class="admrem-cap-icon" aria-hidden="true"></span>
+                <div class="admrem-cap-body">
+                    <h3>Turnos por operador</h3>
+                    <p>Quién abrió, quién cerró y con cuánto. Con aprobación del administrador.</p>
+                </div>
             </div>
             <div class="admrem-cap-item">
-                <h3>Historial de patentes</h3>
-                <p>Cada ingreso y salida queda registrado y se exporta a Excel o PDF.</p>
+                <span class="admrem-cap-icon" aria-hidden="true"></span>
+                <div class="admrem-cap-body">
+                    <h3>Historial de patentes</h3>
+                    <p>Cada ingreso y salida queda registrado y se exporta a Excel o PDF.</p>
+                </div>
             </div>
         </div>
 

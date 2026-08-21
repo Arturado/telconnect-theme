@@ -86,6 +86,8 @@
 @media (max-width: 900px) {
     .hp-content {
         padding: 0 20px;
+        align-items: flex-start;
+        text-align: left;
     }
     .hp-title {
         font-size: 36px;
