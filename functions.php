@@ -937,15 +937,16 @@ add_action( 'wp_ajax_tc_submit_trial_request', 'tc_ajax_submit_trial_request' );
 add_action( 'wp_ajax_nopriv_tc_submit_trial_request', 'tc_ajax_submit_trial_request' );
 
 /**
- * Header flotante SOLO en la home (ver header.css .site-header).
- * El Hero de front-page.php tiene su propia foto + overlay oscuro
- * calibrados para que el header transparente se vea bien superpuesto.
- * Cualquier página nueva sin ese tipo de fondo NO debe agregar esta
- * clase — así el header se comporta como uno normal (empuja el
- * contenido) y no hace falta compensar con padding-top a mano.
+ * Header flotante en la home Y en la landing de Parking (ver header.css
+ * .site-header). Ambos Heroes (front-page.php y hero-parking.php) tienen
+ * su propia foto + overlay oscuro calibrados para que el header
+ * transparente se vea bien superpuesto. Cualquier página nueva sin ese
+ * tipo de fondo NO debe agregar esta clase — así el header se comporta
+ * como uno normal (empuja el contenido) y no hace falta compensar con
+ * padding-top a mano.
  */
 function telconnect_body_classes( $classes ) {
-    if ( is_front_page() ) {
+    if ( is_front_page() || is_page_template( 'page-parking.php' ) ) {
         $classes[] = 'has-floating-header';
     }
     return $classes;

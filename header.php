@@ -62,7 +62,9 @@
 <div class="mobile-nav-overlay" id="mobile-nav-overlay" role="dialog" aria-modal="true" aria-label="Menú de navegación" aria-hidden="true">
     <div class="mobile-nav-panel">
         <div class="mobile-nav-panel-header">
-            <img src="<?php echo get_template_directory_uri(); ?>/assets/img/logo-telconnect-mark.svg" alt="" class="mobile-nav-logo">
+            <a href="<?php echo home_url(); ?>" class="mobile-nav-logo-link">
+                <img src="<?php echo get_template_directory_uri(); ?>/assets/img/logo-telconnect-mark.svg" alt="<?php bloginfo( 'name' ); ?>" class="mobile-nav-logo">
+            </a>
             <button type="button" class="mobile-nav-close" id="mobile-nav-close" aria-label="Cerrar menú">
                 <span class="mobile-nav-close-line"></span>
                 <span class="mobile-nav-close-line"></span>

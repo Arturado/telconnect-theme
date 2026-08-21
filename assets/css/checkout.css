@@ -213,6 +213,46 @@
     border-color: var(--color-eyebrow-blue);
 }
 
+/* Formulario de cupón del checkout (template nativo de WC, sin override
+   de theme — el core no le pone ninguna clase propia de estilo, así que
+   sin esto el input/botón se veían con el look default del navegador).
+   Mismo tratamiento que .crt-coupon-toggle .coupon .input-text/button.button
+   en cart.css (la fuente de verdad del proyecto para inputs de texto). */
+.chk-container .checkout_coupon input.input-text {
+    box-sizing: border-box;
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    color: #0D0F15;
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 10px;
+    padding: 10px 14px;
+    transition: border-color 0.2s ease;
+}
+
+.chk-container .checkout_coupon input.input-text:focus {
+    outline: none;
+    border-color: var(--color-eyebrow-blue);
+}
+
+.chk-container .checkout_coupon button.button {
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: var(--text-body);
+    color: #0D0F15;
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 999px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.chk-container .checkout_coupon button.button:hover {
+    border-color: var(--color-eyebrow-blue);
+}
+
 /* ===== Grid principal ===== */
 .chk-grid {
     display: grid;
@@ -400,19 +440,32 @@
     font-weight: var(--weight-regular);
 }
 
-.chk-form-col input.input-text,
-.chk-form-col select,
-.chk-form-col textarea,
+/* Normalizado contra la fuente de verdad del proyecto para inputs de
+   texto (.crt-coupon-toggle .coupon .input-text en cart.css): mismo
+   border-radius/padding/font-size/border/focus en todo el checkout.
+
+   Selector con .chk-page + .form-row a propósito (no solo .chk-form-col):
+   WooCommerce 11 agregó estilo default propio para inputs de checkout
+   clásico — ".woocommerce form .form-row .input-text, .woocommerce form
+   .form-row select" en woocommerce.css, especificidad (0,3,1) — que le
+   ganaba a nuestro selector de 2 clases (0,2,1) y dejaba los inputs con
+   el look default de WC (border-radius:4px, borde oscuro) pese a esta
+   regla. ".chk-page .chk-form-col .form-row ..." especificidad (0,4,1),
+   gana sin ambigüedad de orden (mismo criterio que los demás bugs de
+   especificidad del core, ver §10). */
+.chk-page .chk-form-col .form-row input.input-text,
+.chk-page .chk-form-col .form-row select,
+.chk-page .chk-form-col .form-row textarea,
 .chk-form-col .select2-container .select2-selection--single {
     width: 100%;
     box-sizing: border-box;
     font-family: var(--font-body);
-    font-size: 16px;
+    font-size: var(--text-body);
     color: #0D0F15;
     background: #fff;
     border: 1px solid #D9D9D9;
-    border-radius: 16px;
-    padding: 15px 18px;
+    border-radius: 10px;
+    padding: 10px 14px;
     height: auto;
     transition: border-color 0.2s ease;
 }
@@ -427,20 +480,37 @@
     line-height: normal !important;
 }
 
+/* top:50%/translateY en vez de un px fijo: con el padding reducido a
+   10px 14px (antes 15px 18px, ver normalización de inputs más arriba)
+   un valor fijo calibrado para la caja vieja habría quedado descentrado
+   verticalmente. select2 no está activo en este entorno local (los
+   selects de Región/Comuna son <select> nativos, sin
+   .select2-container en el DOM) — no se pudo verificar visualmente,
+   pero esta forma es agnóstica al padding exacto, así que no debería
+   volver a desalinearse si el padding cambia de nuevo. */
 .chk-form-col .select2-selection__arrow {
-    top: 14px !important;
+    top: 50% !important;
     right: 12px !important;
+    transform: translateY(-50%);
 }
 
-.chk-form-col input.input-text:focus,
-.chk-form-col select:focus,
-.chk-form-col textarea:focus,
+/* Mismo motivo que el bloque de arriba: WC 11 también define
+   ".woocommerce form .form-row .input-text:focus, ... select:focus"
+   (border-color: currentcolor) a especificidad (0,4,1) — más que
+   ".chk-form-col input.input-text:focus" (0,3,1) solo. Con .chk-page +
+   .form-row sumados acá también, (0,5,1) gana sin ambigüedad. */
+.chk-page .chk-form-col .form-row input.input-text:focus,
+.chk-page .chk-form-col .form-row select:focus,
+.chk-page .chk-form-col .form-row textarea:focus,
 .chk-form-col .select2-container--focus .select2-selection--single {
     outline: none;
     border-color: var(--color-eyebrow-blue);
 }
 
-.chk-form-col input.input-text.chk-input-invalid {
+/* Mismo criterio: WC 11 también trae ".form-row.woocommerce-invalid
+   input.input-text/select { border-color: var(--wc-red) }" a (0,4,2) —
+   más que la regla propia de abajo con solo 3 clases. */
+.chk-page .chk-form-col .form-row input.input-text.chk-input-invalid {
     border-color: var(--color-red);
 }
 
@@ -507,8 +577,14 @@
 
 /* Boleta/Factura: el Figma no lo muestra (mantenido por capacidad de
    negocio, ver CONTEXT.md §8.8) — se le baja el peso visual para que
-   no compita con los 4 campos que sí calzan con el diseño. */
-.chk-field-document-type {
+   no compita con los 4 campos que sí calzan con el diseño.
+   Selector con .chk-form-col + .form-row a propósito (no solo
+   .chk-field-document-type): bug de especificidad preexistente (no
+   introducido en esta sesión, encontrado durante la auditoría de
+   §8.20) — ".chk-form-col .form-row" (0,2,0) le ganaba a un selector
+   de 1 sola clase (0,1,0) y el max-width:280px nunca se aplicaba en
+   la práctica, dejando el select a ancho completo. */
+.chk-form-col .form-row.chk-field-document-type {
     max-width: 280px;
 }
 
@@ -552,7 +628,13 @@
     flex-wrap: wrap;
 }
 
-.chk-shipping-option {
+/* Selector con .chk-form-col a propósito (no solo .chk-shipping-option):
+   .chk-form-col label {display:block} tiene más especificidad (0,1,1)
+   que un selector de 1 sola clase (0,1,0) y le ganaba, dejando este
+   <label> en display:block. Como resultado el <span class="chk-shipping-dot">
+   (inline por default) nunca se "blockifica" como ítem flex y su
+   width/height se ignoran, dando un dot alargado en vez de circular. */
+.chk-form-col .chk-shipping-option {
     box-sizing: border-box;
     flex: 1 1 260px;
     display: flex;
@@ -664,7 +746,15 @@
     border: 2px solid var(--color-eyebrow-blue);
 }
 
-.chk-payment-option-label {
+/* Selector con .chk-form-col a propósito (no solo .chk-payment-option-label):
+   mismo bug de especificidad que .chk-shipping-option (ver §8.19/§10) —
+   .chk-form-col label {display:block} (0,1,1) le ganaba a un selector de
+   1 sola clase (0,1,0), dejando este <label> en display:block y su
+   <span class="chk-payment-dot"> (inline) sin blockificar como ítem flex,
+   dando un dot alargado en vez de circular. Este selector cubre CUALQUIER
+   gateway activo (el markup sale de payment-method.php, uno por gateway
+   en el loop de WooCommerce), no un número fijo de métodos de pago. */
+.chk-form-col .chk-payment-option-label {
     box-sizing: border-box;
     display: flex;
     flex-direction: row;

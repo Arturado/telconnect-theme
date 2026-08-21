@@ -164,7 +164,14 @@
     gap: 10px;
 }
 
-.pmodal-radio-pill {
+/* Selector con .pmodal-field a propósito (no solo .pmodal-radio-pill):
+   .pmodal-field label {display:block} tiene más especificidad (0,1,1)
+   que un selector de 1 sola clase (0,1,0) y le ganaba, dejando este
+   <label> en display:block. Como resultado el <span class="pmodal-radio-dot">
+   (inline por default) nunca se "blockifica" como ítem flex y su
+   width/height se ignoran, dando un dot alargado en vez de circular
+   (mismo bug y mismo fix que .chk-shipping-option en checkout.css). */
+.pmodal-field .pmodal-radio-pill {
     box-sizing: border-box;
     display: flex;
     align-items: center;
