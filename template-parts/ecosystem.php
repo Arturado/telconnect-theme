@@ -90,6 +90,25 @@
                 </div>
             </div>
 
+            <?php
+            /**
+             * Navegación con flechas — solo mobile (ver @media en ecosystem.css,
+             * mismo breakpoint 900px que oculta .eco-tabs). Reusa el componente
+             * visual .dp-arrow/.dp-arrow-prev/.dp-arrow-next del carrusel de
+             * productos (devices-products.css) tal cual, sin crear uno nuevo.
+             * ecosystem.js reusa la misma función que ya actualiza foto/título/
+             * descripción al hacer click en una pill — no hay lógica duplicada.
+             */
+            ?>
+            <div class="eco-mobile-nav">
+                <button type="button" class="dp-arrow dp-arrow-prev" id="eco-prev" aria-label="Herramienta anterior">
+                    <span></span>
+                </button>
+                <button type="button" class="dp-arrow dp-arrow-next" id="eco-next" aria-label="Herramienta siguiente">
+                    <span></span>
+                </button>
+            </div>
+
             <div class="eco-verticals">
                 <span class="eco-verticals-caption">Adaptados para cada tipo de negocio</span>
                 <div class="eco-tags">

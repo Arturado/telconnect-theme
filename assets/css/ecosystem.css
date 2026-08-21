@@ -207,7 +207,29 @@
     white-space: nowrap;
 }
 
+/* Navegación con flechas — oculta en desktop a propósito, las pills
+   (.eco-tabs) son la navegación acá. Solo se muestra dentro del @media
+   de mobile de abajo, mismo breakpoint que oculta .eco-tabs. Reusa el
+   componente visual .dp-arrow/.dp-arrow-prev/.dp-arrow-next definido en
+   devices-products.css (mismo estilo que el carrusel de productos) —
+   no se redefine acá, ambos CSS ya se cargan siempre juntos (loop de
+   telconnect_enqueue_assets() en functions.php). */
+.eco-mobile-nav {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
 @media (max-width: 900px) {
+    .eco-tabs {
+        display: none;
+    }
+
+    .eco-mobile-nav {
+        display: flex;
+    }
+
     .ecosystem {
         padding: 32px 20px;
     }
