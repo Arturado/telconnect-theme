@@ -493,6 +493,73 @@ function tc_get_order_summary_breakdown() {
 }
 
 /**
+ * Datos reales del PEDIDO para la página de gracias (thankyou.php v2,
+ * rediseño pixel-a-pixel contra recursos/thankyou/). A diferencia de
+ * tc_get_order_summary_breakdown() (que lee WC()->cart — sirve para
+ * carrito/checkout ANTES de pagar), acá el carrito ya está vacío en el
+ * momento en que thankyou.php se renderiza: todo sale del $order ya
+ * creado, no de la sesión.
+ *
+ * @param WC_Order $order
+ * @return array {
+ *     @type array  $items               Lista de líneas del pedido: name/quantity/price_html/image_html.
+ *     @type string $total_html          wc_price() del total pagado.
+ *     @type string $payment_title       Título del método de pago usado.
+ *     @type bool   $is_pickup           true si el método de envío es Local pickup.
+ *     @type string $shipping_value      Texto para la línea "Despacho" del resumen (dirección real o nombre del método).
+ *     @type string $shipping_step_text  Texto para el paso "Despachamos tu máquina" de "Qué sigue ahora".
+ * }
+ */
+function tc_get_thankyou_order_summary( $order ) {
+    $items = array();
+    foreach ( $order->get_items() as $item ) {
+        $product = is_callable( array( $item, 'get_product' ) ) ? $item->get_product() : false;
+        $items[] = array(
+            'name'       => $item->get_name(),
+            'quantity'   => $item->get_quantity(),
+            'price_html' => wc_price( $order->get_line_total( $item, false ) ),
+            'image_html' => $product ? $product->get_image( 'thumbnail' ) : wc_placeholder_img( 'thumbnail' ),
+        );
+    }
+
+    // Mismo criterio que review-order.php (§8.8/§8.10): "local_pickup" en
+    // el method_id decide si se muestra la dirección real o el nombre del
+    // método de retiro.
+    $is_pickup = false;
+    foreach ( $order->get_shipping_methods() as $shipping_item ) {
+        $is_pickup = false !== strpos( $shipping_item->get_method_id(), 'local_pickup' );
+        break; // Un solo package en este negocio, ver review-order.php.
+    }
+
+    // _shipping_comuna: post meta custom del checkout (§8.8), no una prop
+    // nativa de WC_Order — no se inyecta en get_shipping_address_1/2().
+    $comuna       = get_post_meta( $order->get_id(), '_shipping_comuna', true );
+    $addr_parts   = array_filter( array( $comuna, $order->get_shipping_address_1(), $order->get_shipping_address_2() ) );
+    $full_address = implode( ', ', $addr_parts );
+
+    if ( $is_pickup ) {
+        $shipping_value     = $order->get_shipping_method() ? $order->get_shipping_method() : __( 'Retiro en tienda', 'telconnect' );
+        // Dirección real de la tienda, la misma de template-parts/tienda-fisica.php — no inventada.
+        $shipping_step_text = __( 'Retira tu equipo en Vicuña Mackenna poniente 6843, oficina 805, La Florida, cuando te avisemos por correo que está listo.', 'telconnect' );
+    } else {
+        $shipping_value     = $full_address ? $full_address : $order->get_shipping_method();
+        $shipping_step_text = $full_address
+            /* translators: %s es la dirección de despacho (comuna, calle y número) */
+            ? sprintf( __( 'Llega en 48 h hábiles a %s.', 'telconnect' ), $full_address )
+            : __( 'Llega en 48 h hábiles a la dirección de despacho indicada.', 'telconnect' );
+    }
+
+    return array(
+        'items'              => $items,
+        'total_html'         => $order->get_formatted_order_total(),
+        'payment_title'      => $order->get_payment_method_title() ? $order->get_payment_method_title() : __( 'No especificado', 'telconnect' ),
+        'is_pickup'          => $is_pickup,
+        'shipping_value'     => $shipping_value,
+        'shipping_step_text' => $shipping_step_text,
+    );
+}
+
+/**
  * "Proceed to checkout" -> "Ir a pagar" (texto exacto del Figma del
  * carrito). No se overridea cart/proceed-to-checkout-button.php (mismo
  * criterio del §8.2: restylear/retextear sin tocar el template) — el

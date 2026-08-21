@@ -1208,7 +1208,279 @@
     }
 }
 
-/* ===== Thank you page ===== */
+/* =====================================================
+   Thank you page — v2, rediseño pixel a pixel contra Figma real
+   (recursos/thankyou/thankyou-figma.css + Body.png). Reemplaza el v1
+   "sin Figma todavía" (CONTEXT.md §8.1).
+
+   Reuso deliberado de clases ya existentes del propio checkout.css en
+   vez de reinventar el markup del resumen (mismo criterio pedido por el
+   usuario) — los valores de Figma para "Resumen del pedido" resultaron
+   ser un match exacto con lo que review-order.php ya usa:
+     .chk-grid / .chk-form-col        → columna 1fr 400px, gap 24, colapsa a 900px
+     .chk-card                        → card "Qué sigue ahora" (padding 26px 28px 28px, radius 20)
+     .chk-summary-col / .chk-summary-card → card "Resumen" (padding 24, radius 20)
+     .chk-summary-title               → H6 17px/24px de ambas cards
+     .chk-summary-total                → "Total pagado" (mismo look que el checkout real)
+     .chk-summary-extra / -line        → bloque Pago/Despacho/Comisión/Servicio
+   Solo el bloque "Datos" (chk-summary-extra) normalmente vive oculto
+   tras [data-step="pago"] (§8.8, visibilidad condicional del wizard) —
+   la página de gracias no tiene ese atributo, así que se fuerza visible
+   acá con más especificidad (ver override más abajo, gana por orden de
+   cascada al estar más abajo en el archivo).
+   ===================================================== */
+
+.chk-thankyou-page {
+    /* Figma explícito: fondo blanco en esta pantalla, a diferencia del
+       #F7F8FA gris que usa el resto de la familia checkout/carrito. */
+    background: #fff;
+}
+
+.chk-thankyou-page .chk-summary-extra {
+    display: flex;
+}
+
+/* ===== Hero (icono + título + subtítulo + badge de pedido) ===== */
+.chk-ty-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    max-width: 1280px;
+    margin: 0 auto 28px;
+    text-align: center;
+}
+
+.chk-ty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.chk-ty-icon img {
+    width: 34px;
+    height: 34px;
+    display: block;
+}
+
+.chk-ty-icon--success {
+    background: #E8F6ED;
+}
+
+.chk-ty-title {
+    font-family: var(--font-main);
+    font-size: 34px;
+    line-height: 40px;
+    font-weight: var(--weight-medium);
+    letter-spacing: -0.005em;
+    color: #0D0F15;
+    margin: 0;
+}
+
+.chk-ty-subtitle {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+    margin: 0;
+}
+
+.chk-ty-subtitle strong {
+    color: #848484;
+    font-weight: var(--weight-medium);
+}
+
+.chk-ty-badge,
+.chk-thankyou-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+}
+
+.chk-ty-badge strong,
+.chk-thankyou-badge strong {
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+}
+
+.chk-thankyou-badge {
+    margin: 4px 0 24px;
+}
+
+/* ===== "Qué sigue ahora": lista de pasos ===== */
+.chk-ty-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.chk-ty-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid #EEF0F3;
+}
+
+.chk-ty-step:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.chk-ty-step:first-child {
+    padding-top: 0;
+}
+
+.chk-ty-step-icon {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #EAEFFD;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.chk-ty-step-icon img {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.chk-ty-step-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.chk-ty-step-title {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+    margin: 0;
+}
+
+.chk-ty-step-desc {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+    margin: 0;
+}
+
+/* ===== Fila de acciones bajo la card "Qué sigue ahora" ===== */
+.chk-ty-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.chk-ty-link {
+    margin-left: auto;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: var(--weight-medium);
+    color: var(--color-eyebrow-blue);
+    text-decoration: none;
+}
+
+.chk-ty-link:hover {
+    color: var(--color-eyebrow-blue-hover);
+}
+
+/* ===== "Resumen del pedido": lista de productos con foto ===== */
+.chk-ty-products {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chk-ty-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chk-ty-product-photo {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+}
+
+.chk-ty-product-photo img {
+    display: block;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #F7F8FA;
+}
+
+.chk-ty-product-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.chk-ty-product-name {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chk-ty-product-qty {
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+}
+
+.chk-ty-product-price {
+    flex-shrink: 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+    white-space: nowrap;
+}
+
+/* ===== Estados simples (fallido / cancelado / sin pedido) — card centrada ===== */
 .chk-thankyou-container {
     max-width: 640px;
 }
@@ -1238,6 +1510,15 @@
     color: var(--color-red);
 }
 
+/* Gris, no rojo, a propósito: un pedido cancelado no es necesariamente
+   un error (puede ser autocancelado por el propio cliente) — se
+   distingue visualmente del estado "fallido". Sin Figma de referencia
+   (§CONTEXT), criterio propio manteniendo los tokens del sitio. */
+.chk-thankyou-icon-cancelled {
+    background: #F3F3F3;
+    color: var(--color-body);
+}
+
 .chk-thankyou-title {
     font-family: var(--font-main);
     font-size: 32px;
@@ -1252,6 +1533,10 @@
     color: var(--color-body);
     margin: 0 0 28px;
     line-height: var(--line-height-normal);
+}
+
+.chk-thankyou-card .chk-ty-badge {
+    margin: -8px 0 24px;
 }
 
 .chk-thankyou-overview {
@@ -1283,4 +1568,305 @@
     gap: 12px;
     justify-content: center;
     margin: 0;
+}
+
+/* ===== "Redirigiendo a Webpay" / "Pedido cancelado" — checkout/order-receipt.php.
+   Página real de WooCommerce (WC_Shortcode_Checkout::order_pay(), sin
+   overridear antes de esta sesión) que el plugin TUU usa para imprimir su
+   HTML crudo (sin clases propias) antes de redirigir a Webpay o de volver
+   con x_result=failed — ver docblock del template para el detalle
+   completo. Se restylea esa salida cruda por selector genérico, sin
+   tocar el plugin. ===== */
+.chk-receipt-spinner {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    border: 4px solid #EAEFFD;
+    border-top-color: var(--color-eyebrow-blue);
+    animation: chk-receipt-spin 0.8s linear infinite;
+}
+
+@keyframes chk-receipt-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chk-receipt-spinner {
+        animation: none;
+    }
+}
+
+.chk-receipt-native {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #EEF0F3;
+}
+
+/* El propio heading ya se muestra arriba (chk-thankyou-title) según el
+   mismo x_result que evalúa receiptPage() — el <h1> crudo del plugin
+   queda redundante, se oculta en vez de mostrar 2 títulos. Selector de
+   4 clases/elemento a propósito (mismo criterio que §10 CONTEXT.md: WC
+   trae su propio .woocommerce-error con especificidad no trivial). */
+.chk-thankyou-page .chk-receipt-native h1.woocommerce-error {
+    display: none;
+}
+
+.chk-receipt-native p {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 19px;
+    color: #848484;
+    margin: 0 0 10px;
+}
+
+.chk-thankyou-page .chk-receipt-native a.button.alt {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    padding: 14px 24px;
+    border-radius: 100px;
+    background: var(--color-eyebrow-blue);
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: 15px;
+    line-height: 20px;
+    text-decoration: none;
+    margin-top: 4px;
+    transition: background 0.2s ease;
+}
+
+.chk-thankyou-page .chk-receipt-native a.button.alt:hover {
+    background: var(--color-eyebrow-blue-hover);
+    color: #fff;
+}
+
+/* ===== Contenido nativo debajo de la card (tabla de detalle de WC,
+   direcciones, instrucciones de gateways como BACS) — restylear sin
+   overridear sus templates, mismo criterio §6/§8.1. Sin Figma para esta
+   parte (el capture no la incluye), tipografía/espaciado a criterio
+   propio con los tokens del sitio. Selectores de 4 clases donde compiten
+   con reglas float+width% del core (mismo bug ya documentado 2 veces,
+   §10 CONTEXT.md: PDP §8.4, Mi Cuenta §8.5). ===== */
+.chk-thankyou-native {
+    max-width: 1280px;
+    margin: 40px auto 0;
+    padding-top: 32px;
+    border-top: 1px solid #EEF0F3;
+}
+
+.chk-thankyou-native h2,
+.chk-thankyou-native h3,
+.chk-thankyou-native .woocommerce-order-details__title,
+.chk-thankyou-native .woocommerce-column__title,
+.chk-thankyou-native .wc-bacs-bank-details-heading,
+.chk-thankyou-native .wc-bacs-bank-details-account-name {
+    font-family: var(--font-main);
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: var(--weight-medium);
+    color: #0D0F15;
+    margin: 0 0 12px;
+}
+
+.chk-thankyou-native section {
+    margin-bottom: 28px;
+}
+
+.chk-thankyou-native section:last-child {
+    margin-bottom: 0;
+}
+
+.chk-thankyou-native p {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    color: #686C76;
+    margin: 0 0 12px;
+}
+
+.chk-thankyou-native table.shop_table,
+.chk-thankyou-native .woocommerce-table--order-details {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4px 0 8px;
+}
+
+.chk-thankyou-native table.shop_table th,
+.chk-thankyou-native table.shop_table td {
+    padding: 12px 12px 12px 0;
+    border-bottom: 1px solid #EEF0F3;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: #0D0F15;
+    text-align: left;
+}
+
+.chk-thankyou-native table.shop_table thead th {
+    font-size: 13px;
+    font-weight: var(--weight-medium);
+    color: #848484;
+}
+
+.chk-thankyou-native table.shop_table tfoot tr:last-child th,
+.chk-thankyou-native table.shop_table tfoot tr:last-child td {
+    border-bottom: none;
+    font-weight: var(--weight-medium);
+}
+
+.chk-thankyou-page .chk-thankyou-native .col2-set.addresses {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+/* Bug real encontrado con Playwright (no hipótesis): el clearfix nativo
+   de WC (".woocommerce .col2-set::before/::after { content:' '; display:table }",
+   pensado para el layout float original) se vuelve un ítem de grid MÁS
+   en cuanto el contenedor pasa a display:grid — con grid-auto-flow:row
+   por default, ese pseudo-elemento invisible ocupa la celda (fila1,
+   columna1) y empuja "Dirección de facturación" a la columna 2 y
+   "Dirección de envío" a una fila 2 completa, en vez de quedar ambas
+   lado a lado. Se neutraliza el clearfix (innecesario en grid, no hay
+   floats que limpiar) en vez de pelear la especificidad del selector
+   ::before condicionado a ".woocommerce" (mismo criterio de siempre:
+   selector con más clases, sin !important). */
+.chk-thankyou-page .chk-thankyou-native .col2-set.addresses::before,
+.chk-thankyou-page .chk-thankyou-native .col2-set.addresses::after {
+    display: none;
+    content: none;
+}
+
+.chk-thankyou-page .chk-thankyou-native .col2-set .col-1,
+.chk-thankyou-page .chk-thankyou-native .col2-set .col-2 {
+    float: none;
+    width: 100%;
+}
+
+.chk-thankyou-native address {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    color: #686C76;
+    font-style: normal;
+}
+
+.chk-thankyou-native ul.bacs_details,
+.chk-thankyou-native ul.order_details {
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.chk-thankyou-native ul.bacs_details li {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: #686C76;
+}
+
+.chk-thankyou-native ul.bacs_details li strong {
+    color: #0D0F15;
+    font-weight: var(--weight-medium);
+}
+
+@media (max-width: 700px) {
+    .chk-thankyou-page .chk-thankyou-native .col2-set.addresses {
+        grid-template-columns: 1fr;
+    }
+
+    .chk-thankyou-native table.shop_table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+/* ===== Responsive — mismos breakpoints 900px/700px del resto del sitio,
+   sin Figma mobile todavía (§CONTEXT): el usuario pidió explícitamente
+   validar este responsive, así que se colapsa la grilla 2 columnas y se
+   reescala tipografía/espaciado con el mismo criterio ya usado en el
+   resto del checkout (form-checkout.php) y del carrito. ===== */
+@media (max-width: 900px) {
+    .chk-ty-hero {
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .chk-ty-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .chk-ty-icon img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .chk-ty-title {
+        font-size: 26px;
+        line-height: 32px;
+    }
+
+    .chk-ty-subtitle {
+        font-size: 15px;
+        line-height: 22px;
+    }
+
+    .chk-ty-actions {
+        flex-wrap: wrap;
+    }
+
+    .chk-ty-link {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+        order: 3;
+        margin-top: 4px;
+    }
+}
+
+@media (max-width: 700px) {
+    .chk-thankyou-page .chk-card,
+    .chk-thankyou-page .chk-summary-card {
+        padding: 20px 18px;
+    }
+
+    .chk-ty-title {
+        font-size: 22px;
+        line-height: 28px;
+    }
+
+    .chk-ty-step {
+        gap: 12px;
+    }
+
+    .chk-ty-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .chk-ty-actions .chk-btn-primary,
+    .chk-ty-actions .chk-btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+
+    .chk-ty-link {
+        order: 3;
+    }
+
+    .chk-thankyou-card {
+        padding: 32px 20px;
+    }
+
+    .chk-thankyou-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
