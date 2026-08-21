@@ -38,7 +38,9 @@
                         </span>
                     </summary>
                     <div class="faq-answer">
-                        <p><?php echo esc_html( $faq['a'] ); ?></p>
+                        <div class="faq-answer-inner">
+                            <p><?php echo esc_html( $faq['a'] ); ?></p>
+                        </div>
                     </div>
                 </details>
                 <?php

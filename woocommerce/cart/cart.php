@@ -245,11 +245,15 @@ $crt_product_count   = count( $crt_top_level_items );
                         <?php if ( wc_coupons_enabled() ) : ?>
                             <details class="crt-coupon-toggle">
                                 <summary><?php esc_html_e( '¿Tienes un cupón de descuento?', 'telconnect' ); ?></summary>
-                                <div class="coupon">
-                                    <label for="coupon_code" class="screen-reader-text"><?php esc_html_e( 'Coupon:', 'woocommerce' ); ?></label>
-                                    <input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Código de cupón', 'telconnect' ); ?>" />
-                                    <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Aplicar cupón', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Aplicar cupón', 'telconnect' ); ?></span></span></button>
-                                    <?php do_action( 'woocommerce_cart_coupon' ); ?>
+                                <div class="crt-coupon-panel">
+                                    <div class="crt-coupon-inner">
+                                        <div class="coupon">
+                                            <label for="coupon_code" class="screen-reader-text"><?php esc_html_e( 'Coupon:', 'woocommerce' ); ?></label>
+                                            <input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Código de cupón', 'telconnect' ); ?>" />
+                                            <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Aplicar cupón', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Aplicar cupón', 'telconnect' ); ?></span></span></button>
+                                            <?php do_action( 'woocommerce_cart_coupon' ); ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </details>
                         <?php endif; ?>

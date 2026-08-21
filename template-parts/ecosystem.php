@@ -6,6 +6,20 @@
         </div>
 
         <div class="eco-explorer">
+            <?php
+            /**
+             * Desktop: 2 filas fijas (4 arriba, 5 abajo) — no depende de
+             * flex-wrap natural, que reacomodaba en 3+ filas según el ancho
+             * exacto del viewport. Cada fila tiene flex-wrap:nowrap (ver
+             * ecosystem.css) para que nunca pueda wrappear a una 3ra fila;
+             * el tamaño de las pills es fluido (clamp() con container query
+             * units) para que ambas filas quepan sin desbordar en todo el
+             * rango desktop (900px+). Mobile no se toca: .eco-tabs sigue
+             * ocultándose completo con display:none en el mismo @media de
+             * siempre, sin importar esta subdivisión interna en filas.
+             */
+            $eco_row_split = 4; // primeros 4 arriba, últimos 5 abajo
+            ?>
             <div class="eco-tabs" role="tablist">
                 <?php
                 $eco_tools = array(
@@ -60,6 +74,12 @@
                     $active    = 0 === $i ? ' is-active' : '';
                     $icon_url  = get_template_directory_uri() . '/assets/img/icons/eco-' . $tool['icon'] . '.svg';
                     $photo_url = get_template_directory_uri() . '/assets/img/ecosystem/' . $tool['icon'] . '.jpg';
+
+                    if ( 0 === $i ) {
+                        echo '<div class="eco-tabs-row eco-tabs-row-1">';
+                    } elseif ( $eco_row_split === $i ) {
+                        echo '</div><div class="eco-tabs-row eco-tabs-row-2">';
+                    }
                     ?>
                     <button
                         type="button"
@@ -74,6 +94,7 @@
                     <?php
                 endforeach;
                 ?>
+                </div>
             </div>
 
             <div class="eco-media">

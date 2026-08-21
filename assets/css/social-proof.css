@@ -40,8 +40,18 @@
     margin: 0 0 40px;
 }
 
+/* .sp-card-stat (628px) + 2x .sp-card (302px) + gaps sin flex-shrink
+   suman exactamente 1280px (= .sp-container max-width), diseñado para
+   caber solo desde ~1440px de viewport en adelante. El @media de abajo
+   (max-width:1100px) ya cubre el rango angosto, pero entre 1101px y
+   ~1439px no hay ningún fallback — la fila no puede achicarse y
+   desbordaba la página (bug real, cazado con overflow horizontal en
+   toda la home, no solo en esta sección). wrap es la red de seguridad:
+   a >=1440px de viewport se ve igual que siempre (1 sola fila), en el
+   rango angosto intermedio pasa a 2 filas en vez de desbordar. */
 .sp-grid {
     display: flex;
+    flex-wrap: wrap;
     gap: 24px;
     margin-bottom: 24px;
 }
@@ -341,6 +351,12 @@
     .sp-card-stat,
     .sp-card {
         flex: 1 1 100%;
+        /* Sin esto, el mínimo por defecto de un flex item (min-width:auto)
+           usa el ancho intrínseco de su contenido (el párrafo de
+           .sp-stat-note, ~340px) como piso — la card no podía achicarse
+           más allá de eso y desbordaba en mobile angosto (320-360px,
+           bug real, cazado con overflow horizontal a nivel de página). */
+        min-width: 0;
     }
     .sp-trust-grid {
         flex-wrap: wrap;

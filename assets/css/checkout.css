@@ -1712,6 +1712,18 @@
     color: #848484;
 }
 
+/* Nombre de producto de la tabla nativa de WooCommerce (order/order-details-item.php,
+   sin overridear — ver docblock arriba) es un link a la PDP; por defecto
+   sale azul de link, se ve igual que el resto de la celda (Ink-900). */
+.chk-thankyou-native .woocommerce-table__product-name a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.chk-thankyou-native .woocommerce-table__product-name a:hover {
+    color: var(--color-eyebrow-blue);
+}
+
 .chk-thankyou-native table.shop_table tfoot tr:last-child th,
 .chk-thankyou-native table.shop_table tfoot tr:last-child td {
     border-bottom: none;

@@ -410,6 +410,23 @@ body.mobile-nav-open {
     background: var(--color-eyebrow-blue-hover);
 }
 
+/* Hueco angosto entre el breakpoint mobile (900px, hamburguesa) y el
+   ancho real que necesita el navbar desktop sin achicarse (~960px):
+   .header-inner (padding 40px c/lado) + .menu-pill con 4 links a
+   padding:9px 18px + login no entraban y desbordaban horizontalmente
+   TODA la página entre 901px y 959px (bug real, cazado con
+   document.body.scrollWidth > viewport en ese rango exacto — no se
+   toca el breakpoint de 900px en sí, ni la altura fija/sticky del
+   header, solo se comprime el padding lo justo para que quepa). */
+@media (min-width: 901px) and (max-width: 959px) {
+    .header-inner {
+        padding: 0 16px;
+    }
+    .menu-pill-list li a {
+        padding: 9px 12px;
+    }
+}
+
 @media (max-width: 900px) {
     .menu-pill {
         display: none;

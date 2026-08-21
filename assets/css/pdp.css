@@ -253,8 +253,39 @@
     transform: translate(-50%, -30%) rotate(135deg);
 }
 
+/* Reveal animado — mismo patrón grid-template-rows que faq.css (ver
+   comentario detallado ahí) y misma variable centralizada. El wrapper
+   .pdp-accordion-panel es el único hijo directo de <details> aparte de
+   <summary> — adentro vive .pdp-accordion-body (descripción, puede
+   traer varios <p> de wpautop()) o .pdp-features-list (características),
+   según el accordion; cualquiera de los 2 recibe el overflow:hidden. */
+.pdp-accordion-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows var(--accordion-duration) ease,
+                visibility 0s linear var(--accordion-duration);
+}
+
+.pdp-accordion[open] .pdp-accordion-panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition: grid-template-rows var(--accordion-duration) ease;
+}
+
+.pdp-accordion-panel > * {
+    overflow: hidden;
+}
+
 .pdp-accordion-body {
-    margin-top: 18px;
+    /* SIN padding acá — ver comentario detallado en faq.css: este es el
+       elemento con overflow:hidden (recibido de .pdp-accordion-panel > *
+       arriba), y un padding en el MISMO elemento que se achica a 0 vía
+       grid crea un piso mínimo de altura que nunca baja de ese padding,
+       pase lo que pase. El espaciado equivalente vive en el primer <p>
+       (padding-top, ver .pdp-accordion-body p:first-child abajo) —
+       1 nivel más adentro que el overflow:hidden, así se recorta/anima
+       de verdad en vez de dejar un resto fijo al cerrar. */
     font-family: var(--font-body);
     font-size: 16px;
     line-height: 24px;
@@ -263,6 +294,10 @@
 
 .pdp-accordion-body p {
     margin: 0 0 12px;
+}
+
+.pdp-accordion-body p:first-child {
+    padding-top: 18px;
 }
 
 .pdp-accordion-body p:last-child {
@@ -278,11 +313,18 @@
 
 .pdp-features-list {
     list-style: none;
-    margin: 18px 0 0;
+    /* SIN padding-top acá — mismo motivo que .pdp-accordion-body (ver
+       comentario ahí): este <ul> es el elemento con overflow:hidden,
+       el espaciado equivalente vive en el primer <li>. */
+    margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.pdp-features-list li:first-child {
+    padding-top: 18px;
 }
 
 .pdp-features-list li {

@@ -142,11 +142,52 @@
     border-bottom: none;
 }
 
+/* Reveal animado del contenido — <details> nativo no anima su apertura
+   (el navegador aplica display:none al contenido cuando está cerrado,
+   sin transición posible). Técnica grid-template-rows: display:grid
+   acá pisa ese display:none del user-agent (el toggle real lo sigue
+   manejando el navegador vía el atributo [open], no se pierde teclado
+   ni accesibilidad nativa), y el 0fr→1fr anima la altura sin necesitar
+   max-height hardcodeado. El cierre sí necesita una asistencia mínima
+   de JS (accordion.js) — <details> nativo saca el atributo "open" de
+   forma síncrona, sin darle tiempo a la transición de correr; el JS
+   solo orquesta ESE timing, la animación en sí la sigue haciendo el
+   CSS. Misma duración centralizada (--accordion-duration, main.css)
+   que faq-parking.css y funcionalidades.css — no hardcodear el valor
+   3 veces.
+
+   3 niveles, no 2 — importante: .faq-answer-inner (no .faq-answer)
+   es el que lleva overflow:hidden, y el <p> con su padding-top vive
+   ADENTRO de ese wrapper, no directo en .faq-answer. Si el
+   overflow:hidden y el padding conviven en el MISMO elemento, ese
+   padding se convierte en un piso mínimo de altura que ningún
+   grid-template-rows puede bajar de ahí (el box-model no permite un
+   height menor a su propio padding, pase lo que pase) — el acordeón
+   "cerrado" quedaba con un resto visible exactamente del tamaño del
+   padding-top. Con el padding en el <p> (2 niveles más adentro que el
+   overflow:hidden), cuando .faq-answer-inner llega a altura 0 real,
+   el <p> completo —padding incluido— quedaba clipeado sin excepción,
+   sin importar su propio box-model. */
 .faq-answer {
-    padding-top: 14px;
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows var(--accordion-duration) ease,
+                visibility 0s linear var(--accordion-duration);
+}
+
+.faq-item[open] .faq-answer {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition: grid-template-rows var(--accordion-duration) ease;
+}
+
+.faq-answer-inner {
+    overflow: hidden;
 }
 
 .faq-answer p {
+    padding-top: 14px;
     font-family: var(--font-body);
     font-size: 16px;
     line-height: 1.6;

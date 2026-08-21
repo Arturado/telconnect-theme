@@ -98,7 +98,9 @@
                                     </span>
                                 </summary>
                                 <div class="func-answer">
-                                    <p><?php echo esc_html( $item['a'] ); ?></p>
+                                    <div class="func-answer-inner">
+                                        <p><?php echo esc_html( $item['a'] ); ?></p>
+                                    </div>
                                 </div>
                             </details>
                         <?php endforeach; ?>

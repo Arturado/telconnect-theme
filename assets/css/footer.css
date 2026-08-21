@@ -11,6 +11,19 @@
 
 .footer-top {
     display: flex;
+    /* .footer-brand (340px fijo) + 4 .footer-col (min-width:195px) +
+       gaps solo caben sin achicarse desde ~1280px de ancho de
+       contenido (ver .footer-container max-width). El breakpoint
+       mobile de este archivo recién entra en 900px, así que entre
+       901px y ~1280px+padding no había ningún fallback: el row sin
+       wrap forzaba overflow horizontal de TODA la página (bug real,
+       no cosmético — cazado con .footer-col empujando document.body
+       hasta ~1360px de ancho con el viewport en 901-1024px). wrap acá
+       es la red de seguridad: a >=1280px+padding se sigue viendo
+       igual que siempre (1 sola fila, todo entra), y en el rango
+       angosto intermedio las columnas pasan a 2 filas en vez de
+       desbordar la página. */
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: 40px;
     margin-bottom: 56px;

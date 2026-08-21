@@ -40,8 +40,15 @@
     line-height: 1.5;
 }
 
+/* .tf-info-card (640px) + .tf-map (616px) + gap suman exactamente
+   1280px (= .tf-container max-width), mismo patrón/mismo bug que
+   .sp-grid en social-proof.css: sin flex-shrink, solo cabe desde
+   ~1440px de viewport; el @media de abajo (max-width:1100px) no cubre
+   el rango 1101-1439px, donde desbordaba la página. wrap = red de
+   seguridad, sin cambiar el layout en el rango de diseño real. */
 .tf-grid {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 24px;
     margin-bottom: 24px;

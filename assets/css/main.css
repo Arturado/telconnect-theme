@@ -30,6 +30,40 @@
     --line-height-tight: 1.25;
     --line-height-normal: 1.5;
     --line-height-relaxed: 1.6;
+
+    /* Duración del reveal animado de los acordeones <details> (FAQ Home,
+       FAQ Parking, Funcionalidades Parking, accordions de la PDP, cupón
+       del carrito — técnica grid-template-rows, ver esas hojas de
+       estilo + accordion.js). 280ms es un default razonable, el usuario
+       todavía no dio el valor exacto de Figma — cuando lo tenga, cambiar
+       solo acá. */
+    --accordion-duration: 280ms;
+}
+
+/* ===== Reveal animado de <details> — regla compartida por TODOS los
+   acordeones del sitio (ver accordion.js) =====
+   Cada sección define su propio par de reglas puntuales:
+     .algo-answer { display:grid; grid-template-rows:0fr; transition:...; }
+     .algo-item[open] .algo-answer { grid-template-rows:1fr; ... }
+   Esta única regla de acá es la única parte GENÉRICA (no repetida por
+   sección): cuando accordion.js agrega la clase "is-closing" a un
+   <details> que todavía tiene el atributo "open" puesto (para poder
+   animar el cierre antes de sacarlo, ver accordion.js), fuerza el panel
+   de vuelta a 0fr sin necesitar saber el nombre de clase específico de
+   cada panel — *:not(summary) matchea el que sea (.faq-answer,
+   .pdp-accordion-panel, .crt-coupon-panel, etc).
+
+   El !important es intencional, no un parche: cada regla puntual de
+   arriba (".algo-item[open] .algo-answer") tiene 3 selectores de clase
+   (item + [open] + answer) — más específica que esta regla genérica de
+   2 (.is-closing + [open]), así que sin !important esta pierde la
+   pelea de especificidad y el cierre nunca anima (bug real, cazado con
+   Chrome headless: la clase "is-closing" se agregaba bien pero
+   grid-template-rows se quedaba pegado en 1fr). Es el único !important
+   de este archivo — un solo lugar, a propósito, no una guerra de
+   especificidad repartida. */
+details[open].is-closing > *:not(summary) {
+    grid-template-rows: 0fr !important;
 }
 
 /* ===== Reset base / Tipografía global ===== */

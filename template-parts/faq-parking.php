@@ -45,7 +45,9 @@
                         </span>
                     </summary>
                     <div class="faqp-answer">
-                        <p><?php echo esc_html( $item['a'] ); ?></p>
+                        <div class="faqp-answer-inner">
+                            <p><?php echo esc_html( $item['a'] ); ?></p>
+                        </div>
                     </div>
                 </details>
                 <?php

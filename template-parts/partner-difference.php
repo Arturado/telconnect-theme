@@ -72,24 +72,7 @@
                 </div>
 
                 <div class="pd-floating-wrap">
-                    <!-- Cards fantasma difuminadas apiladas detrás -->
-                    <div class="pd-floating-ghost pd-floating-ghost-1"></div>
-                    <div class="pd-floating-ghost pd-floating-ghost-2"></div>
-
-                    <div class="pd-floating-card">
-                        <span class="pd-floating-icon">
-                            <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/icons/logo-mark.svg' ); ?>" alt="">
-                        </span>
-                        <div class="pd-floating-info">
-                            <div class="pd-floating-top">
-                                <span class="pd-floating-dot"></span>
-                                <span class="pd-floating-label">Abono recibido</span>
-                                <span class="pd-floating-time">hace 3 min</span>
-                            </div>
-                            <strong>$248.500</strong>
-                            <span class="pd-floating-sub">Disponibles en tu cuenta.</span>
-                        </div>
-                    </div>
+                    <img class="pd-floating-img" src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/abono.png' ); ?>" alt="Abono recibido: $248.500 disponibles en tu cuenta">
                 </div>
             </div>
 
@@ -100,7 +83,7 @@
                     <p>Nueve herramientas incluidas. Más Telconnect Parking, exclusivamente solo con nosotros.</p>
                 </div>
                 <div class="pd-ecosystem-visual">
-                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/partner-ecosystem.jpg' ); ?>" alt="Opera tu tarjeta" loading="lazy">
+                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/Ilustracion.png' ); ?>" alt="Opera tu tarjeta" loading="lazy">
                 </div>
             </div>
 

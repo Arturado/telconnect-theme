@@ -145,11 +145,31 @@
     background: var(--color-eyebrow-blue);
 }
 
+/* Reveal animado — mismo patrón/misma variable que faq.css y
+   funcionalidades.css (ver comentario detallado en faq.css). */
 .faqp-answer {
-    padding-top: 14px;
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows var(--accordion-duration) ease,
+                visibility 0s linear var(--accordion-duration);
+}
+
+.faqp-item[open] .faqp-answer {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition: grid-template-rows var(--accordion-duration) ease;
+}
+
+/* .faqp-answer-inner (no .faqp-answer) es el que lleva overflow:hidden
+   — ver comentario detallado en faq.css sobre por qué el padding-top
+   tiene que vivir 1 nivel más adentro que el overflow:hidden. */
+.faqp-answer-inner {
+    overflow: hidden;
 }
 
 .faqp-answer p {
+    padding-top: 14px;
     font-family: var(--font-body);
     font-size: 16px;
     line-height: 24px;

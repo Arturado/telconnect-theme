@@ -79,8 +79,10 @@ $primary_cat = ( $terms && ! is_wp_error( $terms ) ) ? reset( $terms ) : null;
                                 <span>Información adicional</span>
                                 <span class="pdp-chevron" aria-hidden="true"></span>
                             </summary>
-                            <div class="pdp-accordion-body">
-                                <?php echo wp_kses_post( wpautop( $product->get_description() ) ); ?>
+                            <div class="pdp-accordion-panel">
+                                <div class="pdp-accordion-body">
+                                    <?php echo wp_kses_post( wpautop( $product->get_description() ) ); ?>
+                                </div>
                             </div>
                         </details>
                     <?php endif; ?>
@@ -156,11 +158,13 @@ $primary_cat = ( $terms && ! is_wp_error( $terms ) ) ? reset( $terms ) : null;
                                         <span>Características principales</span>
                                         <span class="pdp-chevron" aria-hidden="true"></span>
                                     </summary>
-                                    <ul class="pdp-features-list">
-                                        <?php foreach ( $features as $feature ) : ?>
-                                            <li><span class="pdp-feature-dot"></span><?php echo esc_html( $feature ); ?></li>
-                                        <?php endforeach; ?>
-                                    </ul>
+                                    <div class="pdp-accordion-panel">
+                                        <ul class="pdp-features-list">
+                                            <?php foreach ( $features as $feature ) : ?>
+                                                <li><span class="pdp-feature-dot"></span><?php echo esc_html( $feature ); ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
                                 </details>
                             <?php endif; ?>
 

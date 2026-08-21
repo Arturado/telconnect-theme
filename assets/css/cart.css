@@ -514,12 +514,37 @@
     display: none;
 }
 
+/* Reveal animado — mismo patrón grid-template-rows que faq.css (ver
+   comentario detallado ahí) y misma variable centralizada. */
+.crt-coupon-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows var(--accordion-duration) ease,
+                visibility 0s linear var(--accordion-duration);
+}
+
+.crt-coupon-toggle[open] .crt-coupon-panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition: grid-template-rows var(--accordion-duration) ease;
+}
+
+/* .crt-coupon-inner (no .coupon) es el que lleva overflow:hidden — ver
+   comentario detallado en faq.css sobre por qué el padding-top de
+   .coupon tiene que vivir 1 nivel más adentro que el overflow:hidden
+   (si conviven en el mismo elemento, el padding se vuelve un piso
+   mínimo de altura que el 0fr nunca logra bajar del todo). */
+.crt-coupon-panel > * {
+    overflow: hidden;
+}
+
 .crt-coupon-toggle .coupon {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-    margin-top: 12px;
+    padding-top: 12px;
 }
 
 .crt-coupon-toggle .coupon .input-text {

@@ -60,26 +60,45 @@
     max-width: 1136px;
 }
 
-/* Tabs (2 filas) */
+/* Tabs (2 filas fijas: 4 arriba / 5 abajo — ver .eco-tabs-row).
+   container-type habilita cqw en .eco-tab para que las pills se
+   achiquen de forma fluida y ambas filas quepan siempre sin
+   desbordar, en todo el rango desktop (900px+, sin límite superior).
+   El shrink solo entra en juego bajo ~826px de ancho de contenedor
+   (el resto del rango usa el tamaño de diseño original, sin cambios
+   visuales) — ver §8.25 en HISTORY.md para los números de referencia
+   usados al calibrar los clamp(). */
 .eco-tabs {
+    container-type: inline-size;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px 10px;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
     max-width: 826px;
+}
+
+.eco-tabs-row {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: clamp(6px, 1.3cqw, 10px);
+    width: 100%;
 }
 
 .eco-tab {
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 11px 20px;
+    flex: 0 1 auto;
+    min-width: 0;
+    gap: clamp(4px, 1.1cqw, 8px);
+    padding: clamp(7px, 1.5cqw, 11px) clamp(10px, 2.7cqw, 20px);
     background: #fff;
     border: 1px solid #F3F3F3;
     border-radius: 999px;
     font-family: var(--font-body);
-    font-size: 14px;
+    font-size: clamp(10.5px, 1.75cqw, 14px);
     font-weight: var(--weight-medium);
     line-height: 18px;
     color: var(--color-body);
@@ -97,12 +116,13 @@
     border: 1.5px solid var(--color-eyebrow-blue);
     box-shadow: 0px 8px 20px rgba(19,21,21,0.05);
     color: var(--color-eyebrow-blue);
-    padding: 10.5px 19.5px; /* compensa el border 1.5 vs 1 para que no salte de tamaño */
+    /* compensa el border 1.5 vs 1 para que no salte de tamaño, mismo clamp -0.5px */
+    padding: clamp(6.5px, calc(1.5cqw - 0.5px), 10.5px) clamp(9.5px, calc(2.7cqw - 0.5px), 19.5px);
 }
 
 .eco-tab-icon {
-    width: 24px;
-    height: 24px;
+    width: clamp(18px, 3.2cqw, 24px);
+    height: clamp(18px, 3.2cqw, 24px);
     flex-shrink: 0;
     object-fit: contain;
 }

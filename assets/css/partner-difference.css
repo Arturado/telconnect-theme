@@ -317,112 +317,10 @@
     padding-bottom: 40px;
 }
 
-.pd-floating-ghost {
-    position: absolute;
-    left: 50%;
-    bottom: -6px;
-    width: 90%;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.35);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 14px;
-    z-index: 1;
-}
-
-.pd-floating-ghost-1 {
-    transform: translateX(-50%) translateY(0);
-    opacity: 0.6;
-}
-
-.pd-floating-ghost-2 {
-    bottom: -14px;
-    width: 82%;
-    height: 30px;
-    transform: translateX(-50%) translateY(0);
-    opacity: 0.35;
-}
-
-.pd-floating-card {
-    position: relative;
-    background: #fff;
-    border: 1px solid #D9D4C6;
-    box-shadow: 0 6px 18px -4px rgba(18,23,43,0.08);
-    border-radius: 14px;
-    padding: 22px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    z-index: 2;
-}
-
-.pd-floating-icon {
-    flex-shrink: 0;
-    width: 80px;
-    height: 80px;
-    background: var(--color-eyebrow-blue);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.pd-floating-icon img {
-    width: 43px;
-    height: 36px;
-    object-fit: contain;
-}
-
-.pd-floating-info {
-    text-align: left;
-    flex: 1;
-}
-
-.pd-floating-top {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 4px;
-}
-
-.pd-floating-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--color-eyebrow-blue);
-    flex-shrink: 0;
-}
-
-.pd-floating-label {
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: var(--weight-medium);
-    color: var(--color-heading);
-    flex: 1;
-}
-
-.pd-floating-time {
-    font-family: var(--font-body);
-    font-size: 12px;
-    color: var(--color-body);
-}
-
-.pd-floating-info strong {
+.pd-floating-img {
     display: block;
-    font-family: var(--font-main);
-    font-size: 44px;
-    font-weight: var(--weight-medium);
-    line-height: 48px;
-    letter-spacing: -0.02em;
-    color: var(--color-eyebrow-blue);
-    margin: 4px 0;
-}
-
-.pd-floating-sub {
-    font-family: var(--font-body);
-    font-size: 12px;
-    color: var(--color-body);
+    width: 100%;
+    height: auto;
 }
 
 /* Card 4: ecosistema */
@@ -513,27 +411,4 @@
         font-size: 11px;
     }
 
-    /* Card 3 (abono flotante): mismo problema — ícono 80px + número a 44px
-       no entraban en el ancho angosto del card flotante y se recortaban. */
-    .pd-floating-card {
-        padding: 16px 18px;
-        gap: 12px;
-    }
-    .pd-floating-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 12px;
-    }
-    .pd-floating-icon img {
-        width: 30px;
-        height: 25px;
-    }
-    .pd-floating-top {
-        flex-wrap: wrap;
-        row-gap: 4px;
-    }
-    .pd-floating-info strong {
-        font-size: 28px;
-        line-height: 32px;
-    }
 }

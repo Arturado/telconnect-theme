@@ -172,14 +172,11 @@
     text-decoration: none;
 }
 
-.dp-card-body h3 a {
-    color: inherit;
-    text-decoration: none;
-}
-
-.dp-card-body h3 a:hover {
-    color: var(--color-eyebrow-blue);
-}
+/* .dp-card-body h3 a (color del link de nombre de producto) ahora vive
+   en devices-products.css junto a .dp-card-body h3 — ese archivo es
+   dependencia de telconnect-plp en todos los contextos que cargan
+   este CSS (PLP, PDP relacionados, cross-sells del carrito), así que
+   no hace falta duplicar la regla acá. */
 
 /* ===== Paginación ===== */
 .woocommerce-pagination {

@@ -119,6 +119,20 @@
     margin: 0;
 }
 
+/* El nombre del producto es un link a la PDP — se ve igual que texto
+   plano (Ink-900 heredado del h3), no azul de link por defecto. Regla
+   base para .dp-card-body h3 a (Home Devices/Máquinas y Complementos,
+   además de PLP/PDP relacionados/cross-sells del carrito, que reusan
+   este mismo componente vía plp.css cargado encima de este archivo). */
+.dp-card-body h3 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.dp-card-body h3 a:hover {
+    color: var(--color-eyebrow-blue);
+}
+
 .dp-card-desc {
     font-family: var(--font-body);
     font-size: 14px;
@@ -414,15 +428,39 @@
     .dp-card {
         flex: 0 0 300px;
     }
+    /* Mobile: de fila única con dividers a grid 2x2 — cada item pasa a
+       ser su propia card (mismo border/radius que .dp-card, ver arriba),
+       en vez de vivir dentro de la card grande compartida (esa pierde
+       su propio fondo/borde/padding, ahora es solo el grid wrapper). */
     .dp-features-strip {
-        flex-direction: column;
-        gap: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 0;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
     }
     .dp-feature-divider {
         display: none;
     }
     .dp-feature-item {
-        padding: 0;
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px;
+        background: #fff;
+        border: 1px solid #D9D9D9;
+        border-radius: 20px;
+    }
+    /* Estas 2 reglas tienen más especificidad (clase + pseudo-clase)
+       que .dp-feature-item sola de arriba y le ganan pase lo que pase
+       — sin este reset, el padding-left:0/padding-right:0 pensado
+       para los extremos de la fila horizontal (desktop) se cuela acá
+       y las cards del grid quedan con padding asimétrico. */
+    .dp-feature-item:first-child,
+    .dp-feature-item:last-child {
+        padding: 20px;
     }
     .dp-cta-banner {
         flex-direction: column;

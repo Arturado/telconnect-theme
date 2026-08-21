@@ -651,6 +651,19 @@ function telconnect_enqueue_assets() {
         tc_asset_version( '/assets/js/header.js' ),
         true
     );
+
+    // Orquesta el timing del cierre animado de TODO <details> del sitio
+    // (FAQ Home/Parking, Funcionalidades, PDP, cupón del carrito) — ver
+    // docblock de accordion.js. Genérico y global por la misma razón que
+    // telconnect-header: no hay forma barata de saber de antemano en qué
+    // páginas hay un <details>.
+    wp_enqueue_script(
+        'telconnect-accordion',
+        get_template_directory_uri() . '/assets/js/accordion.js',
+        array(),
+        tc_asset_version( '/assets/js/accordion.js' ),
+        true
+    );
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_assets' );
 

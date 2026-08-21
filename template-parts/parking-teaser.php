@@ -19,7 +19,7 @@
             <!-- Card chica: mockup teléfono -->
             <div class="pt-card pt-card-mockup">
                 <div class="pt-mockup-visual">
-                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/parking-teaser-mockup.jpg' ); ?>" alt="Tu estacionamiento en una sola máquina" loading="lazy">
+                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/parking-teaser-mockup.png' ); ?>" alt="Tu estacionamiento en una sola máquina" loading="lazy">
                     <div class="pt-mockup-fade"></div>
                 </div>
                 <div class="pt-card-text">
