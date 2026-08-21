@@ -738,6 +738,70 @@ function telconnect_enqueue_account_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_account_assets' );
 
+
+// Assets de la landing de Telconnect Parking (Hero propio, distinto al de la home)
+function telconnect_enqueue_parking_assets() {
+    if ( ! is_page_template( 'page-parking.php' ) ) {
+        return;
+    }
+
+    wp_enqueue_style(
+        'telconnect-hero-parking',
+        get_template_directory_uri() . '/assets/css/hero-parking.css',
+        array( 'telconnect-main' ),
+        tc_asset_version( '/assets/css/hero-parking.css' )
+    );
+
+    wp_enqueue_style(
+        'telconnect-problema',
+        get_template_directory_uri() . '/assets/css/problema.css',
+        array( 'telconnect-main' ),
+        tc_asset_version( '/assets/css/problema.css' )
+    );
+    wp_enqueue_style(
+        'telconnect-funcionalidades',
+        get_template_directory_uri() . '/assets/css/funcionalidades.css',
+        array( 'telconnect-main' ),
+        tc_asset_version( '/assets/css/funcionalidades.css' )
+    );
+
+    wp_enqueue_style(
+        'telconnect-admin-remota',
+        get_template_directory_uri() . '/assets/css/admin-remota.css',
+        array( 'telconnect-main' ),
+        tc_asset_version( '/assets/css/admin-remota.css' )
+    );
+
+    wp_enqueue_style(
+        'telconnect-planes',
+        get_template_directory_uri() . '/assets/css/planes.css',
+        array( 'telconnect-main' ),
+        tc_asset_version( '/assets/css/planes.css' )
+    );
+
+    wp_enqueue_style(
+        'telconnect-como-empezar',
+        get_template_directory_uri() . '/assets/css/como-empezar.css',
+        array( 'telconnect-main' ),
+        tc_asset_version( '/assets/css/como-empezar.css' )
+    );
+
+    wp_enqueue_style(
+        'telconnect-faq-parking',
+        get_template_directory_uri() . '/assets/css/faq-parking.css',
+        array( 'telconnect-main' ),
+        tc_asset_version( '/assets/css/faq-parking.css' )
+    );
+
+    wp_enqueue_style(
+        'telconnect-final-cta-parking',
+        get_template_directory_uri() . '/assets/css/final-cta-parking.css',
+        array( 'telconnect-main' ),
+        tc_asset_version( '/assets/css/final-cta-parking.css' )
+    );
+}
+add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_parking_assets' );
+
 /**
  * Header flotante SOLO en la home (ver header.css .site-header).
  * El Hero de front-page.php tiene su propia foto + overlay oscuro

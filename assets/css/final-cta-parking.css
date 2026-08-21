@@ -1,0 +1,63 @@
+/* ===== Final CTA Parking ===== */
+.fcp {
+    padding: 80px 80px 96px;
+    background: #fff;
+}
+
+.fcp-band {
+    box-sizing: border-box;
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    padding: 64px 40px;
+    background: var(--color-eyebrow-blue);
+    border-radius: 32px;
+    text-align: center;
+}
+
+.fcp-title {
+    font-family: var(--font-main);
+    font-size: 48px;
+    font-weight: var(--weight-medium);
+    line-height: 58px;
+    letter-spacing: -0.01em;
+    color: #fff;
+    max-width: 860px;
+    margin: 0;
+}
+
+.fcp-subtitle {
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 27px;
+    color: #fff;
+    max-width: 720px;
+    margin: 0;
+}
+
+.fcp-legal {
+    max-width: 1280px;
+    margin: 24px auto 0;
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 16px;
+    color: #848484;
+    text-align: center;
+}
+
+@media (max-width: 700px) {
+    .fcp {
+        padding: 48px 20px 32px;
+    }
+    .fcp-band {
+        padding: 48px 24px;
+    }
+    .fcp-title {
+        font-size: 28px;
+        line-height: 1.3;
+    }
+}

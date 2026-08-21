@@ -1,0 +1,147 @@
+/* ===== Administración Remota ===== */
+.admrem {
+    padding: 80px 80px 0;
+    background: var(--color-eyebrow-blue);
+    overflow: hidden;
+}
+
+.admrem-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 80px;
+}
+
+.admrem-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+}
+
+.admrem-eyebrow {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-lime);
+}
+
+.admrem-title {
+    font-family: var(--font-main);
+    font-size: 48px;
+    font-weight: var(--weight-medium);
+    line-height: 58px;
+    letter-spacing: -0.01em;
+    color: #fff;
+    max-width: 1000px;
+    margin: 0;
+}
+
+.admrem-subtitle {
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: var(--weight-regular);
+    line-height: 27px;
+    color: rgba(255, 255, 255, 0.78);
+    max-width: 760px;
+    margin: 0;
+}
+
+/* ===== Capacidades (4 columnas con dividers) ===== */
+.admrem-capacidades {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.admrem-cap-item {
+    flex: 1;
+    padding: 0 28px;
+    position: relative;
+}
+
+.admrem-cap-item:first-child {
+    padding-left: 0;
+}
+
+.admrem-cap-item:last-child {
+    padding-right: 0;
+}
+
+.admrem-cap-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 1px;
+    height: 88px;
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.admrem-cap-item h3 {
+    font-family: var(--font-main);
+    font-size: 19px;
+    font-weight: var(--weight-medium);
+    line-height: 25px;
+    color: #fff;
+    margin: 0 0 8px;
+}
+
+.admrem-cap-item p {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: var(--weight-regular);
+    line-height: 20px;
+    color: rgba(255, 255, 255, 0.68);
+    margin: 0;
+}
+
+/* ===== Dashboard screenshot (recortado a propósito) ===== */
+.admrem-dashboard-frame {
+    box-sizing: border-box;
+    position: relative;
+    width: 100%;
+    height: 560px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px 24px 0 0;
+    overflow: hidden;
+}
+
+.admrem-dashboard-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+@media (max-width: 1100px) {
+    .admrem {
+        padding: 60px 20px 0;
+    }
+    .admrem-title {
+        font-size: 32px;
+        line-height: 1.3;
+    }
+    .admrem-capacidades {
+        flex-direction: column;
+        gap: 24px;
+    }
+    .admrem-cap-item {
+        padding: 0 !important;
+        width: 100%;
+    }
+    .admrem-cap-item:not(:last-child)::after {
+        display: none;
+    }
+    .admrem-dashboard-frame {
+        height: 320px;
+    }
+}
