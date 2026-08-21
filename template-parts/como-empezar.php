@@ -30,7 +30,7 @@
         </div>
 
         <div class="empezar-cta-wrap">
-            <a href="#" class="empezar-cta">
+            <a href="#" class="empezar-cta" data-pmodal-open data-pmodal-origen="Cómo Empezar">
                 <span class="btn-label-mask">
                     <span class="btn-label">Solicitar mis 15 días</span>
                     <span class="btn-label-ghost" aria-hidden="true">Solicitar mis 15 días</span>

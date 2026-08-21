@@ -9,7 +9,7 @@
             <p class="hp-subtitle">Telconnect Parking es desarrollo propio y solo lo encuentras con nosotros. Se instala sobre la máquina TUU que ya cobra con tarjeta, así que el mismo equipo imprime el ticket, controla la salida y cierra el turno. Pruébalo quince días con tu operación real andando.</p>
 
             <div class="hp-cta-row">
-                <a href="#" class="btn btn-primary">
+                <a href="#" class="btn btn-primary" data-pmodal-open data-pmodal-origen="Hero">
                     <span class="btn-label-mask">
                         <span class="btn-label">Probar 15 días</span>
                         <span class="btn-label-ghost" aria-hidden="true">Probar 15 días</span>

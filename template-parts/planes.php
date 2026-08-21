@@ -42,7 +42,7 @@
                         </li>
                     <?php endforeach; ?>
                 </ul>
-                <a href="#" class="plan-cta plan-cta-light">
+                <a href="#" class="plan-cta plan-cta-light" data-pmodal-open data-pmodal-origen="Planes">
                     <span class="btn-label-mask">
                         <span class="btn-label">Solicitar prueba gratis</span>
                         <span class="btn-label-ghost" aria-hidden="true">Solicitar prueba gratis</span>

@@ -7,13 +7,11 @@
 
         <?php
         /**
-         * Copy de las respuestas cerradas (Configuración de tarifas, Descuentos
-         * por consumo, Control de evasores, Clientes frecuentes, Múltiples
-         * sucursales, Compatible con tu máquina TUU): el Figma solo mostraba el
-         * texto de la pregunta ABIERTA de cada grupo (la primera). Estas 6
-         * respuestas son un placeholder razonable inventado, no copy real del
-         * cliente — validar antes de publicar, mismo criterio que usamos en el
-         * FAQ del Home.
+         * Copy real cargado por el usuario (ya no son placeholders).
+         *
+         * 'image': cada grupo usa un único PNG ya compuesto (los 2 celulares
+         * con sus sombras ya integrados en un solo archivo rasterizado), no 2
+         * imágenes separadas posicionadas por CSS como en la primera versión.
          */
         $func_groups = array(
             array(
@@ -21,6 +19,7 @@
                 'title'      => 'La operación de todos los días',
                 'image_side' => 'right',
                 'gradient'   => 'linear-gradient(240deg, #2B5BFF 63.4%, #0C2CA8 136.6%)',
+                'image'      => 'celulares-1.png',
                 'items'      => array(
                     array(
                         'q' => 'Tickets de entrada y salida',
@@ -28,11 +27,11 @@
                     ),
                     array(
                         'q' => 'Configuración de tarifas',
-                        'a' => 'Define tarifas por hora, por tramo o tarifa plana, y ajústalas cuando quieras desde el panel web sin reprogramar la máquina.',
+                        'a' => 'Cobra por minuto exacto, por bloques de tiempo o con un tramo inciial gratuito. El cálculo se ajusta al tiempo real de permanencia del vehiculo.',
                     ),
                     array(
                         'q' => 'Descuentos por consumo',
-                        'a' => 'Aplica descuentos automáticos validando el monto de la boleta, sin cálculos manuales ni criterio a ojo del operador.',
+                        'a' => 'Registras el monto de la boleta del cliente y el sistema rebaja el estacionamiento según las reglas que definas. Ideal para supermercados y centro comerciales.',
                     ),
                 ),
             ),
@@ -41,6 +40,7 @@
                 'title'      => 'Que la plata cuadre siempre',
                 'image_side' => 'left',
                 'gradient'   => 'linear-gradient(240deg, #1E4CF0 63.4%, #0A2494 136.6%)',
+                'image'      => 'celulares-2.png',
                 'items'      => array(
                     array(
                         'q' => 'Cierre de turno con validación',
@@ -48,11 +48,11 @@
                     ),
                     array(
                         'q' => 'Control de evasores',
-                        'a' => 'La patente queda registrada en cada ingreso — si un vehículo que no pagó intenta volver, el sistema te avisa automáticamente.',
+                        'a' => 'Si un vehiculo sale sin pagar, su patente queda registrada y el sistema te avisa apenas ese vehiculo vuelve a ingresar.',
                     ),
                     array(
                         'q' => 'Clientes frecuentes',
-                        'a' => 'Identifica patentes recurrentes y aplica tarifas o beneficios especiales sin que el operador tenga que recordarlas de memoria.',
+                        'a' => 'Registra las patenetes habituales y asígnales acceso liberado, descuentos permanentes o una tarifa plana mensual.',
                     ),
                 ),
             ),
@@ -61,6 +61,7 @@
                 'title'      => 'Cuando ya no es un solo recinto',
                 'image_side' => 'right',
                 'gradient'   => 'linear-gradient(240deg, #3366FF 63.4%, #12309F 136.6%)',
+                'image'      => 'celulares-3.png',
                 'items'      => array(
                     array(
                         'q' => 'Reportes en tiempo real',
@@ -68,11 +69,11 @@
                     ),
                     array(
                         'q' => 'Múltiples sucursales',
-                        'a' => 'Administra todos tus recintos desde un solo panel, con ocupación y recaudación de cada uno visibles en vivo.',
+                        'a' => 'Administra varias ubicaciones desde una sola cuenta, cada una con su configuración de precios, operadors y  reportes.',
                     ),
                     array(
                         'q' => 'Compatible con tu máquina TUU',
-                        'a' => 'Corre directo sobre el mismo equipo que ya usas para cobrar — no necesitas comprar hardware adicional.',
+                        'a' => 'Funciona en celulares, tablets y equipos POS Android. Sobre la máquina TUU además cobra con tarjeta y emite la boleta electrónica.',
                     ),
                 ),
             ),
@@ -106,14 +107,8 @@
 
                 <div class="func-mockup" style="background: <?php echo esc_attr( $group['gradient'] ); ?>;">
                     <img
-                        class="func-mockup-phone func-mockup-phone-back"
-                        src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/parking/celular-1.png' ); ?>"
-                        alt=""
-                        loading="lazy"
-                    >
-                    <img
-                        class="func-mockup-phone func-mockup-phone-front"
-                        src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/parking/celular-2.png' ); ?>"
+                        class="func-mockup-photo"
+                        src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/parking/' . $group['image'] ); ?>"
                         alt=""
                         loading="lazy"
                     >

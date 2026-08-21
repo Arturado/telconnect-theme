@@ -4,6 +4,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // Centralización de contacto — cambiar acá, se propaga a todo el sitio
 define( 'TC_WHATSAPP_NUMBER', '56900000000' ); // TODO: reemplazar con el número real del cliente
 
+// Destino de las notificaciones por email del modal "Solicita tu prueba"
+// de Parking (tc_ajax_submit_trial_request(), más abajo). Email temporal
+// del usuario — TODO: reemplazar por el email real del cliente cuando lo
+// confirme. El respaldo real de cada solicitud NO depende de este email,
+// queda guardado en el plugin "Telconnect - Solicitudes Prueba" aunque el
+// envío falle (ver wp-content/plugins/telconnect-solicitudes-prueba/).
+define( 'TC_TRIAL_REQUEST_EMAIL', 'hola@arturodev.info' );
+
 
 /**
  * Devuelve la URL de WhatsApp lista para usar en href.
@@ -799,8 +807,134 @@ function telconnect_enqueue_parking_assets() {
         array( 'telconnect-main' ),
         tc_asset_version( '/assets/css/final-cta-parking.css' )
     );
+
+    // Modal "Solicita tu prueba" — compartido por los 3 botones de la
+    // landing (Hero, Cómo Empezar, Planes). Ver template-parts/modal-prueba-parking.php.
+    wp_enqueue_style(
+        'telconnect-pmodal',
+        get_template_directory_uri() . '/assets/css/pmodal.css',
+        array( 'telconnect-main' ),
+        tc_asset_version( '/assets/css/pmodal.css' )
+    );
+
+    wp_enqueue_script(
+        'telconnect-pmodal',
+        get_template_directory_uri() . '/assets/js/pmodal.js',
+        array(),
+        tc_asset_version( '/assets/js/pmodal.js' ),
+        true
+    );
+
+    wp_localize_script(
+        'telconnect-pmodal',
+        'tcPmodal',
+        array(
+            'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'tc_trial_request' ),
+        )
+    );
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_parking_assets' );
+
+/**
+ * ============================================================
+ * AJAX — Modal "Solicita tu prueba" (Parking)
+ * ============================================================
+ * 1. Valida (requeridos + RUT vía la misma WoocommercePlugin\helpers\RutValidator
+ *    que ya usa el checkout, §8.1 — no se reinventa el algoritmo).
+ * 2. Persiste vía tc_solicitudes_prueba_guardar() (plugin standalone,
+ *    wp-content/plugins/telconnect-solicitudes-prueba/) — ES el respaldo
+ *    real, no depende de que el email se entregue.
+ * 3. Envía notificación por wp_mail() a TC_TRIAL_REQUEST_EMAIL (arriba).
+ *    Si el email falla (típico en local sin SMTP configurado) no se
+ *    bloquea la respuesta de éxito al usuario, porque el dato ya quedó
+ *    guardado en el paso 2 — se deja constancia en el log de PHP.
+ */
+function tc_ajax_submit_trial_request() {
+    if ( ! check_ajax_referer( 'tc_trial_request', 'nonce', false ) ) {
+        wp_send_json_error( array( 'message' => 'Tu sesión expiró. Recarga la página e inténtalo de nuevo.' ), 400 );
+    }
+
+    $nombre        = isset( $_POST['nombre'] ) ? sanitize_text_field( wp_unslash( $_POST['nombre'] ) ) : '';
+    $rut           = isset( $_POST['rut'] ) ? sanitize_text_field( wp_unslash( $_POST['rut'] ) ) : '';
+    $telefono      = isset( $_POST['telefono'] ) ? sanitize_text_field( wp_unslash( $_POST['telefono'] ) ) : '';
+    $email         = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+    $tiene_maquina = ( isset( $_POST['tiene_maquina'] ) && 'no' === $_POST['tiene_maquina'] ) ? 'no' : 'si';
+    $origen        = isset( $_POST['origen'] ) ? sanitize_text_field( wp_unslash( $_POST['origen'] ) ) : '';
+
+    $errors = array();
+
+    if ( '' === $nombre ) {
+        $errors['nombre'] = 'Ingresa tu nombre y apellido.';
+    }
+
+    if ( '' === $rut ) {
+        $errors['rut'] = 'Ingresa tu RUT.';
+    } elseif ( class_exists( 'WoocommercePlugin\\helpers\\RutValidator' ) && ! \WoocommercePlugin\helpers\RutValidator::validate( $rut ) ) {
+        $errors['rut'] = 'RUT inválido. Revisa el formato (ej: 12345678-9).';
+    }
+
+    if ( '' === $telefono ) {
+        $errors['telefono'] = 'Ingresa tu número de teléfono.';
+    }
+
+    if ( '' === $email || ! is_email( $email ) ) {
+        $errors['email'] = 'Ingresa un correo electrónico válido.';
+    }
+
+    if ( ! empty( $errors ) ) {
+        wp_send_json_error( array( 'errors' => $errors ), 422 );
+    }
+
+    $datos = array(
+        'nombre'        => $nombre,
+        'rut'           => $rut,
+        'telefono'      => $telefono,
+        'email'         => $email,
+        'tiene_maquina' => $tiene_maquina,
+        'origen'        => $origen,
+    );
+
+    if ( function_exists( 'tc_solicitudes_prueba_guardar' ) ) {
+        $resultado = tc_solicitudes_prueba_guardar( $datos );
+        if ( is_wp_error( $resultado ) ) {
+            error_log( '[Telconnect Parking] tc_solicitudes_prueba_guardar() devolvió error: ' . $resultado->get_error_message() );
+            wp_send_json_error( array( 'message' => 'No pudimos guardar tu solicitud. Escríbenos por WhatsApp mientras lo revisamos.' ), 500 );
+        }
+    } else {
+        // El plugin de respaldo no está activo — no bloqueamos el envío del
+        // correo por esto (el usuario igual debe poder solicitar la prueba),
+        // pero queda constancia en el log para no perder el rastro del bug.
+        error_log( '[Telconnect Parking] tc_solicitudes_prueba_guardar() no existe — activa el plugin "Telconnect - Solicitudes Prueba".' );
+    }
+
+    $subject = 'Nueva solicitud de prueba — Telconnect Parking';
+    $body    = "Nombre: {$nombre}\n"
+        . "RUT: {$rut}\n"
+        . "Teléfono: {$telefono}\n"
+        . "Email: {$email}\n"
+        . '¿Tiene máquina TUU?: ' . ( 'si' === $tiene_maquina ? 'Sí' : 'No' ) . "\n"
+        . 'Origen: ' . ( $origen ? $origen : '(no especificado)' ) . "\n";
+
+    $mail_sent = wp_mail( TC_TRIAL_REQUEST_EMAIL, $subject, $body );
+
+    // Log de diagnóstico — confirma qué se intentó enviar y si wp_mail() lo
+    // aceptó. Útil en local sin SMTP configurado, donde wp_mail() puede
+    // devolver false aunque los datos estén bien armados (no hay MTA).
+    error_log(
+        sprintf(
+            '[Telconnect Parking] Solicitud de prueba de "%s" (%s) — wp_mail() a %s: %s',
+            $nombre,
+            $email,
+            TC_TRIAL_REQUEST_EMAIL,
+            $mail_sent ? 'OK' : 'FALLÓ'
+        )
+    );
+
+    wp_send_json_success( array( 'message' => 'Solicitud enviada.' ) );
+}
+add_action( 'wp_ajax_tc_submit_trial_request', 'tc_ajax_submit_trial_request' );
+add_action( 'wp_ajax_nopriv_tc_submit_trial_request', 'tc_ajax_submit_trial_request' );
 
 /**
  * Header flotante SOLO en la home (ver header.css .site-header).
