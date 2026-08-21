@@ -236,21 +236,24 @@
     border-color: var(--color-eyebrow-blue);
 }
 
+/* Botón azul sólido — mismo criterio que .crt-coupon-toggle button.button
+   en cart.css (actualizado en la misma sesión, ver CONTEXT.md) para que
+   el botón "Aplicar cupón" se vea igual en carrito y checkout. */
 .chk-container .checkout_coupon button.button {
     font-family: var(--font-body);
     font-weight: var(--weight-medium);
     font-size: var(--text-body);
-    color: #0D0F15;
-    background: #fff;
-    border: 1px solid #D9D9D9;
+    color: #fff;
+    background: var(--color-eyebrow-blue);
+    border: none;
     border-radius: 999px;
     padding: 10px 20px;
     cursor: pointer;
-    transition: border-color 0.2s ease;
+    transition: background 0.2s ease;
 }
 
 .chk-container .checkout_coupon button.button:hover {
-    border-color: var(--color-eyebrow-blue);
+    background: var(--color-eyebrow-blue-hover);
 }
 
 /* ===== Grid principal ===== */
@@ -346,8 +349,18 @@
 /* Headers nativos del core (form-billing.php/form-shipping.php ya
    traen su propio <h3>) — se ocultan, la card ya tiene su propio
    header (.chk-card-header) construido a mano. Mismo criterio que
-   §8.1: restylear/ocultar sin overridear esos templates. */
-.chk-section-billing > h3,
+   §8.1: restylear/ocultar sin overridear esos templates.
+   La regla de billing tenía un bug de selector (no introducido en
+   esta sesión): usaba ">" (hijo directo) asumiendo que el <h3> vivía
+   pegado a .chk-section-billing, pero el <h3> real es hijo de
+   .woocommerce-billing-fields, que a su vez es hijo de
+   .chk-section-billing — un nivel más adentro. El combinador de hijo
+   directo nunca matcheaba nada (confirmado con document.styleSheets:
+   0 reglas coincidiendo con el <h3> real), así que "Detalles de
+   facturación" quedaba visible siempre. Corregido a descendiente
+   general, mismo patrón que la línea de shipping de al lado (que sí
+   nombra el wrapper intermedio .woocommerce-shipping-fields). */
+.chk-section-billing h3,
 .chk-section-shipping .woocommerce-shipping-fields > h3 {
     display: none;
 }
@@ -1126,16 +1139,43 @@
        el "260px" de flex:1 1 260px pasa a leerse como ALTO objetivo en
        vez de ancho — las cards de despacho/pago quedaban con ~260px de
        alto vacío en mobile. Se resetea a flex:none + width:100% en vez
-       de heredar el flex-basis pensado para el layout en fila. */
+       de heredar el flex-basis pensado para el layout en fila.
+
+       Regresión encontrada y corregida en esta sesión: al arreglar el
+       bug del dot circular (§8.19) se le sumó ".chk-form-col" al
+       selector base de ".chk-shipping-option"/".chk-payment-option-label"
+       para ganar especificidad contra ".chk-form-col label{display:block}".
+       Eso subió la especificidad de ".chk-form-col .chk-shipping-option"
+       a (0,2,1) — por encima de esta regla mobile de acá, que se quedó
+       en (0,1,0) sin haberse tocado. Resultado: este reset de flex/width
+       dejó de aplicar en la práctica (aunque seguía "escrito" en el
+       archivo) y las cards volvían a medir ~260px de alto en mobile —
+       casi un cuadrado. Confirmado con document.styleSheets antes de
+       tocar nada. Mismo fix de siempre: igualar el selector al de la
+       regla que hay que vencer. */
     .chk-shipping-options,
     .wc_payment_methods.payment_methods.methods {
         flex-direction: column;
     }
 
-    .chk-shipping-option,
-    .chk-payment-option {
+    .chk-page .chk-form-col .chk-shipping-option,
+    .chk-page .chk-form-col .chk-payment-option {
         flex: none;
         width: 100%;
+    }
+
+    /* Ajuste pedido por el usuario (punto 3): con el alto ya corregido
+       arriba, el padding de desktop (16px 18px, pensado para una card de
+       ~260px de ancho en fila) todavía se sentía "bloque" a 284px de
+       ancho real en mobile — se achica un poco para una proporción más
+       liviana, sin tocar desktop (la regla base sigue en 16px 18px). */
+    .chk-page .chk-form-col .chk-shipping-option,
+    .chk-page .chk-form-col .chk-payment-option-label {
+        padding: 14px 16px;
+    }
+
+    .chk-shipping-option.is-selected {
+        padding: 13.5px 15.5px; /* compensa el border 1.5->2, mismo criterio que desktop */
     }
 
     /* Mismo criterio que checkout/cart/plp: en mobile los pares de 2

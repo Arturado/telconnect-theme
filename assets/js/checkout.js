@@ -236,6 +236,56 @@
 
     /**
      * ============================================================
+     * Card "Forma de pago": resaltado visual (.is-selected) del
+     * gateway elegido
+     * ============================================================
+     * Mismo patrón que toggleDeliveryFields()/initShippingToggle()
+     * arriba, pero para .chk-payment-option/.chk-payment-radio. Sin
+     * esto, el radio real SÍ cambiaba de checked correctamente al
+     * hacer click (la selección que se envía al submit siempre fue
+     * la correcta — confirmado con pedidos reales de punta a punta
+     * con ambos gateways), pero la card nunca se resaltaba (borde/
+     * fondo azul) ni el dot se rellenaba al elegir un método distinto
+     * al que vino "chosen" desde el render inicial del servidor,
+     * porque nunca se escribió el equivalente de toggleDeliveryFields()
+     * para pago — quedó documentado como pendiente en CONTEXT.md §8.20.
+     * Reportado por el usuario como "el checkout no deja seleccionar
+     * método de pago" — el click SÍ funcionaba, pero sin feedback
+     * visual el usuario no tenía forma de saber que su click había
+     * registrado, así que en la práctica bloqueaba la compra igual.
+     */
+    function togglePaymentSelection() {
+        document.querySelectorAll('.chk-payment-option').forEach(function (opt) {
+            var radio = opt.querySelector('.chk-payment-radio');
+            opt.classList.toggle('is-selected', !!(radio && radio.checked));
+        });
+    }
+
+    // Re-invocable a propósito (no solo una vez en DOMContentLoaded): el
+    // core de WooCommerce reemplaza por completo el fragment
+    // ".woocommerce-checkout-payment" (los <li> de cada gateway, generados
+    // vía payment-method.php) cada vez que corre update_checkout (cambio
+    // de método de envío, comuna, cupón, etc.) — eso destruye los <input>
+    // radio viejos y los reemplaza por nodos nuevos sin ningún listener
+    // atado. Se vuelve a llamar en el evento "updated_checkout" (mismo
+    // gancho que syncProxyLabel más abajo) para re-atar los listeners a
+    // los radios nuevos y resincronizar .is-selected con lo que el
+    // servidor acaba de renderizar como "chosen".
+    function initPaymentToggle() {
+        var radios = document.querySelectorAll('.chk-payment-radio');
+        if (!radios.length) {
+            return;
+        }
+
+        radios.forEach(function (radio) {
+            radio.addEventListener('change', togglePaymentSelection);
+        });
+
+        togglePaymentSelection();
+    }
+
+    /**
+     * ============================================================
      * Wizard Datos <-> Pago (§8.8)
      * ============================================================
      * Todo el estado vive en un solo atributo: .chk-page[data-step].
@@ -342,6 +392,13 @@
         initRutField('shipping_rut');
         initComunaCascade();
         initShippingToggle();
+        initPaymentToggle();
         initWizard();
+
+        // Ver docblock de initPaymentToggle(): reatar tras cada refresh de
+        // fragment de WooCommerce, mismo gancho que syncProxyLabel.
+        if (window.jQuery) {
+            window.jQuery(document.body).on('updated_checkout', initPaymentToggle);
+        }
     });
 })();

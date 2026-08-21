@@ -539,21 +539,25 @@
     border-color: var(--color-eyebrow-blue);
 }
 
+/* Botón azul sólido, mismo patrón que .chk-btn-primary (checkout.css) y
+   el resto de los CTA primarios del sitio (Commission, Tienda Física,
+   Venta y Soporte, etc.) — antes era un botón outline blanco/gris, la
+   única acción primaria del sitio sin el tratamiento azul estándar. */
 .crt-coupon-toggle button.button {
     font-family: var(--font-body);
     font-weight: var(--weight-medium);
     font-size: var(--text-body);
-    color: #0D0F15;
-    background: #fff;
-    border: 1px solid #D9D9D9;
+    color: #fff;
+    background: var(--color-eyebrow-blue);
+    border: none;
     border-radius: 999px;
     padding: 10px 20px;
     cursor: pointer;
-    transition: border-color 0.2s ease;
+    transition: background 0.2s ease;
 }
 
 .crt-coupon-toggle button.button:hover {
-    border-color: var(--color-eyebrow-blue);
+    background: var(--color-eyebrow-blue-hover);
 }
 
 /* Botón "Actualizar carrito" nativo — solo existe como submitter del
