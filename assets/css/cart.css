@@ -16,7 +16,7 @@
 
 .crt-page {
     padding: 36px 80px 88px;
-    background: #F7F8FA;
+    background: #FFF;
 }
 
 @media (max-width: 900px) {
@@ -233,7 +233,7 @@
     object-fit: cover;
     border-radius: 14px;
     border: 1px solid #D9D9D9;
-    background: #F7F8FA;
+    background: #FFF;
 }
 
 .crt-item-info {

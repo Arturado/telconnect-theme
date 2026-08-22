@@ -8,7 +8,7 @@
 
 .acc-page {
     padding: 56px 24px 96px;
-    background: #F7F8FA;
+    background: #FFF;
 }
 
 .acc-container {
@@ -135,7 +135,7 @@
 }
 
 .acc-nav-card .woocommerce-MyAccount-navigation-link a:hover {
-    background: #F7F8FA;
+    background: #FFF;
     color: var(--color-heading);
 }
 
@@ -517,7 +517,7 @@
 }
 
 .acc-panel .woocommerce-OrderUpdate-inner {
-    background: #F7F8FA;
+    background: #FFF;
     border-radius: 12px;
     padding: 14px 16px;
 }

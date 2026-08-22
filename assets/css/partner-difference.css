@@ -314,7 +314,7 @@
 .pd-floating-wrap {
     position: relative;
     margin-top: auto;
-    padding-bottom: 40px;
+    padding-bottom: 1px;
 }
 
 .pd-floating-img {

@@ -21,7 +21,7 @@
 
 .chk-page {
     padding: 36px 80px 88px;
-    background: #F7F8FA;
+    background: #FFF;
 }
 
 @media (max-width: 900px) {
@@ -842,7 +842,7 @@
 .wc_payment_method .payment_box {
     margin: 0 18px 16px;
     padding: 12px 14px;
-    background: #F7F8FA;
+    background: #FFF;
     border-radius: 10px;
     font-size: var(--text-small);
     color: var(--color-body);
@@ -1232,7 +1232,7 @@
 
 .chk-thankyou-page {
     /* Figma explícito: fondo blanco en esta pantalla, a diferencia del
-       #F7F8FA gris que usa el resto de la familia checkout/carrito. */
+       #FFF gris que usa el resto de la familia checkout/carrito. */
     background: #fff;
 }
 
@@ -1440,7 +1440,7 @@
     height: 40px;
     object-fit: cover;
     border-radius: 10px;
-    background: #F7F8FA;
+    background: #FFF;
 }
 
 .chk-ty-product-info {
