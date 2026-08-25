@@ -807,18 +807,10 @@
     border-color: var(--color-red);
 }
 
-/* Toggle Factura (Razón social/Giro) y validación de RUT: reusa las
-   clases/IDs de checkout.js (billing_document_type, billing_rut son los
-   mismos en el formulario de Editar dirección de facturación de Mi Cuenta,
-   así que el mismo JS funciona sin duplicar lógica — ver functions.php). */
-.acc-panel form .chk-field-factura {
-    display: none;
-}
-
-.acc-panel form .chk-field-factura.is-visible {
-    display: block;
-}
-
+/* Validación de RUT: reusa las clases/ID de checkout.js (billing_rut es
+   el mismo en el formulario de Editar dirección de facturación de Mi
+   Cuenta, así que el mismo JS funciona sin duplicar lógica — ver
+   functions.php). */
 .acc-panel form .chk-field-rut-error {
     color: var(--color-red);
     font-size: 12px;

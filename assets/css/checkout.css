@@ -391,8 +391,17 @@
 .chk-form-col .woocommerce-additional-fields__field-wrapper {
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-end;
     gap: 0 20px;
 }
+
+/* "Número / depto. u oficina" (shipping_address_2) reconstruye su label
+   como .screen-reader-text (WC lo pisa así vía wc-address-i18n.js, ver
+   docblock arriba) — sin texto visible arriba, su input quedaba pegado
+   al techo de la fila mientras el de "Dirección" (con label visible)
+   quedaba más abajo. align-items:flex-end en el wrapper de arriba
+   empareja el borde INFERIOR de cada fila de 2 campos, así que ambos
+   inputs terminan a la misma altura sin tocar el campo de Dirección. */
 
 .chk-form-col .form-row {
     flex: 0 0 100%;
@@ -418,9 +427,6 @@
 #billing_phone_field { order: 2; }
 #billing_email_field { order: 3; }
 #billing_rut_field { order: 4; }
-#billing_document_type_field { order: 5; }
-#billing_company_field { order: 6; }
-#billing_giro_field { order: 7; }
 
 #shipping_rut_field { order: 1; }
 #shipping_first_name_field { order: 2; }
@@ -577,33 +583,6 @@
    (domicilio, el método por defecto) — se oculta solo ese texto. */
 .chk-field-domicilio label .optional {
     display: none;
-}
-
-/* Factura: Razón social + Giro, ocultos hasta elegir "Factura electrónica" */
-.chk-field-factura {
-    display: none;
-}
-
-.chk-field-factura.is-visible {
-    display: block;
-}
-
-/* Boleta/Factura: el Figma no lo muestra (mantenido por capacidad de
-   negocio, ver CONTEXT.md §8.8) — se le baja el peso visual para que
-   no compita con los 4 campos que sí calzan con el diseño.
-   Selector con .chk-form-col + .form-row a propósito (no solo
-   .chk-field-document-type): bug de especificidad preexistente (no
-   introducido en esta sesión, encontrado durante la auditoría de
-   §8.20) — ".chk-form-col .form-row" (0,2,0) le ganaba a un selector
-   de 1 sola clase (0,1,0) y el max-width:280px nunca se aplicaba en
-   la práctica, dejando el select a ancho completo. */
-.chk-form-col .form-row.chk-field-document-type {
-    max-width: 280px;
-}
-
-.chk-field-document-type select {
-    padding: 10px 14px;
-    font-size: 14px;
 }
 
 .woocommerce-additional-fields {

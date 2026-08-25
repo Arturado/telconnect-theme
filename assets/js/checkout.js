@@ -1,23 +1,6 @@
 (function () {
     'use strict';
 
-    function toggleFacturaFields() {
-        var docType = document.getElementById('billing_document_type');
-        if (!docType) {
-            return;
-        }
-
-        var isFactura = docType.value === 'factura';
-
-        document.querySelectorAll('.chk-field-factura').forEach(function (field) {
-            field.classList.toggle('is-visible', isFactura);
-            var input = field.querySelector('input, select, textarea');
-            if (input) {
-                input.required = isFactura;
-            }
-        });
-    }
-
     function validateRut(rut) {
         rut = rut.replace(/[^0-9kK]/g, '');
         if (rut.length < 8 || rut.length > 9) {
@@ -40,6 +23,50 @@
         return dv === expected;
     }
 
+    // Helper genérico para marcar/limpiar un campo obligatorio vacío,
+    // reusando el mismo lenguaje visual del error de RUT (borde rojo
+    // .chk-input-invalid + mensaje .chk-field-rut-error debajo del campo)
+    // en vez de inventar un patrón de error nuevo. Usado por
+    // validateDatosStep()/validateDespachoStep() más abajo.
+    function validateRequiredField(input, emptyMessage) {
+        if (!input) {
+            return true;
+        }
+
+        var row = input.closest('.form-row');
+        var valid = !!input.value.trim();
+
+        if (row) {
+            var errorEl = row.querySelector('.chk-field-required-error');
+            if (!errorEl) {
+                errorEl = document.createElement('span');
+                errorEl.className = 'chk-field-rut-error chk-field-required-error';
+                row.appendChild(errorEl);
+
+                // Igual que en initRutField(): limpiar el error mientras el
+                // usuario escribe, no recién al volver a hacer click en
+                // "Continuar a pago".
+                input.addEventListener('input', function () {
+                    input.classList.remove('chk-input-invalid');
+                    errorEl.classList.remove('is-visible');
+                });
+            }
+            errorEl.textContent = emptyMessage;
+            errorEl.classList.toggle('is-visible', !valid);
+        }
+
+        input.classList.toggle('chk-input-invalid', !valid);
+
+        return valid;
+    }
+
+    // Registro de validadores forzados por campo de RUT (incluye el caso
+    // "vacío", que el blur por sí solo no marca como error para no
+    // molestar al usuario antes de que termine de escribir). Lo usan
+    // validateDatosStep()/validateDespachoStep() al intentar avanzar de
+    // paso.
+    var rutValidators = {};
+
     // Generalizado (§8.8) para poder validar tanto #billing_rut (RUT del
     // comprador) como #shipping_rut (RUT de quien recibe el despacho) con
     // la misma lógica, sin duplicar el código.
@@ -54,23 +81,31 @@
         errorEl.textContent = 'RUT inválido. Formato: 12345678-9';
         rutInput.closest('.form-row').appendChild(errorEl);
 
+        function applyState(valid) {
+            rutInput.classList.toggle('chk-input-invalid', !valid);
+            errorEl.classList.toggle('is-visible', !valid);
+        }
+
         rutInput.addEventListener('blur', function () {
             var value = rutInput.value.trim();
             if (!value) {
-                rutInput.classList.remove('chk-input-invalid');
-                errorEl.classList.remove('is-visible');
+                applyState(true);
                 return;
             }
 
-            var valid = validateRut(value);
-            rutInput.classList.toggle('chk-input-invalid', !valid);
-            errorEl.classList.toggle('is-visible', !valid);
+            applyState(validateRut(value));
         });
 
         rutInput.addEventListener('input', function () {
-            rutInput.classList.remove('chk-input-invalid');
-            errorEl.classList.remove('is-visible');
+            applyState(true);
         });
+
+        rutValidators[fieldId] = function () {
+            var value = rutInput.value.trim();
+            var valid = !!value && validateRut(value);
+            applyState(valid);
+            return valid;
+        };
     }
 
     /**
@@ -153,7 +188,7 @@
      * ============================================================
      * Card "Despacho": toggle de campos según Retiro/Domicilio
      * ============================================================
-     * Mismo patrón que toggleFacturaFields() — los campos con
+     * Los campos con
      * .chk-field-domicilio (RUT receptor, nombre, dirección, número,
      * región, comuna) solo se MUESTRAN cuando el método elegido es
      * "Despacho a domicilio". El refuerzo server-side está en
@@ -187,6 +222,17 @@
         }
     }
 
+    // Reusado también por validateDespachoStep() para saber si hay que
+    // exigir los campos de dirección o no.
+    function isPickupSelected() {
+        var checkedRadio = document.querySelector('.chk-shipping-radio:checked');
+        if (!checkedRadio) {
+            return false;
+        }
+        var option = checkedRadio.closest('.chk-shipping-option');
+        return !!(option && option.getAttribute('data-method') === 'pickup');
+    }
+
     function toggleDeliveryFields() {
         var checkedRadio = document.querySelector('.chk-shipping-radio:checked');
 
@@ -201,8 +247,7 @@
             return;
         }
 
-        var option = checkedRadio.closest('.chk-shipping-option');
-        var isPickup = option && option.getAttribute('data-method') === 'pickup';
+        var isPickup = isPickupSelected();
 
         document.querySelectorAll('.chk-field-domicilio').forEach(function (field) {
             field.classList.toggle('chk-field-hidden', isPickup);
@@ -293,12 +338,68 @@
      * paso del stepper/nota de confianza mostrar — este JS solo:
      * 1) valida el panel visible antes de avanzar (los campos del otro
      *    panel están display:none, así que quedan afuera de la
-     *    validación nativa del navegador),
+     *    validación nativa del navegador). form.reportValidity() no
+     *    alcanza para esto: los campos de WooCommerce (Nombre y
+     *    apellido, Correo, RUT, dirección de despacho) no traen el
+     *    atributo HTML "required" (WC solo les pone aria-required +
+     *    clase validate-required, ver woocommerce_form_field()), así
+     *    que validateDatosStep()/validateDespachoStep() los chequean a
+     *    mano y reusan el mismo lenguaje visual del error de RUT.
      * 2) cambia el atributo data-step,
      * 3) reenvía el click del botón "Pagar" visible al #place_order
      *    real de WooCommerce (ver form-checkout.php por qué no se
      *    reconstruye ese botón).
      */
+
+    // Nombre y apellido, Correo electrónico, RUT.
+    function validateDatosStep() {
+        var firstNameValid = validateRequiredField(
+            document.getElementById('billing_first_name'),
+            'El nombre y apellido es obligatorio.'
+        );
+        var emailValid = validateRequiredField(
+            document.getElementById('billing_email'),
+            'El correo electrónico es obligatorio.'
+        );
+
+        var rutValidator = rutValidators.billing_rut;
+        var rutValid = rutValidator ? rutValidator() : true;
+
+        return firstNameValid && emailValid && rutValid;
+    }
+
+    // RUT receptor, Nombre de quien recibe, Dirección, Región, Comuna —
+    // solo si el método elegido es "Despacho a domicilio" (con "Retiro en
+    // tienda" ninguno de estos campos aplica, mismo criterio que
+    // toggleDeliveryFields()/tc_validate_shipping_fields() en PHP).
+    function validateDespachoStep() {
+        if (isPickupSelected()) {
+            return true;
+        }
+
+        var rutValidator = rutValidators.shipping_rut;
+        var rutValid = rutValidator ? rutValidator() : true;
+
+        var nameValid = validateRequiredField(
+            document.getElementById('shipping_first_name'),
+            'El nombre de quien recibe es obligatorio.'
+        );
+        var addressValid = validateRequiredField(
+            document.getElementById('shipping_address_1'),
+            'La dirección es obligatoria.'
+        );
+        var regionValid = validateRequiredField(
+            document.getElementById('shipping_state'),
+            'La región es obligatoria.'
+        );
+        var comunaValid = validateRequiredField(
+            document.getElementById('shipping_comuna'),
+            'La comuna es obligatoria.'
+        );
+
+        return rutValid && nameValid && addressValid && regionValid && comunaValid;
+    }
+
     function initWizard() {
         var page = document.querySelector('.chk-page');
         var form = document.querySelector('form.checkout');
@@ -317,6 +418,17 @@
 
         if (nextBtn) {
             nextBtn.addEventListener('click', function () {
+                // Bloquear el avance a "Pago" si faltan datos del cliente o
+                // (cuando aplica) datos de despacho. Ambas se llaman siempre
+                // (sin cortocircuito &&) para que se marquen TODOS los
+                // campos faltantes de una vez, no solo el primero.
+                var datosValid = validateDatosStep();
+                var despachoValid = validateDespachoStep();
+
+                if (!datosValid || !despachoValid) {
+                    return;
+                }
+
                 if (!form.reportValidity()) {
                     return;
                 }
@@ -383,11 +495,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        var docType = document.getElementById('billing_document_type');
-        if (docType) {
-            toggleFacturaFields();
-            docType.addEventListener('change', toggleFacturaFields);
-        }
         initRutField('billing_rut');
         initRutField('shipping_rut');
         initComunaCascade();

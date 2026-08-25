@@ -1172,41 +1172,30 @@ add_action( 'save_post_product', 'tc_save_features_metabox' );
 
 /**
  * ============================================================
- * Checkout — RUT y documento tributario (boleta / factura)
+ * Checkout — RUT (boleta electrónica)
  * ============================================================
- * Chile exige RUT para emitir boleta o factura electrónica al SII.
- * Se agregan como campos de billing custom; "Razón social" reusa el
- * campo nativo billing_company (solo se pide/exige cuando es factura),
- * y se suma "Giro comercial" como campo nuevo.
+ * Chile exige RUT para emitir boleta electrónica al SII. Se agrega como
+ * campo de billing custom. La opción de Factura electrónica (con Razón
+ * social/Giro condicionales) se eliminó — todo pedido se procesa siempre
+ * como Boleta electrónica.
  */
 
 /**
- * Definición compartida de los 3 campos custom de billing — reusada en
- * el checkout (woocommerce_checkout_fields) Y en Mi Cuenta > Direcciones >
+ * Definición compartida del campo custom de billing — reusada en el
+ * checkout (woocommerce_checkout_fields) Y en Mi Cuenta > Direcciones >
  * Editar dirección de facturación (woocommerce_billing_fields, un filtro
  * DISTINTO — WC_Countries::get_address_fields() no pasa por
- * woocommerce_checkout_fields). Antes solo estaban en checkout, así que
- * el cliente no podía corregir su RUT/tipo de documento desde Mi Cuenta
- * sin volver a pasar por una compra. Los IDs (billing_document_type,
- * billing_rut) son los mismos en los 2 formularios, así que checkout.js
- * (toggle Factura + validación de RUT) funciona en ambos sin duplicar JS.
+ * woocommerce_checkout_fields). Antes solo estaba en checkout, así que
+ * el cliente no podía corregir su RUT desde Mi Cuenta sin volver a pasar
+ * por una compra. El ID (billing_rut) es el mismo en los 2 formularios,
+ * así que checkout.js (validación de RUT) funciona en ambos sin
+ * duplicar JS.
  */
 function tc_get_billing_extra_fields() {
-    // Prioridad 21/23: justo después de apellidos (20) para no romper el
+    // Prioridad 23: justo después de apellidos (20) para no romper el
     // emparejamiento flotante form-row-first/form-row-last de Nombre+Apellidos.
     return array(
-        'billing_document_type' => array(
-            'type'     => 'select',
-            'label'    => __( 'Tipo de documento', 'telconnect' ),
-            'options'  => array(
-                'boleta'  => __( 'Boleta electrónica', 'telconnect' ),
-                'factura' => __( 'Factura electrónica', 'telconnect' ),
-            ),
-            'required' => true,
-            'class'    => array( 'form-row-wide', 'chk-field-document-type' ),
-            'priority' => 21,
-        ),
-        'billing_rut'            => array(
+        'billing_rut' => array(
             'type'        => 'text',
             'label'       => __( 'RUT', 'telconnect' ),
             'placeholder' => '12.345.678-9',
@@ -1214,30 +1203,11 @@ function tc_get_billing_extra_fields() {
             'class'       => array( 'form-row-wide', 'chk-field-rut' ),
             'priority'    => 23,
         ),
-        'billing_giro'           => array(
-            'type'     => 'text',
-            'label'    => __( 'Giro comercial', 'telconnect' ),
-            'required' => false,
-            'class'    => array( 'form-row-wide', 'chk-field-factura' ),
-            'priority' => 33,
-        ),
     );
-}
-
-// Razón social: reusa el campo nativo billing_company, relabeled — solo
-// visible cuando se elige Factura. Misma relabel en checkout y en Mi Cuenta.
-function tc_relabel_billing_company( array $fields ) {
-    if ( isset( $fields['billing_company'] ) ) {
-        $fields['billing_company']['label']    = __( 'Razón social', 'telconnect' );
-        $fields['billing_company']['class']    = array( 'form-row-wide', 'chk-field-factura' );
-        $fields['billing_company']['priority'] = 31;
-    }
-    return $fields;
 }
 
 function tc_add_checkout_fields( $fields ) {
     $fields['billing'] = array_merge( $fields['billing'], tc_get_billing_extra_fields() );
-    $fields['billing'] = tc_relabel_billing_company( $fields['billing'] );
     return $fields;
 }
 add_filter( 'woocommerce_checkout_fields', 'tc_add_checkout_fields' );
@@ -1246,9 +1216,9 @@ add_filter( 'woocommerce_checkout_fields', 'tc_add_checkout_fields' );
  * ============================================================
  * Checkout wizard (§8.8) — reordenar/ocultar campos SOLO en checkout
  * ============================================================
- * No toca tc_get_billing_extra_fields()/tc_relabel_billing_company()
- * (esas siguen alimentando también el formulario de Mi Cuenta >
- * Direcciones, §8.5, que debe mantener su layout original) — este
+ * No toca tc_get_billing_extra_fields() (esa sigue alimentando también
+ * el formulario de Mi Cuenta > Direcciones, §8.5, que debe mantener su
+ * layout original) — este
  * filtro corre DESPUÉS de tc_add_checkout_fields() (prioridad 20 > 10)
  * y solo reacomoda lo que ya existe para el checkout.
  *
@@ -1269,12 +1239,9 @@ add_filter( 'woocommerce_checkout_fields', 'tc_add_checkout_fields' );
  *   intacto — no rompe nada porque el IVA se calcula según la
  *   dirección de SHIPPING (woocommerce_tax_based_on = shipping), no
  *   billing.
- * - Boleta/Factura (billing_document_type + Razón social/Giro) NO
- *   aparece en el Figma provisto — pero es una capacidad de negocio ya
- *   validada (§8.1, factura para empresas) que no hay motivo para
- *   eliminar solo porque el mockup no la capturó. Se mantiene, solo se
- *   le baja la prioridad visual (después del RUT). Anotado para
- *   confirmar con el cliente si el Figma la omitió a propósito.
+ * - billing_company (Razón social, antes solo visible con Factura) se
+ *   oculta ahora también, mismo criterio que el resto de la dirección de
+ *   facturación — la opción de Factura electrónica se eliminó.
  */
 function tc_reorder_billing_fields_for_checkout_wizard( $fields ) {
     $overrides = array(
@@ -1331,17 +1298,10 @@ function tc_reorder_billing_fields_for_checkout_wizard( $fields ) {
             'priority' => 45,
             'class'    => array( 'chk-field-hidden' ),
         ),
-        'billing_document_type' => array(
-            'priority' => 50,
-            'class'    => array( 'form-row-wide', 'chk-field-document-type' ),
-        ),
         'billing_company'       => array(
-            'priority' => 51,
-            'class'    => array( 'form-row-wide', 'chk-field-factura' ),
-        ),
-        'billing_giro'          => array(
-            'priority' => 52,
-            'class'    => array( 'form-row-wide', 'chk-field-factura' ),
+            'required' => false,
+            'priority' => 50,
+            'class'    => array( 'chk-field-hidden' ),
         ),
     );
 
@@ -1370,8 +1330,8 @@ add_filter( 'woocommerce_checkout_fields', 'tc_reorder_billing_fields_for_checko
  *
  * Ambos campos nuevos solo son obligatorios cuando el método de envío
  * elegido es "Despacho a domicilio" (flat_rate) — el toggle visual/
- * required lo maneja checkout.js (mismo patrón que chk-field-factura),
- * y tc_validate_shipping_fields() abajo lo refuerza server-side.
+ * required lo maneja checkout.js, y tc_validate_shipping_fields() abajo
+ * lo refuerza server-side.
  */
 function tc_add_shipping_fields_for_checkout_wizard( $fields ) {
     $fields['shipping']['shipping_rut'] = array(
@@ -1533,35 +1493,19 @@ add_action( 'woocommerce_checkout_update_order_meta', 'tc_save_shipping_fields_t
 // Mismos campos en Mi Cuenta > Direcciones > Editar dirección de facturación.
 function tc_add_account_billing_address_fields( $address_fields ) {
     $address_fields = array_merge( $address_fields, tc_get_billing_extra_fields() );
-    $address_fields = tc_relabel_billing_company( $address_fields );
     return $address_fields;
 }
 add_filter( 'woocommerce_billing_fields', 'tc_add_account_billing_address_fields' );
 
-// Validación server-side compartida: RUT bien formado, y Razón social +
-// Giro obligatorios si es factura. Se usa tanto en el checkout como al
-// guardar la dirección de facturación desde Mi Cuenta (mismos $_POST keys
-// en los 2 formularios).
+// Validación server-side: RUT bien formado. Se usa tanto en el checkout
+// como al guardar la dirección de facturación desde Mi Cuenta (mismo
+// $_POST key en los 2 formularios).
 function tc_validate_rut_and_document_fields() {
     $rut = isset( $_POST['billing_rut'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_rut'] ) ) : '';
 
     if ( $rut && class_exists( 'WoocommercePlugin\\helpers\\RutValidator' ) ) {
         if ( ! \WoocommercePlugin\helpers\RutValidator::validate( $rut ) ) {
             wc_add_notice( __( 'El RUT ingresado no es válido. Revisa el formato (ej: 12345678-9).', 'telconnect' ), 'error', array( 'id' => 'billing_rut' ) );
-        }
-    }
-
-    $document_type = isset( $_POST['billing_document_type'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_document_type'] ) ) : '';
-
-    if ( 'factura' === $document_type ) {
-        $razon_social = isset( $_POST['billing_company'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_company'] ) ) : '';
-        $giro         = isset( $_POST['billing_giro'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_giro'] ) ) : '';
-
-        if ( ! $razon_social ) {
-            wc_add_notice( __( 'La Razón social es obligatoria para emitir factura.', 'telconnect' ), 'error', array( 'id' => 'billing_company' ) );
-        }
-        if ( ! $giro ) {
-            wc_add_notice( __( 'El Giro comercial es obligatorio para emitir factura.', 'telconnect' ), 'error', array( 'id' => 'billing_giro' ) );
         }
     }
 }
@@ -1578,17 +1522,34 @@ function tc_validate_account_billing_address_fields( $user_id, $address_type ) {
 }
 add_action( 'woocommerce_after_save_address_validation', 'tc_validate_account_billing_address_fields', 10, 2 );
 
-// Guardar RUT, tipo de documento y giro en la orden (no son props nativas de WC_Order).
+// Guardar RUT y tipo de documento en la orden (no son props nativas de
+// WC_Order). El tipo de documento ya no se pide en el formulario — todo
+// pedido se procesa siempre como Boleta electrónica.
+//
+// Usa el objeto WC_Order (update_meta_data + save) en vez de
+// update_post_meta(): con HPOS activo (WooCommerce > Ajustes >
+// Avanzado > Funcionalidades) los pedidos ya NO se guardan en
+// wp_posts, sino en wp_wc_orders/wp_wc_orders_meta. update_post_meta()
+// en ese modo escribe sobre un post "placeholder" de compatibilidad
+// (post_type shop_order_placehold) que NO es el pedido real — el valor
+// nunca llegaba a la orden de verdad. billing_rut "funcionaba" antes
+// solo porque, al ser todavía un campo de checkout registrado, WC lo
+// autoguardaba por su cuenta a través del objeto de la orden; pero
+// billing_document_type ya no se postea (se eliminó el select de
+// Factura), así que este hook es la ÚNICA vía para guardarlo, y con
+// update_post_meta() se perdía en silencio. Confirmado con un pedido
+// real (#81) contra wp_wc_orders_meta.
 function tc_save_checkout_fields_to_order( $order_id ) {
+    $order = wc_get_order( $order_id );
+    if ( ! $order ) {
+        return;
+    }
+
     if ( isset( $_POST['billing_rut'] ) ) {
-        update_post_meta( $order_id, '_billing_rut', sanitize_text_field( wp_unslash( $_POST['billing_rut'] ) ) );
+        $order->update_meta_data( '_billing_rut', sanitize_text_field( wp_unslash( $_POST['billing_rut'] ) ) );
     }
-    if ( isset( $_POST['billing_document_type'] ) ) {
-        update_post_meta( $order_id, '_billing_document_type', sanitize_text_field( wp_unslash( $_POST['billing_document_type'] ) ) );
-    }
-    if ( isset( $_POST['billing_giro'] ) ) {
-        update_post_meta( $order_id, '_billing_giro', sanitize_text_field( wp_unslash( $_POST['billing_giro'] ) ) );
-    }
+    $order->update_meta_data( '_billing_document_type', 'boleta' );
+    $order->save();
 }
 add_action( 'woocommerce_checkout_update_order_meta', 'tc_save_checkout_fields_to_order' );
 
@@ -1620,21 +1581,17 @@ function tc_append_rut_to_formatted_address( $address, $raw_address, $order ) {
 }
 add_filter( 'woocommerce_order_get_formatted_billing_address', 'tc_append_rut_to_formatted_address', 10, 3 );
 
-// Mostrar RUT / tipo de documento / giro en el panel de admin del pedido.
+// Mostrar RUT / tipo de documento en el panel de admin del pedido.
 function tc_display_rut_admin_order_meta( $order ) {
     $rut           = $order->get_meta( '_billing_rut' );
     $document_type = $order->get_meta( '_billing_document_type' );
-    $giro          = $order->get_meta( '_billing_giro' );
 
-    if ( ! $rut && ! $document_type && ! $giro ) {
+    if ( ! $rut && ! $document_type ) {
         return;
     }
 
     echo '<p><strong>' . esc_html__( 'RUT:', 'telconnect' ) . '</strong> ' . esc_html( $rut ) . '</p>';
     echo '<p><strong>' . esc_html__( 'Documento:', 'telconnect' ) . '</strong> ' . esc_html( 'factura' === $document_type ? 'Factura electrónica' : 'Boleta electrónica' ) . '</p>';
-    if ( $giro ) {
-        echo '<p><strong>' . esc_html__( 'Giro:', 'telconnect' ) . '</strong> ' . esc_html( $giro ) . '</p>';
-    }
 }
 add_action( 'woocommerce_admin_order_data_after_billing_address', 'tc_display_rut_admin_order_meta' );
 
