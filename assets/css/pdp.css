@@ -615,6 +615,78 @@
     cursor: not-allowed;
 }
 
+/* ===== Aviso "agregado al carrito" (WC notices) =====
+   woocommerce_output_all_notices() imprime .woocommerce-notices-wrapper
+   en el hook woocommerce_before_single_product (content-single-product.php),
+   ANTES de que se abra <div class="pdp-page"> — no es descendiente de
+   .pdp-container, es hermano previo en el DOM. Por eso el ancho se
+   replica acá a mano (mismo padding de .pdp-page + mismo max-width/auto
+   de .pdp-container) en vez de heredarlo por nesting normal. */
+.woocommerce-notices-wrapper {
+    padding: 0 80px;
+    margin-top: 24px;
+    box-sizing: border-box;
+}
+
+.woocommerce-notices-wrapper .woocommerce-message,
+.woocommerce-notices-wrapper .woocommerce-error {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 1000px) {
+    .woocommerce-notices-wrapper {
+        padding: 0 24px;
+    }
+}
+
+.woocommerce-notices-wrapper .woocommerce-message {
+    border-top-color: #16a34a;
+}
+
+.woocommerce-notices-wrapper .woocommerce-message::before {
+    color: #16a34a;
+}
+
+.woocommerce-notices-wrapper .woocommerce-error {
+    border-top-color: #e20829;
+}
+
+.woocommerce-notices-wrapper .woocommerce-error::before {
+    color: #e20829;
+}
+
+/* Botón "Ver carrito"/"Continue shopping" dentro del aviso — el core
+   WC lo deja con su gris genérico (.button default de woocommerce.css);
+   acá se lo alinea al mismo sistema visual de .pdp-add-to-cart, en
+   versión más chica porque vive adentro de un aviso, no como CTA
+   principal. */
+.woocommerce-notices-wrapper .woocommerce-message .wc-forward,
+.woocommerce-notices-wrapper .woocommerce-error .wc-forward {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 8px 20px;
+    background: var(--color-eyebrow-blue);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: 14px;
+    line-height: 20px;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.woocommerce-notices-wrapper .woocommerce-message .wc-forward:hover,
+.woocommerce-notices-wrapper .woocommerce-error .wc-forward:hover {
+    background: var(--color-eyebrow-blue-hover);
+    color: #fff;
+}
+
 /* ===== Boleta electrónica ===== */
 .pdp-boleta {
     display: flex;

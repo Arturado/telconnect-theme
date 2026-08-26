@@ -215,7 +215,7 @@ function tc_cart_has_conflicting_signature_addon( $product_id ) {
 }
 
 function tc_signature_addon_conflict_message() {
-    return __( 'Ya tienes una Firma electrónica distinta en tu carrito. Elimínala antes de agregar otra.', 'telconnect' );
+    return __( 'Solo puedes comprar una firma electrónica y ya tienes una en tu carrito. Elimínala antes de agregar otra.', 'telconnect' );
 }
 
 /**

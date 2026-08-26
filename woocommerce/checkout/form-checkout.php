@@ -67,7 +67,6 @@ $chk_total_now = tc_get_order_summary_breakdown()['total'];
         <div class="chk-header">
             <div class="chk-title-block" data-panel="datos">
                 <h1 class="chk-title"><?php esc_html_e( 'Completa tus datos', 'telconnect' ); ?></h1>
-                <p class="chk-subtitle"><?php esc_html_e( 'Necesitamos esta información para activar tu máquina.', 'telconnect' ); ?></p>
             </div>
             <div class="chk-title-block" data-panel="pago">
                 <h1 class="chk-title"><?php esc_html_e( 'Elige cómo pagar', 'telconnect' ); ?></h1>

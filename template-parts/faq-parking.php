@@ -35,9 +35,9 @@
                 ),
             );
 
-            foreach ( $faqp_items as $item ) :
+            foreach ( $faqp_items as $i => $item ) :
                 ?>
-                <details class="faqp-item">
+                <details class="faqp-item"<?php echo 0 === $i ? ' open' : ''; ?>>
                     <summary>
                         <span class="faqp-question"><?php echo esc_html( $item['q'] ); ?></span>
                         <span class="faqp-toggle" aria-hidden="true">

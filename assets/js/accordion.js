@@ -15,8 +15,32 @@
  * y recién saca el atributo "open" cuando termina el transitionend real
  * — la animación la sigue haciendo el CSS, esto no la duplica ni la
  * reemplaza.
+ *
+ * Además, al final del archivo: acordeón exclusivo para FAQ Home y FAQ
+ * Parking (solo 1 pregunta abierta a la vez, por grupo), reusando esta
+ * misma función de cierre animado — ver comentario más abajo.
  */
 document.addEventListener('DOMContentLoaded', function () {
+    function closeAnimated(details) {
+        var panel = details.querySelector(':scope > *:not(summary)');
+
+        if (! panel || ! details.hasAttribute('open') || details.classList.contains('is-closing')) {
+            return;
+        }
+
+        details.classList.add('is-closing');
+
+        var onTransitionEnd = function (ev) {
+            if (ev.target !== panel || ev.propertyName !== 'grid-template-rows') {
+                return;
+            }
+            panel.removeEventListener('transitionend', onTransitionEnd);
+            details.classList.remove('is-closing');
+            details.removeAttribute('open');
+        };
+        panel.addEventListener('transitionend', onTransitionEnd);
+    }
+
     document.querySelectorAll('details').forEach(function (details) {
         var summary = details.querySelector(':scope > summary');
         var panel = details.querySelector(':scope > *:not(summary)');
@@ -29,17 +53,36 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             e.preventDefault();
-            details.classList.add('is-closing');
+            closeAnimated(details);
+        });
+    });
 
-            var onTransitionEnd = function (ev) {
-                if (ev.target !== panel || ev.propertyName !== 'grid-template-rows') {
-                    return;
-                }
-                panel.removeEventListener('transitionend', onTransitionEnd);
-                details.classList.remove('is-closing');
-                details.removeAttribute('open');
-            };
-            panel.addEventListener('transitionend', onTransitionEnd);
+    /**
+     * Acordeón exclusivo (FAQ Home .faq-list y FAQ Parking .faqp-list):
+     * al abrir una pregunta, cierra con la MISMA animación la que
+     * estuviera abierta en el mismo grupo. No se usa el atributo nativo
+     * `name` para esto: el navegador cerraría el <details> hermano de
+     * forma síncrona (mismo bug que closeAnimated existe para arreglar
+     * arriba — el contenido se iría a display:none antes de que la
+     * transición corra), así que la exclusividad se orquesta acá con el
+     * mismo mecanismo que ya usa el cierre manual. Cada .faq-list /
+     * .faqp-list es su propio grupo independiente entre sí. No toca
+     * .func-accordion (Funcionalidades de Parking), que no matchea
+     * ninguno de estos dos selectores y tiene su propia lógica por grupo.
+     */
+    document.querySelectorAll('.faq-list, .faqp-list').forEach(function (group) {
+        var items = group.querySelectorAll(':scope > details');
+
+        items.forEach(function (details) {
+            details.addEventListener('toggle', function () {
+                if (! details.open) return;
+
+                items.forEach(function (other) {
+                    if (other !== details && other.hasAttribute('open')) {
+                        closeAnimated(other);
+                    }
+                });
+            });
         });
     });
 });
