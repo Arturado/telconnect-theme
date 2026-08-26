@@ -22,7 +22,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           local-dir: ./
-          server-dir: /public_html/qaweb.telconnect.cl/wp-content/themes/telconnect/
+          server-dir: /public_html/
           exclude: |
             **/.git*
             **/.git*/**
