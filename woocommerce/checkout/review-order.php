@@ -119,6 +119,13 @@ if ( ! $chk_is_pickup ) {
         <?php endif; ?>
     </div>
 
+    <?php
+    // Cupón (§ ver remove_action en functions.php): va acá, después de
+    // la línea IVA y antes del Total, no en el hook nativo
+    // woocommerce_before_checkout_form.
+    woocommerce_checkout_coupon_form();
+    ?>
+
     <?php do_action( 'woocommerce_review_order_after_cart_contents' ); ?>
 
     <?php do_action( 'woocommerce_review_order_before_order_total' ); ?>

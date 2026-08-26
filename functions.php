@@ -577,6 +577,30 @@ function tc_translate_proceed_to_checkout_text( $translated, $original, $domain 
 add_filter( 'gettext', 'tc_translate_proceed_to_checkout_text', 10, 3 );
 
 /**
+ * Cupón del checkout: se saca del hook nativo woocommerce_before_checkout_form
+ * (tope de /finalizar-compra/, ver wc-template-hooks.php del core) porque
+ * el diseño lo quiere DENTRO de "Resumen de tu compra", después de la
+ * línea IVA — se llama a mano en review-order.php en vez de dejarlo colgado
+ * de este hook.
+ *
+ * OJO con el override de woocommerce/checkout/form-coupon.php (deliberadamente
+ * NO usa la clase "checkout_coupon" del core): WC_AJAX::update_order_review()
+ * reemplaza TODO el contenido de .woocommerce-checkout-review-order-table
+ * (todo review-order.php, ver su docblock) con $(selector).replaceWith(html)
+ * en cada recálculo — eso destruye cualquier listener atado directo a un
+ * nodo (como el $('form.checkout_coupon').on('submit', ...) que arma
+ * wc_checkout_coupons.init() en el checkout.js del core, una sola vez, al
+ * cargar la página). Si el form conservara esa clase iba a dejar de
+ * responder al segundo cambio de método de envío/comuna en adelante (el
+ * primer submit funciona porque el nodo original nunca se tocó). La clase
+ * propia + un listener delegado en document (assets/js/checkout.js,
+ * initCheckoutCouponForm()) esquiva el problema: la delegación no depende
+ * de qué nodo específico exista, sobrevive a cualquier cantidad de
+ * reemplazos del fragment.
+ */
+remove_action( 'woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_form', 10 );
+
+/**
  * Checkout wizard (§8.8): la card "Despacho" reemplaza el concepto de
  * "¿Enviar a una dirección distinta?" del core — acá SIEMPRE se
  * recolecta una dirección de envío propia (shipping_*), sea para
@@ -612,7 +636,6 @@ function telconnect_setup() {
     add_theme_support( 'post-thumbnails' );
     add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption' ) );
     add_theme_support( 'woocommerce' );
-    add_theme_support( 'wc-product-gallery-zoom' );
     add_theme_support( 'wc-product-gallery-lightbox' );
     add_theme_support( 'wc-product-gallery-slider' );
 

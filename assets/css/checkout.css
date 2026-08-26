@@ -213,14 +213,38 @@
     border-color: var(--color-eyebrow-blue);
 }
 
-/* Formulario de cupón del checkout (template nativo de WC, sin override
-   de theme — el core no le pone ninguna clase propia de estilo, así que
-   sin esto el input/botón se veían con el look default del navegador).
-   Mismo tratamiento que .crt-coupon-toggle .coupon .input-text/button.button
-   en cart.css (la fuente de verdad del proyecto para inputs de texto). */
-.chk-container .checkout_coupon input.input-text {
+/* Cupón dentro de "Resumen de tu compra" (después de la línea IVA, ver
+   review-order.php/form-coupon.php override — ya NO es el
+   .checkout_coupon del core, ver docblock del remove_action en
+   functions.php sobre por qué se renombró a .tc-chk-coupon-form).
+   Mismo tratamiento visual que .crt-coupon-toggle .coupon
+   .input-text/button.button en cart.css (fuente de verdad del proyecto
+   para inputs de texto). */
+.chk-summary-coupon {
+    padding-bottom: 18px;
+}
+
+.chk-summary-coupon-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: var(--weight-regular);
+    color: #848484;
+    margin-bottom: 8px;
+}
+
+.chk-summary-coupon-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.chk-summary-coupon-row .input-text {
     box-sizing: border-box;
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     font-family: var(--font-body);
     font-size: var(--text-body);
     color: #0D0F15;
@@ -231,15 +255,18 @@
     transition: border-color 0.2s ease;
 }
 
-.chk-container .checkout_coupon input.input-text:focus {
+.chk-summary-coupon-row .input-text:focus {
     outline: none;
     border-color: var(--color-eyebrow-blue);
 }
 
 /* Botón azul sólido — mismo criterio que .crt-coupon-toggle button.button
-   en cart.css (actualizado en la misma sesión, ver CONTEXT.md) para que
-   el botón "Aplicar cupón" se vea igual en carrito y checkout. */
-.chk-container .checkout_coupon button.button {
+   en cart.css para que el botón "Aplicar cupón" se vea igual en carrito
+   y checkout. color:#fff explícito en :hover por el mismo bug de
+   especificidad ya documentado ahí y en pdp.css (la regla core
+   .woocommerce button.button:hover empata en specificidad y puede
+   ganar por orden de carga). */
+.chk-summary-coupon-row button.button {
     font-family: var(--font-body);
     font-weight: var(--weight-medium);
     font-size: var(--text-body);
@@ -252,8 +279,9 @@
     transition: background 0.2s ease;
 }
 
-.chk-container .checkout_coupon button.button:hover {
+.chk-summary-coupon .chk-summary-coupon-row button.button:hover {
     background: var(--color-eyebrow-blue-hover);
+    color: #fff;
 }
 
 /* ===== Grid principal ===== */
@@ -1377,20 +1405,6 @@
     margin-top: 4px;
 }
 
-.chk-ty-link {
-    margin-left: auto;
-    font-family: var(--font-body);
-    font-size: 15px;
-    line-height: 20px;
-    font-weight: var(--weight-medium);
-    color: var(--color-eyebrow-blue);
-    text-decoration: none;
-}
-
-.chk-ty-link:hover {
-    color: var(--color-eyebrow-blue-hover);
-}
-
 /* ===== "Resumen del pedido": lista de productos con foto ===== */
 .chk-ty-products {
     list-style: none;
@@ -1459,9 +1473,21 @@
     white-space: nowrap;
 }
 
-/* ===== Estados simples (fallido / cancelado / sin pedido) — card centrada ===== */
-.chk-thankyou-container {
+/* ===== Estados simples (fallido / cancelado / sin pedido / receipt) —
+   card centrada =====
+   Bug real: esto vivía en .chk-thankyou-container (el MISMO div que
+   .chk-container, ver thankyou.php/order-receipt.php), así que el
+   max-width:640px se aplicaba también al estado de ÉXITO (chk-ty-hero +
+   chk-grid.chk-ty-grid), angostando el grid muy por debajo del ancho de
+   1280px del hero — el grid quedaba más angosto/descentrado respecto al
+   hero de arriba, que sí usa el max-width:1280px de .chk-container sin
+   pisar. Se mueve el límite de 640px a la card en sí (solo la usan los
+   estados simples) para que el estado de éxito use el mismo ancho de
+   1280px que el hero en ambos. */
+.chk-thankyou-container .chk-thankyou-card {
     max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .chk-thankyou-card {
@@ -1632,6 +1658,11 @@
    con reglas float+width% del core (mismo bug ya documentado 2 veces,
    §10 CONTEXT.md: PDP §8.4, Mi Cuenta §8.5). ===== */
 .chk-thankyou-native {
+    /* Vista de resumen nativa de WC (tabla de detalle + direcciones)
+       duplicada con la card "Resumen del pedido" (.chk-ty-grid) de
+       arriba — se mantiene en el PHP (do_action de WooCommerce/gateway,
+       ver docblock de thankyou.php) solo oculta visualmente. */
+    display: none;
     max-width: 1280px;
     margin: 40px auto 0;
     padding-top: 32px;
@@ -1812,14 +1843,6 @@
     .chk-ty-actions {
         flex-wrap: wrap;
     }
-
-    .chk-ty-link {
-        margin-left: 0;
-        width: 100%;
-        text-align: center;
-        order: 3;
-        margin-top: 4px;
-    }
 }
 
 @media (max-width: 700px) {
@@ -1842,14 +1865,9 @@
         align-items: stretch;
     }
 
-    .chk-ty-actions .chk-btn-primary,
-    .chk-ty-actions .chk-btn-secondary {
+    .chk-ty-actions .chk-btn-primary {
         width: 100%;
         text-align: center;
-    }
-
-    .chk-ty-link {
-        order: 3;
     }
 
     .chk-thankyou-card {

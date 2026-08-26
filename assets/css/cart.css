@@ -581,8 +581,14 @@
     transition: background 0.2s ease;
 }
 
-.crt-coupon-toggle button.button:hover {
+/* Bug de especificidad (mismo patrón que pdp.css §hover del CTA de PDP):
+   la regla core `.woocommerce button.button:hover` tiene specificidad
+   (0,3,1) igual que este selector y gana por orden de carga, pintando
+   el texto gris (#515151) en vez de blanco. Se suma `.coupon` como 4ta
+   clase para ganar sin ambigüedad y se fija color:#fff explícito. */
+.crt-coupon-toggle .coupon button.button:hover {
     background: var(--color-eyebrow-blue-hover);
+    color: #fff;
 }
 
 /* Botón "Actualizar carrito" nativo — solo existe como submitter del

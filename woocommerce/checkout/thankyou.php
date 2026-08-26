@@ -128,16 +128,8 @@ $chk_ty_summary = ( $order && ! $order->has_status( array( 'failed', 'cancelled'
                         </div>
 
                         <div class="chk-ty-actions">
-                            <a href="<?php echo esc_url( wc_get_endpoint_url( 'orders', '', wc_get_page_permalink( 'myaccount' ) ) ); ?>" class="chk-btn-primary"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Ir a mis pedidos', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Ir a mis pedidos', 'telconnect' ); ?></span></span></a>
-                            <?php
-                            /**
-                             * Sin definir aún cómo se genera la boleta real (§CONTEXT) —
-                             * href="#" a propósito, no conectar a nada hasta que el
-                             * usuario defina el mecanismo.
-                             */
-                            ?>
-                            <a href="#" class="chk-btn-secondary"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Descargar boleta', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Descargar boleta', 'telconnect' ); ?></span></span></a>
-                            <a href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>" class="chk-ty-link"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Seguir comprando', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Seguir comprando', 'telconnect' ); ?></span></span></a>
+                            <?php // "Ir a mis pedidos" y "Descargar boleta" se sacaron a pedido del usuario — queda solo "Seguir Comprando" con el mismo estilo azul que tenía "Ir a mis pedidos". ?>
+                            <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="chk-btn-primary"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Seguir Comprando', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Seguir Comprando', 'telconnect' ); ?></span></span></a>
                         </div>
                     </div>
 

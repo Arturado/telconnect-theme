@@ -494,6 +494,125 @@
         }
     }
 
+    /**
+     * ============================================================
+     * Cupón del resumen (§8.8, ver docblocks en functions.php y
+     * woocommerce/checkout/form-coupon.php)
+     * ============================================================
+     * El bloque vive dentro de review-order.php, que WC_AJAX::update_order_review()
+     * reemplaza ENTERO ($(selector).replaceWith(html)) en cada recálculo
+     * (cambio de método de envío, comuna, o el propio envío de este
+     * cupón). Por eso el envío no puede atarse directo al nodo como
+     * hace wc_checkout_coupons.init() del core (ese binding se pierde
+     * apenas el nodo original se reemplaza) — se delega en document,
+     * que no le importa si el nodo es el original o uno recién salido
+     * del fragment nuevo. La clase es .tc-chk-coupon-form (NO
+     * .checkout_coupon) justamente para que el core no le ponga
+     * display:none ni se pise con este listener.
+     *
+     * .tc-chk-coupon-form es un <div>, NO un <form> (ver docblock de
+     * form-coupon.php): este bloque vive DENTRO de <form class="checkout">,
+     * y un <form> anidado ahí rompe el submit real en un click de
+     * verdad — el evento 'submit' hace bubble y pasa primero por el
+     * <form class="checkout"> ancestro, donde el propio wc_checkout_form
+     * del core lo intercepta antes de que llegue al listener delegado
+     * en document, y termina en un POST nativo de página completa (bug
+     * real confirmado con Chrome: un $form.trigger('submit') sintético
+     * sí llegaba al listener, pero un click real del usuario no). Por
+     * eso acá se dispara a mano por click en el botón o Enter en el
+     * input, nunca por el evento 'submit' del navegador.
+     *
+     * Se reimplementa a mano la misma llamada que wc_checkout_coupons.submit()
+     * del core (wc-ajax=apply_coupon con el nonce apply_coupon_nonce ya
+     * localizado por WC en wc_checkout_params), pero simplificada: acá
+     * el campo se deja siempre visible (no hay panel que abrir/cerrar),
+     * así que no hace falta el slideUp/slideToggle del core. El HTML
+     * que devuelve el endpoint (wc_print_notices()) se inserta tal cual
+     * antes del bloque — mismo notice box .woocommerce-error/-message
+     * que el resto del checkout (checkout.css ya lo estiliza), tanto
+     * para cupón válido como inválido/expirado.
+     */
+    function initCheckoutCouponForm() {
+        if (!window.jQuery || typeof wc_checkout_params === 'undefined') {
+            return;
+        }
+
+        var $ = window.jQuery;
+
+        function submitCoupon($form) {
+            if ($form.hasClass('processing')) {
+                return;
+            }
+
+            var $couponField = $form.find('#coupon_code');
+            var couponCode = $couponField.val();
+
+            if (!couponCode) {
+                return;
+            }
+
+            $form.addClass('processing').block({
+                message: null,
+                overlayCSS: { background: '#fff', opacity: 0.6 }
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: wc_checkout_params.wc_ajax_url.toString().replace('%%endpoint%%', 'apply_coupon'),
+                data: {
+                    security: wc_checkout_params.apply_coupon_nonce,
+                    coupon_code: couponCode,
+                    billing_email: $('#billing_email').val()
+                },
+                dataType: 'html',
+                success: function (response) {
+                    $('.woocommerce-error, .woocommerce-message, .is-error, .is-success').remove();
+                    $form.removeClass('processing').unblock();
+
+                    if (!response) {
+                        return;
+                    }
+
+                    $form.before(response);
+
+                    // update_checkout reemplaza TODO .woocommerce-checkout-review-order-table
+                    // (ver docblock de más arriba), incluyendo el aviso que se
+                    // acaba de insertar acá arriba — si se dispara también en
+                    // el caso de error, el "cupón inválido/expirado" desaparece
+                    // solo, antes de que el comprador alcance a leerlo. Por eso
+                    // solo se recalcula el total cuando el cupón SÍ se aplicó
+                    // (mismo indicador que usa el core: ausencia de
+                    // woocommerce-error/is-error en la respuesta) — la línea de
+                    // descuento que aparece en el resumen tras el recálculo ya
+                    // es la confirmación visual que persiste.
+                    var isError = response.indexOf('woocommerce-error') !== -1 || response.indexOf('is-error') !== -1;
+                    if (isError) {
+                        return;
+                    }
+
+                    $couponField.val('');
+                    $(document.body).trigger('applied_coupon_in_checkout', [couponCode]);
+                    $(document.body).trigger('update_checkout', { update_shipping_method: false });
+                },
+                error: function () {
+                    $form.removeClass('processing').unblock();
+                }
+            });
+        }
+
+        $(document).on('click', '.tc-chk-coupon-submit', function (evt) {
+            evt.preventDefault();
+            submitCoupon($(this).closest('.tc-chk-coupon-form'));
+        });
+
+        $(document).on('keydown', '.tc-chk-coupon-form #coupon_code', function (evt) {
+            if (evt.which === 13 || evt.key === 'Enter') {
+                evt.preventDefault();
+                submitCoupon($(this).closest('.tc-chk-coupon-form'));
+            }
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         initRutField('billing_rut');
         initRutField('shipping_rut');
@@ -501,6 +620,7 @@
         initShippingToggle();
         initPaymentToggle();
         initWizard();
+        initCheckoutCouponForm();
 
         // Ver docblock de initPaymentToggle(): reatar tras cada refresh de
         // fragment de WooCommerce, mismo gancho que syncProxyLabel.
