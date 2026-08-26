@@ -14,11 +14,10 @@
  * dejan de usar acá (woocommerce_after_cart_item_name, etc.) más allá
  * de lo que ya hacía el propio WooCommerce core.
  *
- * Ítems anidados (addon "Firma electrónica"): un cart item con
- * 'tc_parent_cart_item_key' (ver tc_maybe_add_signature_addon() en
- * functions.php) NO se renderiza como fila propia — tc_get_top_level_cart_items()
- * ya lo excluye — se dibuja dentro de la fila de su producto padre
- * (ver tc_get_cart_children_map()).
+ * Addon "Firma electrónica" (ver tc_maybe_add_signature_addon() en
+ * functions.php): es un producto normal e independiente del carrito,
+ * sin relación con el producto que lo originó — se renderiza con el
+ * mismo loop que cualquier otro ítem, su propia fila.
  *
  * Nota sobre `woocommerce_cart_collaterals`: el core registra
  * `woocommerce_cross_sell_display` y `woocommerce_cart_totals` como
@@ -34,9 +33,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$crt_top_level_items = tc_get_top_level_cart_items();
-$crt_children_map    = tc_get_cart_children_map();
-$crt_product_count   = count( $crt_top_level_items );
+$crt_cart_items     = WC()->cart->get_cart();
+$crt_product_count  = count( $crt_cart_items );
 ?>
 
 <div class="crt-page">
@@ -94,7 +92,7 @@ $crt_product_count   = count( $crt_top_level_items );
                         <?php do_action( 'woocommerce_before_cart_contents' ); ?>
 
                         <?php
-                        foreach ( $crt_top_level_items as $cart_item_key => $cart_item ) {
+                        foreach ( $crt_cart_items as $cart_item_key => $cart_item ) {
                             $_product   = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
                             $product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
                             $visible    = apply_filters( 'woocommerce_cart_item_visible', true, $cart_item, $cart_item_key );
@@ -105,7 +103,6 @@ $crt_product_count   = count( $crt_top_level_items );
 
                             $product_name      = apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key );
                             $product_permalink = apply_filters( 'woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink( $cart_item ) : '', $cart_item, $cart_item_key );
-                            $child_keys        = isset( $crt_children_map[ $cart_item_key ] ) ? $crt_children_map[ $cart_item_key ] : array();
                             ?>
                             <div class="crt-item <?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
 
@@ -141,46 +138,6 @@ $crt_product_count   = count( $crt_top_level_items );
                                     <?php if ( $_product->backorders_require_notification() && $_product->is_on_backorder( $cart_item['quantity'] ) ) : ?>
                                         <p class="backorder_notification"><?php esc_html_e( 'Available on backorder', 'woocommerce' ); ?></p>
                                     <?php endif; ?>
-
-                                    <?php foreach ( $child_keys as $child_key ) :
-                                        $child_item    = WC()->cart->get_cart_item( $child_key );
-                                        $child_product = $child_item ? $child_item['data'] : null;
-                                        if ( ! $child_product instanceof WC_Product ) {
-                                            continue;
-                                        }
-                                        ?>
-                                        <div class="crt-item-addon">
-                                            <span class="crt-item-addon-icon">
-                                                <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/icons/receipt-lines.svg' ); ?>" alt="">
-                                            </span>
-                                            <span class="crt-item-addon-label"><?php echo esc_html( $child_product->get_name() ); ?></span>
-                                            <span class="crt-item-addon-price"><?php echo wp_kses_post( WC()->cart->get_product_price( $child_product ) ); ?></span>
-                                            <?php
-                                            /**
-                                             * Botón "Eliminar" propio del addon — mismo componente visual que
-                                             * .crt-item-remove (ícono + texto), pero elimina SOLO este cart
-                                             * item hijo (relación unidireccional: eliminar el padre se lleva
-                                             * al hijo vía tc_remove_signature_addon_children() en functions.php,
-                                             * pero eliminar el hijo nunca toca al padre).
-                                             */
-                                            echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                                                'woocommerce_cart_item_remove_link',
-                                                sprintf(
-                                                    '<a role="button" href="%s" class="crt-item-remove crt-item-addon-remove" aria-label="%s" data-product_id="%s" data-product_sku="%s"><img src="%s" alt=""><span class="btn-label-mask"><span class="btn-label">%s</span><span class="btn-label-ghost" aria-hidden="true">%s</span></span></a>',
-                                                    esc_url( wc_get_cart_remove_url( $child_key ) ),
-                                                    /* translators: %s is the product name */
-                                                    esc_attr( sprintf( __( 'Remove %s from cart', 'woocommerce' ), wp_strip_all_tags( $child_product->get_name() ) ) ),
-                                                    esc_attr( $child_product->get_id() ),
-                                                    esc_attr( $child_product->get_sku() ),
-                                                    esc_url( get_template_directory_uri() . '/assets/img/icons/trash-01.svg' ),
-                                                    esc_html__( 'Eliminar', 'telconnect' ),
-                                                    esc_html__( 'Eliminar', 'telconnect' )
-                                                ),
-                                                $child_key
-                                            );
-                                            ?>
-                                        </div>
-                                    <?php endforeach; ?>
                                 </div>
 
                                 <div class="crt-item-control">
@@ -190,6 +147,19 @@ $crt_product_count   = count( $crt_top_level_items );
                                     </div>
 
                                     <?php
+                                    /**
+                                     * Nota firma electrónica: NO se fuerza min=max=1 acá aunque la
+                                     * regla de negocio sea "máx. 1 firma en el carrito". WC renderiza
+                                     * el input como type="hidden" (sin valor visible) apenas
+                                     * min_value === max_value (ver wc_get_quantity_input_args() en
+                                     * woocommerce/includes/wc-template-functions.php) — eso dejaba el
+                                     * stepper en blanco y bloqueaba el "+" en silencio, sin aviso. Se
+                                     * deja la cantidad como un producto normal (visible, editable) y
+                                     * el tope real de 1 lo aplica tc_validate_signature_addon_cart_quantity()
+                                     * en functions.php: al intentar subir a 2+, el auto-submit de
+                                     * cart.js dispara el update, el filtro lo rechaza y se muestra el
+                                     * aviso "Solo puedes comprar una firma electrónica...".
+                                     */
                                     if ( $_product->is_sold_individually() ) {
                                         $min_quantity = 1;
                                         $max_quantity = 1;

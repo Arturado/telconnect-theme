@@ -241,6 +241,28 @@ function tc_validate_signature_addon_cart_limit( $passed, $product_id ) {
 add_filter( 'woocommerce_add_to_cart_validation', 'tc_validate_signature_addon_cart_limit', 10, 2 );
 
 /**
+ * Tope de cantidad = 1 para un ítem de firma electrónica ya en el
+ * carrito — misma regla de negocio de tc_validate_signature_addon_cart_limit(),
+ * pero para el flujo de actualizar cantidades del carrito (stepper +/-
+ * de cart.php), que WC dispara vía 'woocommerce_update_cart_validation'
+ * (WC_Form_Handler::update_cart_action() → WC_Cart::set_quantity()) y
+ * NO pasa por 'woocommerce_add_to_cart_validation'.
+ */
+function tc_validate_signature_addon_cart_quantity( $passed, $cart_item_key, $values, $quantity ) {
+    if ( ! $passed ) {
+        return $passed;
+    }
+
+    if ( tc_product_is_signature_addon( $values['product_id'] ) && $quantity > 1 ) {
+        wc_add_notice( tc_signature_addon_conflict_message(), 'error' );
+        return false;
+    }
+
+    return $passed;
+}
+add_filter( 'woocommerce_update_cart_validation', 'tc_validate_signature_addon_cart_quantity', 10, 4 );
+
+/**
  * Camino 2 (el flujo normal): si el comprador eligió un addon de firma
  * electrónica en el <select> de la PDP de una máquina, lo agrega como
  * un segundo ítem al carrito en el mismo request que agrega el
@@ -253,14 +275,9 @@ add_filter( 'woocommerce_add_to_cart_validation', 'tc_validate_signature_addon_c
  * que repetir el mismo chequeo de tc_validate_signature_addon_cart_limit()
  * a mano, antes de la llamada directa.
  *
- * El addon se taguea con el cart item data 'tc_parent_cart_item_key'
- * (la key del producto principal recién agregado) para que el template
- * del carrito lo pueda detectar y renderizarlo anidado bajo su producto
- * padre en vez de como fila independiente — ver tc_get_cart_children_map()
- * y woocommerce/cart/cart.php. La key no se muestra en el carrito
- * (wc_get_formatted_cart_item_data() solo imprime lo que el filtro
- * woocommerce_get_item_data agregue explícitamente, así que un cart_item_data
- * custom sin ese filtro queda invisible por defecto).
+ * El addon queda como un cart item normal e independiente — su propia
+ * fila en el carrito, igual que cualquier otro producto (sin cart_item_data
+ * ni relación con el producto principal que lo originó).
  */
 function tc_maybe_add_signature_addon( $cart_item_key, $product_id, $quantity ) {
     if ( empty( $_POST['tc_addon_signature'] ) ) {
@@ -286,104 +303,31 @@ function tc_maybe_add_signature_addon( $cart_item_key, $product_id, $quantity ) 
     // Evita loop infinito: este hook no debe reaccionar a la propia
     // llamada de abajo que agrega el addon.
     remove_action( 'woocommerce_add_to_cart', 'tc_maybe_add_signature_addon', 10 );
-    WC()->cart->add_to_cart(
-        $addon_id,
-        1,
-        0,
-        array(),
-        array( 'tc_parent_cart_item_key' => $cart_item_key )
-    );
+    WC()->cart->add_to_cart( $addon_id, 1 );
     add_action( 'woocommerce_add_to_cart', 'tc_maybe_add_signature_addon', 10, 3 );
 }
 add_action( 'woocommerce_add_to_cart', 'tc_maybe_add_signature_addon', 10, 3 );
 
 /**
- * Mapa parent_key => array de child cart_item_keys, para los addons de
- * firma electrónica anidados. Un item se considera "hijo" solo si su
- * 'tc_parent_cart_item_key' apunta a otro item que sigue existiendo en
- * el carrito — si el padre fue eliminado, el addon queda huérfano y se
- * trata como top-level (fallback razonable: WooCommerce no borra en
- * cascada los cart items relacionados, así que igual debe poder verse
- * y eliminarse por su cuenta).
- */
-function tc_get_cart_children_map() {
-    $cart = WC()->cart->get_cart();
-    $map  = array();
-
-    foreach ( $cart as $key => $item ) {
-        if ( empty( $item['tc_parent_cart_item_key'] ) ) {
-            continue;
-        }
-        $parent_key = $item['tc_parent_cart_item_key'];
-        if ( ! isset( $cart[ $parent_key ] ) ) {
-            continue; // padre eliminado: el addon se trata como top-level.
-        }
-        $map[ $parent_key ][] = $key;
-    }
-
-    return $map;
-}
-
-/**
- * Eliminación en cascada: si se elimina del carrito un cart item que
- * tiene un addon de firma electrónica vinculado (via
- * 'tc_parent_cart_item_key'), el addon se elimina en el mismo momento
- * — relación unidireccional, eliminar el hijo (el botón propio de
- * .crt-item-addon-remove en cart.php) nunca dispara esto para el padre.
- *
- * Se lee $cart->get_cart() (no tc_get_cart_children_map(), que ya
- * asume que el padre sigue en el carrito) porque en este momento el
- * padre YA fue eliminado de $cart->cart_contents (WC_Cart::remove_cart_item()
- * hace unset() antes de disparar este hook) — se busca directo cualquier
- * item cuyo tc_parent_cart_item_key sea la key que se acaba de eliminar.
- */
-function tc_remove_signature_addon_children( $cart_item_key, $cart ) {
-    foreach ( $cart->get_cart() as $key => $item ) {
-        if ( ! empty( $item['tc_parent_cart_item_key'] ) && $item['tc_parent_cart_item_key'] === $cart_item_key ) {
-            $cart->remove_cart_item( $key );
-        }
-    }
-}
-add_action( 'woocommerce_cart_item_removed', 'tc_remove_signature_addon_children', 10, 2 );
-
-/**
- * Cart items "top-level" — excluye los addons de firma electrónica que
- * tienen un padre válido todavía presente en el carrito (esos se
- * renderizan anidados, no como fila propia). Es el mismo criterio que
- * define "N productos" en el header y "Productos (N)" del resumen.
- */
-function tc_get_top_level_cart_items() {
-    $cart       = WC()->cart->get_cart();
-    $children   = tc_get_cart_children_map();
-    $child_keys = array();
-    foreach ( $children as $keys ) {
-        $child_keys = array_merge( $child_keys, $keys );
-    }
-
-    $top_level = array();
-    foreach ( $cart as $key => $item ) {
-        if ( in_array( $key, $child_keys, true ) ) {
-            continue;
-        }
-        $top_level[ $key ] = $item;
-    }
-
-    return $top_level;
-}
-
-/**
- * Desglose fiscal del pedido (Productos/Firma electrónica/Despacho/Neto/
- * IVA/Total) — extraído de cart-totals.php (v2, §8.7) para reusarlo tal
- * cual en review-order.php del checkout (wizard de 2 pasos, §8.8). Nada
- * de aritmética propia de precios: todo sale de WC()->cart / WC_Tax, así
+ * Desglose fiscal del pedido (Productos/Despacho/Neto/IVA/Total) —
+ * extraído de cart-totals.php (v2, §8.7) para reusarlo tal cual en
+ * review-order.php del checkout (wizard de 2 pasos, §8.8). Nada de
+ * aritmética propia de precios: todo sale de WC()->cart / WC_Tax, así
  * que carrito y checkout siempre muestran el mismo cálculo real (con IVA
  * activado, ver §8.7) sin duplicar lógica entre los 2 templates.
+ *
+ * La Firma Electrónica es un producto normal e independiente del
+ * carrito (ver tc_maybe_add_signature_addon()), así que entra en
+ * $products_count/$products_subtotal como cualquier otro ítem — no
+ * tiene línea propia en el resumen. $addon_label/$addon_subtotal se
+ * mantienen en el array (siempre vacío/0) para no romper los templates
+ * que ya los consumen condicionalmente.
  *
  * @return array {
  *     @type int         $products_count
  *     @type float        $products_subtotal
- *     @type string        $addon_label      Vacío si no hay addons en el carrito.
- *     @type float        $addon_subtotal
+ *     @type string        $addon_label      Siempre vacío.
+ *     @type float        $addon_subtotal    Siempre 0.
  *     @type string|null  $shipping_label    Null si no aplica envío.
  *     @type string|null  $shipping_html     HTML ya formateado ("Gratis" o wc_price()).
  *     @type float|null   $shipping_cost
@@ -394,47 +338,17 @@ function tc_get_top_level_cart_items() {
  * }
  */
 function tc_get_order_summary_breakdown() {
-    $top_level_items = tc_get_top_level_cart_items();
-    $children_map     = tc_get_cart_children_map();
-    $cart             = WC()->cart->get_cart();
+    $cart_items = WC()->cart->get_cart();
 
-    // ----- Productos (top-level, excluye addons anidados) -----
-    $products_count    = count( $top_level_items );
+    // ----- Productos: todos los ítems del carrito, la Firma Electrónica incluida -----
+    $products_count    = count( $cart_items );
     $products_subtotal = 0;
-    foreach ( $top_level_items as $item ) {
+    foreach ( $cart_items as $item ) {
         $products_subtotal += (float) $item['line_subtotal'];
-    }
-
-    // ----- Addons de firma electrónica (líneas hijas) -----
-    $addon_keys = array();
-    foreach ( $children_map as $keys ) {
-        $addon_keys = array_merge( $addon_keys, $keys );
     }
 
     $addon_subtotal = 0;
     $addon_label    = '';
-    if ( ! empty( $addon_keys ) ) {
-        $addon_names = array();
-        foreach ( $addon_keys as $addon_key ) {
-            if ( ! isset( $cart[ $addon_key ] ) ) {
-                continue;
-            }
-            $addon_subtotal += (float) $cart[ $addon_key ]['line_subtotal'];
-            $addon_names[]   = $cart[ $addon_key ]['data']->get_name();
-        }
-        $addon_names = array_unique( $addon_names );
-        // Un solo tipo de addon en el carrito (el caso normal): se usa su
-        // nombre real de producto. Si hubiera más de un tipo, se agrupan
-        // bajo una etiqueta genérica con el conteo, mismo criterio que
-        // "Productos (N)".
-        $addon_label = ( 1 === count( $addon_names ) )
-            ? $addon_names[0]
-            : sprintf(
-                /* translators: %d es la cantidad de addons de firma electrónica distintos en el carrito */
-                esc_html__( 'Firma electrónica (%d)', 'telconnect' ),
-                count( $addon_names )
-            );
-    }
 
     // ----- Despacho: método real elegido/disponible, sin hardcodear -----
     $shipping_label     = null;
