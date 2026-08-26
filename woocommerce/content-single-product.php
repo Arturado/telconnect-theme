@@ -57,7 +57,7 @@ $primary_cat = ( $terms && ! is_wp_error( $terms ) ) ? reset( $terms ) : null;
             <a href="<?php echo esc_url( home_url() ); ?>">Inicio</a>
             <span class="pdp-breadcrumb-sep" aria-hidden="true"></span>
             <?php if ( $primary_cat ) : ?>
-                <a href="<?php echo esc_url( get_term_link( $primary_cat ) ); ?>"><?php echo esc_html( $primary_cat->name ); ?></a>
+                <span class="pdp-breadcrumb-cat"><?php echo esc_html( $primary_cat->name ); ?></span>
                 <span class="pdp-breadcrumb-sep" aria-hidden="true"></span>
             <?php endif; ?>
             <span class="pdp-breadcrumb-current"><?php the_title(); ?></span>

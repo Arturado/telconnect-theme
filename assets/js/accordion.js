@@ -16,9 +16,10 @@
  * — la animación la sigue haciendo el CSS, esto no la duplica ni la
  * reemplaza.
  *
- * Además, al final del archivo: acordeón exclusivo para FAQ Home y FAQ
- * Parking (solo 1 pregunta abierta a la vez, por grupo), reusando esta
- * misma función de cierre animado — ver comentario más abajo.
+ * Además, al final del archivo: acordeón exclusivo para FAQ Home, FAQ
+ * Parking y Funcionalidades Parking (solo 1 pregunta abierta a la vez,
+ * por grupo), reusando esta misma función de cierre animado — ver
+ * comentario más abajo.
  */
 document.addEventListener('DOMContentLoaded', function () {
     function closeAnimated(details) {
@@ -58,19 +59,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /**
-     * Acordeón exclusivo (FAQ Home .faq-list y FAQ Parking .faqp-list):
-     * al abrir una pregunta, cierra con la MISMA animación la que
-     * estuviera abierta en el mismo grupo. No se usa el atributo nativo
-     * `name` para esto: el navegador cerraría el <details> hermano de
-     * forma síncrona (mismo bug que closeAnimated existe para arreglar
-     * arriba — el contenido se iría a display:none antes de que la
-     * transición corra), así que la exclusividad se orquesta acá con el
-     * mismo mecanismo que ya usa el cierre manual. Cada .faq-list /
-     * .faqp-list es su propio grupo independiente entre sí. No toca
-     * .func-accordion (Funcionalidades de Parking), que no matchea
-     * ninguno de estos dos selectores y tiene su propia lógica por grupo.
+     * Acordeón exclusivo (FAQ Home .faq-list, FAQ Parking .faqp-list y
+     * Funcionalidades Parking .func-accordion-list): al abrir una
+     * pregunta, cierra con la MISMA animación la que estuviera abierta
+     * en el mismo grupo. No se usa el atributo nativo `name` para esto:
+     * el navegador cerraría el <details> hermano de forma síncrona
+     * (mismo bug que closeAnimated existe para arreglar arriba — el
+     * contenido se iría a display:none antes de que la transición
+     * corra), así que la exclusividad se orquesta acá con el mismo
+     * mecanismo que ya usa el cierre manual. Cada .faq-list / .faqp-list /
+     * .func-accordion-list es su propio grupo independiente entre sí —
+     * en Funcionalidades hay 3 (uno por sección "En la caseta"/"Control
+     * y caja"/"Gestión y escala"), no se cierran entre secciones.
      */
-    document.querySelectorAll('.faq-list, .faqp-list').forEach(function (group) {
+    document.querySelectorAll('.faq-list, .faqp-list, .func-accordion-list').forEach(function (group) {
         var items = group.querySelectorAll(':scope > details');
 
         items.forEach(function (details) {

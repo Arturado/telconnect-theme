@@ -26,11 +26,11 @@
                         global $product;
                         ?>
                         <div class="dp-card dc-card">
-                            <a href="<?php echo esc_url( get_permalink() ); ?>" class="dc-card-image">
+                            <div class="dc-card-image">
                                 <?php echo woocommerce_get_product_thumbnail(); ?>
-                            </a>
+                            </div>
                             <div class="dp-card-body">
-                                <h3><a href="<?php echo esc_url( get_permalink() ); ?>"><?php the_title(); ?></a></h3>
+                                <h3><?php the_title(); ?></h3>
                                 <p class="dp-card-desc"><?php echo esc_html( $product->get_short_description() ); ?></p>
                                 <div class="dp-card-price">
                                     <?php echo $product->get_price_html(); ?>
