@@ -3,6 +3,7 @@
 <?php get_template_part( 'template-parts/partner-difference' ); ?>
 <?php get_template_part( 'template-parts/devices-products' ); ?>
 <?php get_template_part( 'template-parts/commission' ); ?>
+<?php get_template_part( 'template-parts/andco' ); ?>
 <?php get_template_part( 'template-parts/devices-complementos' ); ?>
 <?php get_template_part( 'template-parts/ecosystem' ); ?>
 <?php get_template_part( 'template-parts/parking-teaser' ); ?>

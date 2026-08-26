@@ -653,7 +653,7 @@ function telconnect_enqueue_assets() {
 
     $tc_sections = array(
         'header', 'hero', 'partner-difference', 'devices-products',
-        'commission', 'devices-complementos', 'ecosystem', 'parking-teaser',
+        'commission', 'andco', 'devices-complementos', 'ecosystem', 'parking-teaser',
         'social-proof', 'testimonials', 'venta-soporte', 'tienda-fisica',
         'faq', 'final-cta', 'footer',
     );

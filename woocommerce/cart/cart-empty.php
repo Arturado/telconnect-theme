@@ -14,6 +14,11 @@
  * v2: mismo header (sin eyebrow, título "Tu carrito" Ink-900) y stepper
  * de 3 pasos decorativo que cart.php, para que la shell sea idéntica
  * entre el estado vacío y con productos — ver docblock de cart.php.
+ *
+ * v3: contenido del estado vacío contra diseño real (captura) — se
+ * quita el hook woocommerce_cart_is_empty (wc_empty_cart_message
+ * default de WC, sin ilustración) y se reemplaza por la ilustración +
+ * copy + CTA del Figma. El CTA apunta a home_url(), no a la tienda.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -46,18 +51,14 @@ defined( 'ABSPATH' ) || exit;
         </div>
 
         <div class="crt-empty">
-            <?php
-            /**
-             * @hooked wc_empty_cart_message - 10
-             */
-            do_action( 'woocommerce_cart_is_empty' );
-            ?>
+            <img class="crt-empty-illustration" src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/carrito-vacio.png' ); ?>" alt="" width="302" height="297">
 
-            <?php if ( wc_get_page_id( 'shop' ) > 0 ) : ?>
-                <a class="btn btn-primary crt-empty-cta" href="<?php echo esc_url( apply_filters( 'woocommerce_return_to_shop_redirect', wc_get_page_permalink( 'shop' ) ) ); ?>">
-                    <?php echo esc_html( apply_filters( 'woocommerce_return_to_shop_text', __( 'Volver a la tienda', 'telconnect' ) ) ); ?>
-                </a>
-            <?php endif; ?>
+            <h2 class="crt-empty-title"><?php esc_html_e( 'Tu carrito está vacío', 'telconnect' ); ?></h2>
+            <p class="crt-empty-desc"><?php esc_html_e( 'Parece que todavía no has agregado nada. Explora nuestros productos y encuentra lo que necesitas.', 'telconnect' ); ?></p>
+
+            <a class="btn btn-primary-blue crt-empty-cta" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+                <?php esc_html_e( 'Volver al inicio', 'telconnect' ); ?>
+            </a>
         </div>
     </div>
 </div>
