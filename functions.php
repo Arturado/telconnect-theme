@@ -533,7 +533,9 @@ function tc_get_thankyou_order_summary( $order ) {
 
     // _shipping_comuna: post meta custom del checkout (§8.8), no una prop
     // nativa de WC_Order — no se inyecta en get_shipping_address_1/2().
-    $comuna       = get_post_meta( $order->get_id(), '_shipping_comuna', true );
+    // $order->get_meta() (no get_post_meta()) para que funcione con HPOS
+    // activo — ver el docblock largo en tc_save_checkout_fields_to_order().
+    $comuna       = $order->get_meta( '_shipping_comuna' );
     $addr_parts   = array_filter( array( $comuna, $order->get_shipping_address_1(), $order->get_shipping_address_2() ) );
     $full_address = implode( ', ', $addr_parts );
 
@@ -1066,6 +1068,9 @@ function tc_remove_description_tab( $tabs ) {
 }
 add_filter( 'woocommerce_product_tabs', 'tc_remove_description_tab', 98 );
 
+// Quita la sección de "Productos relacionados" de la PDP
+remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
+
 /**
  * ============================================================
  * Metabox "Características (checklist landing)" en productos
@@ -1479,14 +1484,24 @@ function tc_validate_shipping_fields() {
 }
 add_action( 'woocommerce_after_checkout_validation', 'tc_validate_shipping_fields' );
 
-// shipping_rut/shipping_comuna no son props nativas de WC_Order — se guardan como meta.
+// shipping_rut/shipping_comuna no son props nativas de WC_Order — se guardan
+// como meta. Usa el objeto WC_Order (update_meta_data + save), no
+// update_post_meta() — mismo motivo que tc_save_checkout_fields_to_order()
+// más abajo (HPOS: update_post_meta() escribe sobre el post placeholder
+// legacy, no sobre el pedido real).
 function tc_save_shipping_fields_to_order( $order_id ) {
+    $order = wc_get_order( $order_id );
+    if ( ! $order ) {
+        return;
+    }
+
     if ( isset( $_POST['shipping_rut'] ) ) {
-        update_post_meta( $order_id, '_shipping_rut', sanitize_text_field( wp_unslash( $_POST['shipping_rut'] ) ) );
+        $order->update_meta_data( '_shipping_rut', sanitize_text_field( wp_unslash( $_POST['shipping_rut'] ) ) );
     }
     if ( isset( $_POST['shipping_comuna'] ) ) {
-        update_post_meta( $order_id, '_shipping_comuna', sanitize_text_field( wp_unslash( $_POST['shipping_comuna'] ) ) );
+        $order->update_meta_data( '_shipping_comuna', sanitize_text_field( wp_unslash( $_POST['shipping_comuna'] ) ) );
     }
+    $order->save();
 }
 add_action( 'woocommerce_checkout_update_order_meta', 'tc_save_shipping_fields_to_order' );
 
