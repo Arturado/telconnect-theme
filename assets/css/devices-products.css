@@ -83,6 +83,7 @@
 }
 
 .dp-card-image {
+    position: relative;
     width: 100%;
     aspect-ratio: 362 / 332;
     background: #FFF;
@@ -91,6 +92,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Badge de % dcto. — reusado tal cual por .dc-card-image
+   (devices-complementos.php), ambos contenedores llevan position:relative. */
+.dp-sale-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #0d0f15;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
 }
 
 .dp-card-image img {
@@ -169,6 +189,20 @@
     min-height: 40px;
 }
 
+/* Línea "Precio normal: $X" tachada — solo cuando $product->is_on_sale(),
+   arriba de .dp-card-price (que en ese caso muestra únicamente el
+   sale_price, ver devices-products.php / devices-complementos.php). */
+.dp-price-was {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-body);
+    margin: 0 0 4px;
+}
+
+.dp-price-was del {
+    text-decoration: line-through;
+}
+
 .dp-card-price {
     display: flex;
     align-items: baseline;
@@ -220,7 +254,7 @@
     width: 18px;
     height: 18px;
     color: var(--color-eyebrow-blue);
-    font-weight: 700;
+    font-weight: var(--weight-medium);
     font-size: 13px;
     line-height: 20px;
 }

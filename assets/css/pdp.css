@@ -41,7 +41,7 @@
 }
 
 .pdp-breadcrumb-current {
-    font-weight: 700;
+    font-weight: var(--weight-medium);
     color: #0D0F15;
 }
 
@@ -208,12 +208,12 @@
     position: absolute;
     top: 16px;
     left: 16px;
-    background: var(--color-lime);
-    color: var(--color-heading);
+    background: #0d0f15;
+    color: #eef0f3;
     font-family: var(--font-body);
     font-weight: var(--weight-medium);
     font-size: 13px;
-    padding: 6px 14px;
+    padding: 3px 14px;
     border-radius: 999px;
     z-index: 1;
 }
@@ -246,7 +246,7 @@
 
 .pdp-accordion summary span:first-child {
     flex: 1;
-    font-weight: 700;
+    font-weight: var(--weight-medium);
 }
 
 .pdp-chevron {
@@ -694,7 +694,7 @@
     border: none;
     border-radius: 999px;
     font-family: var(--font-body);
-    font-weight: 700;
+    font-weight: var(--weight-medium);
     font-size: 14px;
     line-height: 20px;
     text-decoration: none;
@@ -718,7 +718,7 @@
     font-family: var(--font-body);
     font-size: 15px;
     line-height: 20px;
-    font-weight: 700;
+    font-weight: var(--weight-medium);
     color: #0D0F15;
 }
 
@@ -760,7 +760,7 @@
     font-family: var(--font-body);
     font-size: 15px;
     line-height: 20px;
-    font-weight: 700;
+    font-weight: var(--weight-medium);
     color: #0D0F15;
 }
 
@@ -793,7 +793,7 @@
     font-family: var(--font-body);
     font-size: 15px;
     line-height: 20px;
-    font-weight: 700;
+    font-weight: var(--weight-medium);
     color: #0D0F15;
     appearance: none;
     -webkit-appearance: none;

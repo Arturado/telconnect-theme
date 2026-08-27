@@ -43,6 +43,7 @@
 /* La card reutiliza .dp-card (mismo padding/border/radius que Devices Products),
    solo la imagen cambia: sin border-radius y proporción distinta */
 .dc-card-image {
+    position: relative;
     width: 100%;
     aspect-ratio: 362 / 240;
     background: #FFF;
@@ -50,6 +51,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 16px!important;
 }
 
 .dc-card-image img {

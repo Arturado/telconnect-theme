@@ -141,7 +141,7 @@ body.has-floating-header .site-header {
     text-decoration: none;
     font-family: var(--font-body);
     font-size: 14px;
-    font-weight: 700;
+    font-weight: var(--weight-medium);
     line-height: 18px;
     color: var(--color-ink-300);
     transition: background 0.2s ease, color 0.2s ease;
@@ -216,14 +216,14 @@ body.has-floating-header .site-header {
     justify-content: center;
     font-family: var(--font-body);
     font-size: 10px;
-    font-weight: 700;
+    font-weight: var(--weight-medium);
     line-height: 1;
 }
 
 .cart-pill-label {
     font-family: var(--font-body);
     font-size: 15px;
-    font-weight: 700;
+    font-weight: var(--weight-medium);
     letter-spacing: -0.002em;
     color: var(--color-heading);
 }

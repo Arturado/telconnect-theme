@@ -223,6 +223,7 @@
     line-height: 20px;
     color: var(--color-body);
     margin: 10px 0 0;
+    display: none;
 }
 
 .amodal-submit {

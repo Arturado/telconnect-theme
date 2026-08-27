@@ -24,15 +24,26 @@
                         ?>
                         <div class="dp-card">
                             <div class="dp-card-image">
+                                <?php if ( $product->is_on_sale() ) : ?>
+                                    <span class="dp-sale-badge"><?php echo esc_html( tc_get_product_discount_percent( $product ) ); ?>% dcto.</span>
+                                <?php endif; ?>
                                 <?php echo woocommerce_get_product_thumbnail(); ?>
                             </div>
                             <div class="dp-card-body">
                                 <h3><?php the_title(); ?></h3>
                                 <p class="dp-card-desc"><?php echo esc_html( $product->get_short_description() ); ?></p>
-                                <div class="dp-card-price">
-                                    <?php echo $product->get_price_html(); ?>
-                                    <span class="dp-price-note">+ IVA</span>
-                                </div>
+                                <?php if ( $product->is_on_sale() ) : ?>
+                                    <p class="dp-price-was">Precio normal: <del><?php echo wp_kses_post( wc_price( $product->get_regular_price() ) ); ?></del></p>
+                                    <div class="dp-card-price">
+                                        <?php echo wp_kses_post( wc_price( $product->get_sale_price() ) ); ?>
+                                        <span class="dp-price-note">+ IVA</span>
+                                    </div>
+                                <?php else : ?>
+                                    <div class="dp-card-price">
+                                        <?php echo $product->get_price_html(); ?>
+                                        <span class="dp-price-note">+ IVA</span>
+                                    </div>
+                                <?php endif; ?>
                                 <?php
                                 $features = get_post_meta( get_the_ID(), '_dp_features', true );
                                 if ( $features ) :

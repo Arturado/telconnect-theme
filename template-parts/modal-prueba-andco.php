@@ -79,8 +79,8 @@
 
                 <button type="submit" class="amodal-submit">
                     <span class="btn-label-mask">
-                        <span class="btn-label" id="amodal-submit-label">Solicitar prueba</span>
-                        <span class="btn-label-ghost" aria-hidden="true" id="amodal-submit-label-ghost">Solicitar prueba</span>
+                        <span class="btn-label" id="amodal-submit-label">Quiero que me ayuden</span>
+                        <span class="btn-label-ghost" aria-hidden="true" id="amodal-submit-label-ghost">Quiero que me ayuden</span>
                     </span>
                 </button>
 

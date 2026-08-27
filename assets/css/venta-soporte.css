@@ -109,7 +109,7 @@
     left: 0;
     top: 0;
     color: #000;
-    font-weight: 700;
+    font-weight: var(--weight-medium);
     font-size: 13px;
     line-height: 20px;
 }

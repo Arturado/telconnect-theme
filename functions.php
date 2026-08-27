@@ -56,6 +56,26 @@ function tc_asset_version( $relative_path ) {
     return file_exists( $full_path ) ? filemtime( $full_path ) : '1.0.0';
 }
 
+/**
+ * % de descuento (redondeado al entero más cercano) entre regular_price y
+ * sale_price de un producto. WooCommerce no trae un helper nativo para
+ * esto (revisado en el core — get_price_html() ya arma su propio markup
+ * <del>/<ins>, pero no expone el % calculado por separado), así que se
+ * calcula a mano a partir de los precios nativos del producto. Usar junto
+ * a $product->is_on_sale() — no valida por su cuenta si el producto está
+ * en oferta, solo hace la resta/división.
+ */
+function tc_get_product_discount_percent( $product ) {
+    $regular = (float) $product->get_regular_price();
+    $sale    = (float) $product->get_sale_price();
+
+    if ( $regular <= 0 || $sale <= 0 || $sale >= $regular ) {
+        return 0;
+    }
+
+    return (int) round( ( ( $regular - $sale ) / $regular ) * 100 );
+}
+
 function telconnect_enqueue_fonts() {
     wp_enqueue_style( 'telconnect-fonts', 'https://fonts.googleapis.com/css2?family=Stack+Sans+Headline:wght@200..700&display=swap', array(), null );
 }
