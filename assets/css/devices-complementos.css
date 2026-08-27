@@ -45,7 +45,7 @@
 .dc-card-image {
     width: 100%;
     aspect-ratio: 362 / 240;
-    background: #F0F1F4;
+    background: #FFF;
     overflow: hidden;
     display: flex;
     align-items: center;

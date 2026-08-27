@@ -199,13 +199,10 @@ $primary_cat = ( $terms && ! is_wp_error( $terms ) ) ? reset( $terms ) : null;
                         </form>
                         <?php do_action( 'woocommerce_after_add_to_cart_form' ); ?>
 
-                        <?php if ( wc_product_sku_enabled() || $product->get_category_ids() ) : ?>
+                        <?php if ( wc_product_sku_enabled() && ( $product->get_sku() || $product->is_type( 'variable' ) ) ) : ?>
                             <div class="product_meta">
                                 <?php do_action( 'woocommerce_product_meta_start' ); ?>
-                                <?php if ( wc_product_sku_enabled() && ( $product->get_sku() || $product->is_type( 'variable' ) ) ) : ?>
-                                    <span class="sku_wrapper">SKU: <span class="sku"><?php echo esc_html( $product->get_sku() ? $product->get_sku() : __( 'N/A', 'woocommerce' ) ); ?></span></span>
-                                <?php endif; ?>
-                                <?php echo wc_get_product_category_list( $product->get_id(), ', ', '<span class="posted_in">' . _n( 'Categoría:', 'Categorías:', count( $product->get_category_ids() ), 'woocommerce' ) . ' ', '</span>' ); ?>
+                                <span class="sku_wrapper">SKU: <span class="sku"><?php echo esc_html( $product->get_sku() ? $product->get_sku() : __( 'N/A', 'woocommerce' ) ); ?></span></span>
                                 <?php do_action( 'woocommerce_product_meta_end' ); ?>
                             </div>
                         <?php endif; ?>

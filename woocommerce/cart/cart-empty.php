@@ -24,7 +24,7 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 <div class="crt-page">
-    <div class="crt-container">
+    <div class="crt-container tc-container">
 
         <div class="crt-header">
             <div class="crt-title-row">

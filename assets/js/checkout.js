@@ -340,7 +340,7 @@
      *    panel están display:none, así que quedan afuera de la
      *    validación nativa del navegador). form.reportValidity() no
      *    alcanza para esto: los campos de WooCommerce (Nombre y
-     *    apellido, Correo, RUT, dirección de despacho) no traen el
+     *    apellido, Teléfono, Correo, RUT, dirección de despacho) no traen el
      *    atributo HTML "required" (WC solo les pone aria-required +
      *    clase validate-required, ver woocommerce_form_field()), así
      *    que validateDatosStep()/validateDespachoStep() los chequean a
@@ -351,11 +351,15 @@
      *    reconstruye ese botón).
      */
 
-    // Nombre y apellido, Correo electrónico, RUT.
+    // Nombre y apellido, Teléfono, Correo electrónico, RUT.
     function validateDatosStep() {
         var firstNameValid = validateRequiredField(
             document.getElementById('billing_first_name'),
             'El nombre y apellido es obligatorio.'
+        );
+        var phoneValid = validateRequiredField(
+            document.getElementById('billing_phone'),
+            'El teléfono es obligatorio.'
         );
         var emailValid = validateRequiredField(
             document.getElementById('billing_email'),
@@ -365,7 +369,7 @@
         var rutValidator = rutValidators.billing_rut;
         var rutValid = rutValidator ? rutValidator() : true;
 
-        return firstNameValid && emailValid && rutValid;
+        return firstNameValid && phoneValid && emailValid && rutValid;
     }
 
     // RUT receptor, Nombre de quien recibe, Dirección, Región, Comuna —
@@ -410,10 +414,33 @@
         var nextBtn = document.querySelector('.chk-next-step');
         var prevBtn = document.querySelector('.chk-prev-step');
         var placeOrderProxy = document.querySelector('.chk-place-order-proxy');
+        var stepWarning = document.querySelector('.chk-step-warning');
 
         function goToStep(step) {
             page.setAttribute('data-step', step);
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Además del error puntual bajo cada campo (rojo + mensaje, ver
+        // validateRequiredField), sube el aviso general arriba del botón
+        // y lleva la vista al primer campo inválido: si el campo con el
+        // error quedó fuera de la pantalla (el usuario ya scrolleó hasta
+        // el botón), el borde rojo solo no alcanza para que lo note.
+        function showStepWarning() {
+            if (stepWarning) {
+                stepWarning.hidden = false;
+            }
+            var firstInvalid = document.querySelector('.chk-step-panel[data-panel="datos"] .chk-input-invalid');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalid.focus({ preventScroll: true });
+            }
+        }
+
+        function hideStepWarning() {
+            if (stepWarning) {
+                stepWarning.hidden = true;
+            }
         }
 
         if (nextBtn) {
@@ -426,12 +453,16 @@
                 var despachoValid = validateDespachoStep();
 
                 if (!datosValid || !despachoValid) {
+                    showStepWarning();
                     return;
                 }
 
                 if (!form.reportValidity()) {
+                    showStepWarning();
                     return;
                 }
+
+                hideStepWarning();
 
                 // Fuerza un recálculo de #order_review ANTES de mostrar el
                 // paso Pago: si el comprador llenó la dirección y avanzó
@@ -447,6 +478,18 @@
                 }
 
                 goToStep('pago');
+            });
+        }
+
+        // Si el comprador corrige el campo a mano (sin volver a apretar
+        // "Continuar a pago"), retirar el aviso general en cuanto no
+        // quede ningún campo marcado en rojo en el panel "Datos".
+        var datosPanel = document.querySelector('.chk-step-panel[data-panel="datos"]');
+        if (datosPanel) {
+            datosPanel.addEventListener('input', function () {
+                if (!datosPanel.querySelector('.chk-input-invalid')) {
+                    hideStepWarning();
+                }
             });
         }
 

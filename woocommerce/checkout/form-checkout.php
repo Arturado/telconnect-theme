@@ -172,6 +172,8 @@ $chk_total_now = tc_get_order_summary_breakdown()['total'];
                                 </div>
                             </div>
 
+                            <p class="chk-step-warning" role="alert" hidden><?php esc_html_e( 'Completa los campos obligatorios para continuar.', 'telconnect' ); ?></p>
+
                             <div class="chk-step-actions">
                                 <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="chk-btn-secondary"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Volver al carrito', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Volver al carrito', 'telconnect' ); ?></span></span></a>
                                 <button type="button" class="chk-btn-primary chk-next-step"><span class="btn-label-mask"><span class="btn-label"><?php esc_html_e( 'Continuar a pago', 'telconnect' ); ?></span><span class="btn-label-ghost" aria-hidden="true"><?php esc_html_e( 'Continuar a pago', 'telconnect' ); ?></span></span></button>

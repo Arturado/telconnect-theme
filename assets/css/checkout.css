@@ -886,6 +886,29 @@
     margin: 16px 18px 0;
 }
 
+/* Aviso general arriba de "Continuar a pago"/"Pagar" cuando falta algún
+   campo obligatorio del paso — además del error puntual bajo cada campo
+   (chk-field-rut-error/validateRequiredField en checkout.js), para que
+   no pase desapercibido si el campo con error quedó fuera de la vista. */
+.chk-step-warning {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0 0;
+    padding: 12px 16px;
+    border: 1px solid var(--color-red);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--color-red) 8%, transparent);
+    color: var(--color-red);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: var(--weight-semibold);
+}
+
+.chk-step-warning[hidden] {
+    display: none;
+}
+
 /* ===== Botones de acción (Volver / Continuar / Pagar) ===== */
 .chk-step-actions {
     display: flex;

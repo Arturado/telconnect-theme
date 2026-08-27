@@ -85,8 +85,8 @@
 .dp-card-image {
     width: 100%;
     aspect-ratio: 362 / 332;
-    background: #F0F1F4;
-    border-radius: 16px;
+    background: #FFF;
+    border-radius: 1px;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -96,12 +96,12 @@
 .dp-card-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
 }
 
 .dp-card-image-placeholder {
-    background: #F0F1F4;
+    background: #FFF;
 }
 
 /**

@@ -1008,6 +1008,18 @@ add_filter( 'woocommerce_product_tabs', 'tc_remove_description_tab', 98 );
 // Quita la sección de "Productos relacionados" de la PDP
 remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
 
+// Quita "Marca(s)" de .product_meta en la PDP (content-single-product.php)
+// — WC_Brands engancha show_brand() a woocommerce_product_meta_end en su
+// propio register_hooks() (plugins_loaded, prioridad 11), así que para
+// esta línea ya corrió y $GLOBALS['WC_Brands'] existe. Deja el resto de
+// ese hook (do_action sigue ahí en el template) intacto para cualquier
+// otro consumidor futuro; solo se desengancha esta callback puntual.
+// Solo SKU debe quedar visible en esa sección — la Categoría se remueve
+// directo en el template (ver content-single-product.php).
+if ( isset( $GLOBALS['WC_Brands'] ) ) {
+    remove_action( 'woocommerce_product_meta_end', array( $GLOBALS['WC_Brands'], 'show_brand' ) );
+}
+
 /**
  * ============================================================
  * Metabox "Características (checklist landing)" en productos
@@ -1198,6 +1210,11 @@ function tc_reorder_billing_fields_for_checkout_wizard( $fields ) {
             'class'    => array( 'chk-field-hidden' ),
         ),
         'billing_phone'         => array(
+            // Label explícito en vez de heredar el de WC — required=true
+            // ya evita que woocommerce_form_field() agregue el sufijo
+            // "(opcional)", pero fijamos el texto igual para no depender
+            // de qué label trae el campo base en cada versión de WC.
+            'label'    => __( 'Teléfono', 'telconnect' ),
             'required' => true,
             'priority' => 20,
             'class'    => array( 'form-row-last' ),
@@ -1256,6 +1273,34 @@ function tc_reorder_billing_fields_for_checkout_wizard( $fields ) {
     return $fields;
 }
 add_filter( 'woocommerce_checkout_fields', 'tc_reorder_billing_fields_for_checkout_wizard', 20 );
+
+/**
+ * El required=true de billing_phone de arriba solo corrige el arreglo
+ * de CAMPOS DEL CHECKOUT (woocommerce_checkout_fields), que es lo que
+ * arma el HTML inicial. Pero WooCommerce trae, ADEMÁS y por separado,
+ * un dataset de "locale por país" (WC_Countries::get_country_locale(),
+ * clave SIN prefijo "phone", no "billing_phone") que usa el JS de
+ * fábrica address-i18n.js para resetear labels/required/clases de
+ * varios campos apenas carga la página (evento "country_to_state_changing",
+ * que country-select.js dispara una vez al iniciar, sin que el usuario
+ * toque nada). Ese dataset nunca pasa por nuestro filtro de arriba, así
+ * que sin este segundo filtro, address-i18n.js pisaba el HTML ya
+ * corregido con los valores de fábrica (required=false, "(opcional)",
+ * class="form-row-wide") un instante después de que WordPress lo
+ * entregara bien — el "Ver código fuente" del navegador mostraba el
+ * campo correcto, pero el DOM en pantalla no, porque este JS lo
+ * reescribía después. Confirmado inspeccionando address-i18n.js
+ * (function field_is_required()) y class-wc-countries.php
+ * (get_country_locale_field_selectors() incluye 'phone').
+ */
+function tc_fix_phone_locale_default( $locale ) {
+    if ( isset( $locale['phone'] ) ) {
+        $locale['phone']['required'] = true;
+        $locale['phone']['class']    = array( 'form-row-last' );
+    }
+    return $locale;
+}
+add_filter( 'woocommerce_get_country_locale_default', 'tc_fix_phone_locale_default' );
 
 /**
  * Card "Despacho": agrega shipping_rut y shipping_comuna (nuevos, sin
