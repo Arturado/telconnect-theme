@@ -42,13 +42,13 @@
 
             <div class="tf-map">
                 <iframe
-                    src="https://www.google.com/maps?q=Vicu%C3%B1a+Mackenna+Poniente+6843,+La+Florida,+Santiago&output=embed"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3326.382810779933!2d-70.605282!3d-33.5174314!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662d1229cb6aa7d%3A0x614d94fe2456f85d!2sTELCONNECT!5e0!3m2!1ses-419!2scl!4v1787699454730!5m2!1ses-419!2scl"
                     width="100%"
                     height="100%"
                     style="border:0;"
                     allowfullscreen=""
                     loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
+                    referrerpolicy="strict-origin-when-cross-origin"
                     title="Ubicación tienda Telconnect">
                 </iframe>
             </div>
