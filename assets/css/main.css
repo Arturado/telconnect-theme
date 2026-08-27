@@ -227,6 +227,7 @@ p {
 .btn-label-mask .btn-label-ghost {
     display: block;
     white-space: nowrap;
+    font-weight: 700;
     transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
 }
 

@@ -566,6 +566,26 @@ function telconnect_setup() {
 }
 add_action( 'after_setup_theme', 'telconnect_setup' );
 
+/**
+ * WP calcula "current-menu-item" comparando solo el path de la URL del
+ * link contra el path de la página actual (wp_parse_url($url, PHP_URL_PATH)),
+ * ignorando el fragmento (#ancla). Por eso TODOS los links de ancla del
+ * nav que apuntan al Home (#maquinas, #comisiones, #soporte) quedan
+ * marcados "current" a la vez, y el CSS del pill (.menu-pill-list
+ * li.current-menu-item a) los pinta como si tuvieran el hover pegado —
+ * no es CSS de :hover/:focus ni JS, es este cálculo de WP. Se les saca
+ * la clase "current-*" a los items cuya URL sea un link de ancla
+ * same-page; los links a páginas reales (ej. /telconnect-parking/)
+ * conservan su highlight de "página actual" sin cambios.
+ */
+function telconnect_strip_current_class_from_anchor_links( $classes, $item ) {
+    if ( false !== strpos( $item->url, '#' ) ) {
+        $classes = array_diff( $classes, array( 'current-menu-item', 'current_page_item', 'current-menu-ancestor', 'current_page_ancestor', 'current_page_parent' ) );
+    }
+    return $classes;
+}
+add_filter( 'nav_menu_css_class', 'telconnect_strip_current_class_from_anchor_links', 10, 2 );
+
 // Estilos y scripts
 function telconnect_enqueue_assets() {
     wp_enqueue_style( 'telconnect-style', get_stylesheet_uri(), array(), tc_asset_version( '/style.css' ) );

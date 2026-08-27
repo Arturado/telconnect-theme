@@ -141,7 +141,7 @@ body.has-floating-header .site-header {
     text-decoration: none;
     font-family: var(--font-body);
     font-size: 14px;
-    font-weight: var(--weight-medium);
+    font-weight: 700;
     line-height: 18px;
     color: var(--color-ink-300);
     transition: background 0.2s ease, color 0.2s ease;
@@ -152,6 +152,7 @@ body.has-floating-header .site-header {
 .menu-pill-list li a:hover {
     background: #F0F1F4;
     color: var(--color-heading);
+    font-weight: 700!important;
 }
 
 .menu-pill-login {
