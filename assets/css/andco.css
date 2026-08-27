@@ -109,27 +109,46 @@
 
 /* ===== Columna derecha: mockup de teléfonos (imagen plana) =====
    El contenedor declarado en Figma mide 628x494, pero el grupo real
-   de capas del teléfono mide ~628x711 (celulares.png es 639x712) —
-   la imagen está pensada para desbordar verticalmente su columna, no
-   para recortarse (confirmado contra capture.png: el teléfono se ve
-   "flotando" más alto/bajo que la columna de texto). No usar
-   overflow:hidden acá, a diferencia del patrón de Parking/Funcionalidades. */
+   de capas del teléfono mide ~628x711 (celulares.png es 639x712).
+   v2 (recursos/andCO2/esperada.png vs actual.png): a diferencia de la
+   decisión anterior de dejarla desbordar sin recortar, el diseño real
+   quiere la imagen recortada por el contenedor — se fija la altura de
+   .andco-visual a la misma altura que .andco-text (628x600, la sección
+   queda regida por min-height:640 en vez de por el alto real de la
+   imagen) y se baja la imagen con translateY para que el recorte caiga
+   del lado de abajo (el celular se ve completo arriba, "hundido" en el
+   marco, en vez de flotando por encima de la columna de texto como
+   antes). align-items:flex-start evita que el flex stretch por defecto
+   aplaste la imagen a los 600px del contenedor. */
 .andco-visual {
     width: 628px;
+    height: 640px;
     flex-shrink: 0;
     display: flex;
     justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
 }
 
 .andco-visual img {
     width: 100%;
     height: auto;
     display: block;
+    transform: translateY(70px);
 }
 
 @media (max-width: 1024px) {
+    /* El recorte/translateY de arriba está calculado para el ancho fijo
+       628px de escritorio — a este ancho variable (46%/100% más abajo)
+       esos valores en píxeles ya no calzan, así que se vuelve al
+       comportamiento original (imagen completa, sin recortar). */
     .andco-visual {
         width: 46%;
+        height: auto;
+        overflow: visible;
+    }
+    .andco-visual img {
+        transform: none;
     }
     .andco-text {
         width: 54%;
