@@ -116,7 +116,7 @@
                 <strong>¿No sabes cuál elegir?</strong>
                 <p>Cuéntanos qué vendes y te recomendamos la correcta en minutos.</p>
             </div>
-            <a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener" class="dp-cta-btn"><span class="btn-label-mask"><span class="btn-label">Asesórate por WhatsApp</span><span class="btn-label-ghost" aria-hidden="true">Asesórate por WhatsApp</span></span></a>
+            <a href="https://wa.me/56999979260?text=Hola%2C%20estoy%20interesado%20en%20comprar%20una%20m%C3%A1quina" target="_blank" rel="noopener" class="dp-cta-btn"><span class="btn-label-mask"><span class="btn-label">Asesórate por WhatsApp</span><span class="btn-label-ghost" aria-hidden="true">Asesórate por WhatsApp</span></span></a>
         </div>
     </div>
 </section>

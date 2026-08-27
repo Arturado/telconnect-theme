@@ -29,7 +29,7 @@
                 'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
             ) );
             ?>
-            <a href="https://tu-plataforma-externa.cl/login" target="_blank" rel="noopener" class="menu-pill-login"><span class="btn-label-mask"><span class="btn-label">Iniciar sesión</span><span class="btn-label-ghost" aria-hidden="true">Iniciar sesión</span></span></a>
+            <a href="https://espacio.haulmer.com/" target="_blank" rel="noopener" class="menu-pill-login"><span class="btn-label-mask"><span class="btn-label">Iniciar sesión</span><span class="btn-label-ghost" aria-hidden="true">Iniciar sesión</span></span></a>
         </nav>
 
         <!-- Grupo de acciones: en desktop solo envuelve el carrito (sin efecto visual extra),
@@ -78,6 +78,6 @@
             'items_wrap'     => '<ul class="%2$s">%3$s</ul>',
         ) );
         ?>
-        <a href="https://tu-plataforma-externa.cl/login" target="_blank" rel="noopener" class="mobile-nav-login"><span class="btn-label-mask"><span class="btn-label">Iniciar sesión</span><span class="btn-label-ghost" aria-hidden="true">Iniciar sesión</span></span></a>
+        <a href="https://espacio.haulmer.com/" target="_blank" rel="noopener" class="mobile-nav-login"><span class="btn-label-mask"><span class="btn-label">Iniciar sesión</span><span class="btn-label-ghost" aria-hidden="true">Iniciar sesión</span></span></a>
     </div>
 </div>
