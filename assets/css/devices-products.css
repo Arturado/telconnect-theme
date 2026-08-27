@@ -63,7 +63,15 @@
 
 .dp-card {
     box-sizing: border-box;
-    flex: 0 0 410px;
+    /* Antes flex:0 0 410px (fijo) — con .dp-grid pudiendo medir más o
+       menos de 3×410+2×gap según el viewport (900-1440px), sobraba/faltaba
+       ancho y se veía un pedacito del 4to card asomando en el borde
+       derecho. En % del ancho del grid, 3 cards de exactamente
+       (100% - 2 gaps)/3 SIEMPRE llenan el ancho visible completo sin
+       resto — ver assets/js/devices-carousel.js (loop infinito de a 1
+       card), que depende de este cálculo para no dejar peek en ninguna
+       posición del scroll, no solo en la inicial. */
+    flex: 0 0 calc( ( 100% - 48px ) / 3 );
     scroll-snap-align: start;
     display: flex;
     flex-direction: column;
