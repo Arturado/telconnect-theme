@@ -1,5 +1,5 @@
 <section class="devices-complementos">
-    <div class="dc-container">
+    <div class="dc-container tc-container">
         <span class="dc-eyebrow">Complementos</span>
         <h2 class="dc-title">Tu equipo es solo el comienzo.</h2>
         <p class="dc-subtitle">Accesorios, consumibles y todo lo que necesitas para sacar el máximo provecho a tu equipo. Agrégalo a tu compra y tenlo todo listo desde el primer día.</p>

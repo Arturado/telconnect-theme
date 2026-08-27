@@ -1,5 +1,5 @@
 <section class="prob">
-    <div class="prob-container">
+    <div class="prob-container tc-container">
         <div class="prob-head">
             <span class="prob-eyebrow">Antes de venderte nada</span>
             <h2 class="prob-title">Primero veamos si esto te sirve.</h2>

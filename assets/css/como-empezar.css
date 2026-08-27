@@ -3,17 +3,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 64px 80px;
+    padding: 64px 0;
     background: #fff;
 }
 
+/* Márgen lateral (antes max-width:1280px acá): ahora lo aporta
+   .tc-container (main.css), aplicado junto a .empezar-container en
+   como-empezar.php — mismo margen que .header-inner en todo el sitio. */
 .empezar-container {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 24px;
-    width: 100%;
-    max-width: 1280px;
 }
 
 .empezar-head {

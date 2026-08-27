@@ -3,14 +3,14 @@
    ===================================================== */
 
 .pdp-page {
-    padding: 28px 80px 88px;
+    padding: 28px 0 88px;
     background: #fff;
 }
 
-.pdp-container {
-    max-width: 1280px;
-    margin: 0 auto;
-}
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .pdp-container en
+   content-single-product.php — mismo margen que .header-inner en todo
+   el sitio. */
 
 /* ===== Breadcrumb ===== */
 .pdp-breadcrumb {
@@ -71,15 +71,12 @@
 }
 
 @media (max-width: 1000px) {
-    /* Bug pre-existente (no introducido en esta pasada, encontrado al
-       tomar la captura mobile de QA): .pdp-page nunca tuvo un override
-       de padding para mobile -- los 80px horizontales del Figma desktop
-       (recursos/pdp/figma-pdp.css, "Body") se aplicaban también a 390px
-       de viewport, dejando solo ~230px de ancho real para todo el
-       contenido. Se reduce a 24px horizontales, mismo valor que ya usan
-       checkout.css/cart.css/plp.css en sus propios breakpoints mobile. */
+    /* El padding horizontal de .pdp-page ya no existe (lo aporta
+       .tc-container en .pdp-container, con sus propios breakpoints) —
+       acá solo queda el ajuste de padding VERTICAL para mobile y el
+       apilado del grid. */
     .pdp-page {
-        padding: 24px 24px 64px;
+        padding: 24px 0 64px;
     }
     .pdp-grid {
         flex-direction: column;
@@ -769,6 +766,7 @@
     font-weight: var(--weight-medium);
     color: var(--color-eyebrow-blue);
     text-decoration: none;
+    display:none;
 }
 
 .pdp-signature-info:hover {

@@ -51,7 +51,7 @@ $primary_cat = ( $terms && ! is_wp_error( $terms ) ) ? reset( $terms ) : null;
 ?>
 
 <div class="pdp-page">
-    <div class="pdp-container">
+    <div class="pdp-container tc-container">
 
         <nav class="pdp-breadcrumb" aria-label="Breadcrumb">
             <a href="<?php echo esc_url( home_url() ); ?>">Inicio</a>

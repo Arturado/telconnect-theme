@@ -1,5 +1,5 @@
 <section class="venta-soporte">
-    <div class="vs-container">
+    <div class="vs-container tc-container">
         <h2 class="vs-title">¿En qué te ayudamos?</h2>
         <p class="vs-subtitle">Dos equipos, dos canales, cero derivaciones. Elige el que necesitas y te responde una persona.</p>
 

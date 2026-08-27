@@ -1,14 +1,13 @@
 /* ===== Devices Complementos ===== */
 .devices-complementos {
-    padding: 80px 80px 48px;
+    padding: 80px 0 48px;
     background: #fff;
     text-align: center;
 }
 
-.dc-container {
-    max-width: 1280px;
-    margin: 0 auto;
-}
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .dc-container en
+   devices-complementos.php — mismo margen que .header-inner en todo el sitio. */
 
 .dc-eyebrow {
     display: block;

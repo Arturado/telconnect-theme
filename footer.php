@@ -1,5 +1,5 @@
 <footer class="site-footer">
-    <div class="footer-container">
+    <div class="footer-container tc-container">
         <div class="footer-top">
             <div class="footer-brand">
                 <a href="<?php echo home_url(); ?>" class="footer-logo">

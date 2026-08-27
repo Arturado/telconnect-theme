@@ -15,24 +15,23 @@
    ===================================================== */
 
 .crt-page {
-    padding: 36px 80px 88px;
+    padding: 36px 0 88px;
     background: #FFF;
 }
 
 @media (max-width: 900px) {
-    /* Bug #3: mismo patrón que pdp.css/checkout.css/plp.css — el padding
-       horizontal fijo del desktop (80px) deja casi sin ancho real el
-       contenido en mobile si no se agrega un override acá. 24px es el
-       mismo valor que ya usan las demás páginas de WooCommerce del sitio. */
+    /* Solo ajuste vertical para mobile — el horizontal ya no vive acá,
+       lo aporta .tc-container (con sus propios breakpoints) en
+       .crt-container. */
     .crt-page {
-        padding: 24px 24px 64px;
+        padding: 24px 0 64px;
     }
 }
 
-.crt-container {
-    max-width: 1280px;
-    margin: 0 auto;
-}
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .crt-container en
+   woocommerce/cart/cart.php — mismo margen que .header-inner en todo
+   el sitio. */
 
 /* ===== Header: título + contador + stepper de pasos ===== */
 .crt-header {

@@ -1,14 +1,13 @@
 /* ===== Parking Teaser ===== */
 .parking-teaser {
-    padding: 96px 80px 60px;
+    padding: 96px 0 60px;
     background: #F3F3F3;
     text-align: center;
 }
 
-.pt-container {
-    max-width: 1280px;
-    margin: 0 auto;
-}
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .pt-container en
+   parking-teaser.php — mismo margen que .header-inner en todo el sitio. */
 
 .pt-eyebrow {
     display: block;

@@ -3,17 +3,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 64px 80px;
+    padding: 64px 0;
     background: #fff;
 }
 
+/* Márgen lateral (antes max-width:1280px acá): ahora lo aporta
+   .tc-container (main.css), aplicado junto a .faqp-container en
+   faq-parking.php — mismo margen que .header-inner en todo el sitio. */
 .faqp-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 48px;
-    width: 100%;
-    max-width: 1280px;
 }
 
 .faqp-head {

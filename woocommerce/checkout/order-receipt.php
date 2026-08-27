@@ -37,7 +37,7 @@ $chk_receipt_cancelled = isset( $_GET['x_result'] ) && 'failed' === $_GET['x_res
 ?>
 
 <div class="chk-page chk-thankyou-page chk-receipt-page">
-    <div class="chk-container chk-thankyou-container">
+    <div class="chk-container chk-thankyou-container tc-container">
         <div class="chk-thankyou-card chk-thankyou-card--simple">
 
             <?php if ( $chk_receipt_cancelled ) : ?>

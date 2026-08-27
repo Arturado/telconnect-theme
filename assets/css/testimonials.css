@@ -9,13 +9,17 @@
     margin: 0 auto;
 }
 
+/* Márgen lateral del heading (antes max-width:1280px + padding:80px
+   acá): ahora lo aporta .tc-container (main.css), aplicado junto a
+   .ts-head en testimonials.php — mismo margen que .header-inner. Ojo:
+   NO se toca .ts-container/.testimonials, que se quedan full-bleed a
+   propósito para la vitrina animada de cards (ver comentario debajo,
+   técnica width:100vw). Solo el heading de arriba se realinea. */
 .ts-head {
     display: flex;
     align-items: center;
     gap: 40px;
-    max-width: 1280px;
-    margin: 0 auto 48px;
-    padding: 0 80px;
+    margin-bottom: 48px;
 }
 
 .ts-title {
@@ -245,7 +249,6 @@
     .ts-head {
         flex-direction: column;
         align-items: flex-start;
-        padding: 0 20px;
         gap: 20px;
     }
     .ts-title {

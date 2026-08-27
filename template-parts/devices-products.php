@@ -1,5 +1,5 @@
 <section class="devices-products">
-    <div class="dp-container">
+    <div class="dp-container tc-container">
         <span class="dp-eyebrow">Elige tu máquina</span>
         <h2 class="dp-title">Todo parte por elegir el equipo correcto.</h2>
         <p class="dp-subtitle">Cualquiera que elijas te conecta al ecosistema completo desde el primer día. Si no sabes cuál te sirve, escríbenos y en dos preguntas te lo decimos.</p>

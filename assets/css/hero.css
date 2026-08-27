@@ -20,13 +20,14 @@
     background: rgba(0, 0, 0, 0.5);
 }
 
+/* Márgen lateral (antes max-width:1280px + padding:80px acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .hero-content en
+   hero.php — mismo margen que .header-inner. El fondo (.hero-bg) se
+   queda full-bleed, solo el contenido (badge/título/texto/botones) se
+   realinea. */
 .hero-content {
     position: relative;
     z-index: 2;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 80px;
-    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -79,7 +80,7 @@
 /* Valores exactos de recursos/mobile/hero/figma-hero-mobile.css (frame 390px) */
 @media (max-width: 900px) {
     .hero-content {
-        padding: 0 20px 40px;
+        padding-bottom: 40px;
         gap: 18px;
         align-items: flex-start;
     }

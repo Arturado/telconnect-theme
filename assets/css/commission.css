@@ -1,14 +1,13 @@
 /* ===== Commission ===== */
 .commission {
-    padding: 40px 80px;
+    padding: 40px 0;
     background: #fff;
     text-align: center;
 }
 
-.cm-container {
-    max-width: 1280px;
-    margin: 0 auto;
-}
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .cm-container en
+   commission.php — mismo margen que .header-inner en todo el sitio. */
 
 .cm-eyebrow {
     display: block;

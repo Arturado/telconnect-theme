@@ -20,20 +20,23 @@
    ===================================================== */
 
 .chk-page {
-    padding: 36px 80px 88px;
+    padding: 36px 0 88px;
     background: #FFF;
 }
 
 @media (max-width: 900px) {
+    /* Solo ajuste vertical para mobile — el horizontal ya no vive acá,
+       lo aporta .tc-container (con sus propios breakpoints) en
+       .chk-container. */
     .chk-page {
-        padding: 24px 24px 64px;
+        padding: 24px 0 64px;
     }
 }
 
-.chk-container {
-    max-width: 1280px;
-    margin: 0 auto;
-}
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .chk-container en
+   form-checkout.php / thankyou.php / order-receipt.php — mismo margen
+   que .header-inner en todo el sitio. */
 
 /* ===== Header: título + subtítulo + stepper ===== */
 .chk-header {

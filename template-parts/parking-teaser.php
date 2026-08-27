@@ -1,5 +1,5 @@
 <section class="parking-teaser">
-    <div class="pt-container">
+    <div class="pt-container tc-container">
         <span class="pt-eyebrow">Nuestra solución exclusiva</span>
         <h2 class="pt-title">Gestiona tu estacionamiento con confianza.</h2>
         <p class="pt-subtitle">Telconnect Parking corre en la misma máquina para aceptar pagos. Un solo sistema para controlar accesos, cobrar e imprimir el ticket.</p>

@@ -1,13 +1,12 @@
 /* ===== FAQ ===== */
 .faq {
-    padding: 96px 80px;
+    padding: 96px 0;
     background: #fff;
 }
 
-.faq-container {
-    max-width: 1280px;
-    margin: 0 auto;
-}
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .faq-container en
+   faq.php — mismo margen que .header-inner en todo el sitio. */
 
 .faq-eyebrow {
     display: block;

@@ -1,5 +1,5 @@
 <section class="commission">
-    <div class="cm-container">
+    <div class="cm-container tc-container">
         <span class="cm-eyebrow">Comisiones</span>
         <h2 class="cm-title">Pagas solo cuando vendes.<br>Nunca por tener la máquina.</h2>
         <p class="cm-subtitle">Una sola tarifa para débito, crédito y prepago nacional. Sin tramos, sin letra chica y sin costo por emitir boletas.</p>

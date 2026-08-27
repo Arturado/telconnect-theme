@@ -20,7 +20,7 @@ $plp_current_term = is_tax( 'product_cat' ) ? get_queried_object() : null;
 ?>
 
 <div class="plp-page">
-    <div class="plp-container">
+    <div class="plp-container tc-container">
         <span class="plp-eyebrow"><?php esc_html_e( 'Catálogo', 'telconnect' ); ?></span>
         <h1 class="plp-title"><?php echo esc_html( wp_strip_all_tags( woocommerce_page_title( false ) ) ); ?></h1>
 

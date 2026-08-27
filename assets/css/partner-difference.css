@@ -1,13 +1,12 @@
 /* ===== Partner Difference ===== */
 .partner-difference {
-    padding: 96px 80px;
+    padding: 96px 0;
     background: #fff;
 }
 
-.pd-container {
-    max-width: 1280px;
-    margin: 0 auto;
-}
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .pd-container en
+   partner-difference.php — mismo margen que .header-inner en todo el sitio. */
 
 .pd-eyebrow {
     display: block;
@@ -286,7 +285,6 @@
     background-size: cover;
     background-position: center;
     justify-content: flex-start;
-    padding: 40px;
     position: relative;
 }
 

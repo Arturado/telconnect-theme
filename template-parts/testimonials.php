@@ -1,6 +1,6 @@
 <section class="testimonials">
     <div class="ts-container">
-        <div class="ts-head">
+        <div class="ts-head tc-container">
             <h2 class="ts-title">Negocios como el tuyo<br>ya están creciendo con Telconnect</h2>
             <div class="ts-proof">
                 <div class="ts-avatars">

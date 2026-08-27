@@ -1,15 +1,13 @@
 /* ===== Tienda Física ===== */
 .tienda-fisica {
-    padding: 40px 80px;
+    padding: 40px 0;
     background: #F3F3F3;
     text-align: center;
 }
 
-.tf-container {
-    max-width: 1280px;
-    margin: 0 auto;
-}
-
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .tf-container en
+   tienda-fisica.php — mismo margen que .header-inner en todo el sitio. */
 .tf-eyebrow {
     display: block;
     color: var(--color-eyebrow-blue);

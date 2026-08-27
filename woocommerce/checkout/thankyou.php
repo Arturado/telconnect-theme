@@ -23,7 +23,7 @@ $chk_ty_summary = ( $order && ! $order->has_status( array( 'failed', 'cancelled'
 ?>
 
 <div class="chk-page chk-thankyou-page">
-    <div class="chk-container chk-thankyou-container">
+    <div class="chk-container chk-thankyou-container tc-container">
 
         <?php
         if ( $order ) :

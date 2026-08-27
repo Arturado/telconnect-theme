@@ -1,13 +1,14 @@
 /* ===== Administración Remota ===== */
 .admrem {
-    padding: 80px 80px 0;
+    padding: 80px 0 0;
     background: var(--color-eyebrow-blue);
     overflow: hidden;
 }
 
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .admrem-container en
+   admin-remota.php — mismo margen que .header-inner en todo el sitio. */
 .admrem-container {
-    max-width: 1280px;
-    margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -89,6 +89,45 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0;
 }
 
+/**
+ * Contenedor global — mismo max-width y padding lateral que .header-inner
+ * (header.css), para que el margen izquierdo/derecho del contenido de
+ * CUALQUIER sección del sitio (Home, landings, PDP, PLP, cart, checkout,
+ * footer) coincida exactamente con dónde arranca el logo y termina el
+ * carrito en el header. Antes cada sección tenía su propio -container
+ * suelto (típicamente max-width:1280px sin padding propio, envuelto en
+ * un wrapper exterior con padding:80px) que en pantallas anchas dejaba
+ * el contenido 40px más adentro que el header (1280+80×2=1440 de caja,
+ * pero el padding vive "afuera" del contenido en vez de compartir la
+ * misma caja que .header-inner) — confirmado midiendo en vivo con
+ * getBoundingClientRect(), no era solo percepción visual.
+ *
+ * Reemplaza ese patrón: se aplica DIRECTO sobre lo que antes era el
+ * "-container" interno (no sobre el wrapper de fondo/full-bleed), que
+ * pierde su max-width/margin propios; el wrapper exterior pierde el
+ * padding horizontal (se queda solo con el vertical, si tenía).
+ * Breakpoints idénticos a .header-inner para que el margen no salte de
+ * valor en un punto distinto al del header.
+ */
+.tc-container {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+@media (min-width: 901px) and (max-width: 959px) {
+    .tc-container {
+        padding: 0 16px;
+    }
+}
+
+@media (max-width: 900px) {
+    .tc-container {
+        padding: 0 20px;
+    }
+}
+
 p {
     margin: 0;
 }

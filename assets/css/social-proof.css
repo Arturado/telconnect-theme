@@ -1,12 +1,13 @@
 /* ===== Social Proof ===== */
 .social-proof {
-    padding: 96px 80px;
+    padding: 96px 0;
     background: #F3F3F3;
 }
 
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .sp-container en
+   social-proof.php — mismo margen que .header-inner en todo el sitio. */
 .sp-container {
-    max-width: 1280px;
-    margin: 0 auto;
     text-align: left;
 }
 

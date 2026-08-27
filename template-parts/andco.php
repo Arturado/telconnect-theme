@@ -10,7 +10,7 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 <section class="andco">
-    <div class="andco-container">
+    <div class="andco-container tc-container">
         <div class="andco-text">
             <span class="andco-eyebrow">Más rápido que inmediato</span>
 

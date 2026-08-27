@@ -1,15 +1,13 @@
 /* ===== Venta y Soporte ===== */
 .venta-soporte {
-    padding: 96px 80px;
+    padding: 96px 0;
     background: #F3F3F3;
     text-align: center;
 }
 
-.vs-container {
-    max-width: 1280px;
-    margin: 0 auto;
-}
-
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .vs-container en
+   venta-soporte.php — mismo margen que .header-inner en todo el sitio. */
 .vs-title {
     font-family: var(--font-main);
     font-size: var(--text-section-title);

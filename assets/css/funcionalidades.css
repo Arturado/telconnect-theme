@@ -1,12 +1,13 @@
 /* ===== Funcionalidades ===== */
 .func {
-    padding: 96px 80px;
+    padding: 96px 0;
     background: #F3F3F3;
 }
 
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .func-container en
+   funcionalidades.php — mismo margen que .header-inner en todo el sitio. */
 .func-container {
-    max-width: 1280px;
-    margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 80px;

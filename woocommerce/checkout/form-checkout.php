@@ -62,7 +62,7 @@ $chk_total_now = tc_get_order_summary_breakdown()['total'];
 ?>
 
 <div class="chk-page" data-step="datos">
-    <div class="chk-container">
+    <div class="chk-container tc-container">
 
         <div class="chk-header">
             <div class="chk-title-block" data-panel="datos">

@@ -1,5 +1,5 @@
 <section class="faqp">
-    <div class="faqp-container">
+    <div class="faqp-container tc-container">
         <div class="faqp-head">
             <span class="faqp-eyebrow">Preguntas frecuentes</span>
             <h2 class="faqp-title">Aprende más sobre Telconnect Parking</h2>

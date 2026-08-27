@@ -1,5 +1,5 @@
 <section class="partner-difference">
-    <div class="pd-container">
+    <div class="pd-container tc-container">
         <span class="pd-eyebrow">La diferencia del partner</span>
         <h2 class="pd-title">La máquina es la misma. Telconnect la configura para tu rubro.</h2>
         <p class="pd-subtitle">Somos distribuidor autorizado TUU. Mismo precio, mismas comisiones y misma garantía que comprando directo, más un equipo que te acompaña desde la activación.</p>

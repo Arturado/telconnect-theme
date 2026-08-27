@@ -1,5 +1,5 @@
 <section class="tienda-fisica">
-    <div class="tf-container">
+    <div class="tf-container tc-container">
         <span class="tf-eyebrow">Tienda física</span>
         <h2 class="tf-title">¿Prefieres ir a buscarla?</h2>
         <p class="tf-subtitle">Pasa por nuestra tienda en Santiago y sales con la máquina funcionando. La configuramos, activamos tu cuenta y te enseñamos a usarla en el mismo mostrador.</p>

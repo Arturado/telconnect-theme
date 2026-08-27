@@ -27,14 +27,13 @@
 }
 
 .plp-page {
-    padding: 64px 24px 96px;
+    padding: 64px 0 96px;
     background: #fff;
 }
 
-.plp-container {
-    max-width: 1280px;
-    margin: 0 auto;
-}
+/* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
+   aporta .tc-container (main.css), aplicado junto a .plp-container en
+   archive-product.php — mismo margen que .header-inner en todo el sitio. */
 
 .plp-eyebrow {
     display: block;

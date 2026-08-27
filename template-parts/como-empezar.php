@@ -1,5 +1,5 @@
 <section class="empezar">
-    <div class="empezar-container">
+    <div class="empezar-container tc-container">
         <div class="empezar-head">
             <span class="empezar-eyebrow">Partir sin compromiso</span>
             <h2 class="empezar-title">Parte con quince días de prueba.</h2>

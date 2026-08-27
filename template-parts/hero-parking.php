@@ -1,7 +1,7 @@
 <section class="hp-hero">
     <div class="hp-hero-bg" style="background-image: url('<?php echo esc_url( get_template_directory_uri() . '/assets/img/hero-bg-parking.png' ); ?>');">
         <div class="hp-overlay"></div>
-        <div class="hp-content">
+        <div class="hp-content tc-container">
             <span class="hp-badge">App Exclusiva de Telconnect</span>
 
             <h1 class="hp-title">El único software de estacionamientos que corre dentro de tu máquina de pagos.</h1>
