@@ -861,10 +861,48 @@ function telconnect_enqueue_parking_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_parking_assets' );
 
+// Modal "Solicita tu prueba" del botón "Quiero la app andCo." (Home,
+// template-parts/andco.php) — componente separado del de Parking (propio
+// namespace amodal-*, ver assets/css/amodal.css y assets/js/amodal.js),
+// mismo backend AJAX (tc_submit_trial_request, más abajo).
+function telconnect_enqueue_andco_modal_assets() {
+    if ( ! is_front_page() ) {
+        return;
+    }
+
+    wp_enqueue_style(
+        'telconnect-amodal',
+        get_template_directory_uri() . '/assets/css/amodal.css',
+        array( 'telconnect-main' ),
+        tc_asset_version( '/assets/css/amodal.css' )
+    );
+
+    wp_enqueue_script(
+        'telconnect-amodal',
+        get_template_directory_uri() . '/assets/js/amodal.js',
+        array(),
+        tc_asset_version( '/assets/js/amodal.js' ),
+        true
+    );
+
+    wp_localize_script(
+        'telconnect-amodal',
+        'tcAmodal',
+        array(
+            'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'tc_trial_request' ),
+        )
+    );
+}
+add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_andco_modal_assets' );
+
 /**
  * ============================================================
- * AJAX — Modal "Solicita tu prueba" (Parking)
+ * AJAX — Modal "Solicita tu prueba"
  * ============================================================
+ * Compartido por los modales de Parking (pmodal.js) y AndCo (amodal.js) —
+ * ambos pegan a la misma acción con los mismos campos, cambia solo el
+ * "origen" enviado (Hero, Cómo Empezar, Planes, AndCo...).
  * 1. Valida (requeridos + RUT vía la misma WoocommercePlugin\helpers\RutValidator
  *    que ya usa el checkout, §8.1 — no se reinventa el algoritmo).
  * 2. Persiste vía tc_solicitudes_prueba_guardar() (plugin standalone,
@@ -923,17 +961,21 @@ function tc_ajax_submit_trial_request() {
     if ( function_exists( 'tc_solicitudes_prueba_guardar' ) ) {
         $resultado = tc_solicitudes_prueba_guardar( $datos );
         if ( is_wp_error( $resultado ) ) {
-            error_log( '[Telconnect Parking] tc_solicitudes_prueba_guardar() devolvió error: ' . $resultado->get_error_message() );
+            error_log( '[Telconnect Solicitud Prueba] tc_solicitudes_prueba_guardar() devolvió error: ' . $resultado->get_error_message() );
             wp_send_json_error( array( 'message' => 'No pudimos guardar tu solicitud. Escríbenos por WhatsApp mientras lo revisamos.' ), 500 );
         }
     } else {
         // El plugin de respaldo no está activo — no bloqueamos el envío del
         // correo por esto (el usuario igual debe poder solicitar la prueba),
         // pero queda constancia en el log para no perder el rastro del bug.
-        error_log( '[Telconnect Parking] tc_solicitudes_prueba_guardar() no existe — activa el plugin "Telconnect - Solicitudes Prueba".' );
+        error_log( '[Telconnect Solicitud Prueba] tc_solicitudes_prueba_guardar() no existe — activa el plugin "Telconnect - Solicitudes Prueba".' );
     }
 
-    $subject = 'Nueva solicitud de prueba — Telconnect Parking';
+    // Asunto genérico a propósito: $origen es el nombre de la sección/botón
+    // (Hero, Cómo Empezar, Planes, AndCo...), no el de la landing — ya viaja
+    // en el body como "Origen: X". El handler es compartido por varios
+    // formularios del sitio, no solo el de Parking.
+    $subject = 'Nueva solicitud de prueba — Telconnect';
     $body    = "Nombre: {$nombre}\n"
         . "RUT: {$rut}\n"
         . "Teléfono: {$telefono}\n"
@@ -948,7 +990,7 @@ function tc_ajax_submit_trial_request() {
     // devolver false aunque los datos estén bien armados (no hay MTA).
     error_log(
         sprintf(
-            '[Telconnect Parking] Solicitud de prueba de "%s" (%s) — wp_mail() a %s: %s',
+            '[Telconnect Solicitud Prueba] Solicitud de prueba de "%s" (%s) — wp_mail() a %s: %s',
             $nombre,
             $email,
             TC_TRIAL_REQUEST_EMAIL,

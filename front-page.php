@@ -13,4 +13,7 @@
 <?php get_template_part( 'template-parts/tienda-fisica' ); ?>
 <?php get_template_part( 'template-parts/faq' ); ?>
 <?php get_template_part( 'template-parts/final-cta' ); ?>
+
+<?php get_template_part( 'template-parts/modal-prueba-andco' ); ?>
+
 <?php get_footer(); ?>

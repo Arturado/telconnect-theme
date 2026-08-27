@@ -25,7 +25,7 @@ defined( 'ABSPATH' ) || exit;
                 <img class="andco-brand-haulmer" src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/andco/Haulmer_author_endors.png' ); ?>" alt="Una marca Haulmer" width="132" height="42">
             </div>
 
-            <a href="#" class="btn btn-primary andco-cta"><span class="btn-label-mask"><span class="btn-label">Quiero la app andCo.</span><span class="btn-label-ghost" aria-hidden="true">Quiero la app andCo.</span></span></a>
+            <a href="#" class="btn btn-primary andco-cta" data-amodal-open data-amodal-origen="AndCo"><span class="btn-label-mask"><span class="btn-label">Quiero la app andCo.</span><span class="btn-label-ghost" aria-hidden="true">Quiero la app andCo.</span></span></a>
         </div>
 
         <div class="andco-visual">
