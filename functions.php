@@ -4,6 +4,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // Centralización de contacto — cambiar acá, se propaga a todo el sitio
 define( 'TC_WHATSAPP_NUMBER', '56999979260' ); // TODO: reemplazar con el número real del cliente
 
+// Caso especial: el botón "Escribir a Soporte" de Parking (venta-soporte.php)
+// usa un número distinto al resto del sitio — no reemplaza TC_WHATSAPP_NUMBER.
+define( 'TC_WHATSAPP_NUMBER_PARKING_SUPPORT', '56985729297' );
+
 // Destino de las notificaciones por email del modal "Solicita tu prueba"
 // de Parking (tc_ajax_submit_trial_request(), más abajo). Email temporal
 // del usuario — TODO: reemplazar por el email real del cliente cuando lo
@@ -17,9 +21,11 @@ define( 'TC_TRIAL_REQUEST_EMAIL', 'hola@arturodev.info' );
  * Devuelve la URL de WhatsApp lista para usar en href.
  * Uso: <a href="<?php echo tc_whatsapp_url(); ?>">...</a>
  * Con mensaje precargado: tc_whatsapp_url('Hola, quiero cotizar una máquina')
+ * Con número distinto al de TC_WHATSAPP_NUMBER (caso especial, ver
+ * TC_WHATSAPP_NUMBER_PARKING_SUPPORT): tc_whatsapp_url( '', TC_WHATSAPP_NUMBER_PARKING_SUPPORT )
  */
-function tc_whatsapp_url( $message = '' ) {
-    $url = 'https://wa.me/' . TC_WHATSAPP_NUMBER;
+function tc_whatsapp_url( $message = '', $number = TC_WHATSAPP_NUMBER ) {
+    $url = 'https://wa.me/' . $number;
     if ( $message ) {
         $url .= '?text=' . rawurlencode( $message );
     }

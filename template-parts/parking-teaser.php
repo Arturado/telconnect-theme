@@ -25,7 +25,7 @@
                 <div class="pt-card-text">
                     <h3>Tu estacionamiento en una sola máquina.</h3>
                     <p>El mismo equipo que cobra con tarjeta imprime el ticket y emite la boleta.</p>
-                    <a href="<?php echo esc_url( home_url( '/tienda' ) ); ?>" class="pt-btn-outline"><span class="btn-label-mask"><span class="btn-label">Comprar una máquina</span><span class="btn-label-ghost" aria-hidden="true">Comprar una máquina</span></span></a>
+                    <a href="<?php echo esc_url( home_url( '/telconnect-parking' ) ); ?>" class="pt-btn-outline"><span class="btn-label-mask"><span class="btn-label">Comprar una máquina</span><span class="btn-label-ghost" aria-hidden="true">Comprar una máquina</span></span></a>
                 </div>
             </div>
         </div>
