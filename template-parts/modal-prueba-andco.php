@@ -20,9 +20,9 @@
         </button>
 
         <div class="amodal-view amodal-view-form" id="amodal-view-form">
-            <span class="amodal-eyebrow">Prueba de 15 días</span>
-            <h2 class="amodal-title" id="amodal-title">Solicita tu prueba</h2>
-            <p class="amodal-desc">Déjanos tus datos y te contactamos el mismo día hábil para activarla. No pedimos tarjeta ni compromiso.</p>
+            <span class="amodal-eyebrow">ABONO AL INSTANTE</span>
+            <h2 class="amodal-title" id="amodal-title">Solicita Andco y recibe tus abonos al instante</h2>
+            <p class="amodal-desc">Completa tus datos y solicita tu cuenta digital Andco. Te contactaremos a la brevedad para ayudarte a activarla y comenzar a recibir el abono de tus ventas al instante.</p>
 
             <form class="amodal-form" id="amodal-form" novalidate>
                 <input type="hidden" name="origen" id="amodal-origen" value="">

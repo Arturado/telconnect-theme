@@ -12,7 +12,7 @@
                 <h4>Sitio</h4>
                 <ul>
                     <li><a href="<?php echo home_url(); ?>">Inicio</a></li>
-                    <li><a href="<?php echo esc_url( home_url( '/tienda' ) ); ?>">Máquinas</a></li>
+                    <li><a href="<?php echo esc_url( home_url( '/#maquinas' ) ); ?>">Máquinas</a></li>
                     <li><a href="<?php echo esc_url( home_url( '/#comisiones' ) ); ?>">Comisiones</a></li>
                     <li><a href="<?php echo esc_url( home_url( '/#faq' ) ); ?>">Preguntas frecuentes</a></li>
                 </ul>
@@ -23,7 +23,7 @@
                 <ul>
                     <li><a href="<?php echo esc_url( home_url( '/telconnect-parking' ) ); ?>">Qué es</a></li>
                     <li><a href="<?php echo esc_url( home_url( '/telconnect-parking#funcionalidades' ) ); ?>">Funcionalidades</a></li>
-                    <li><a href="#">Plataforma web</a></li>
+                    <li><a href="<?php echo esc_url( home_url( '/telconnect-parking#plataforma' ) ); ?>">Plataforma web</a></li>
                     <li><a href="<?php echo esc_url( home_url( '/telconnect-parking#planes' ) ); ?>">Planes</a></li>
                     <li><a href="<?php echo esc_url( home_url( '/telconnect-parking#como-empezar' ) ); ?>">Cómo empezar</a></li>
                 </ul>
@@ -33,7 +33,7 @@
                 <h4>Contacto</h4>
                 <ul>
                     <li><a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener">Contactar ventas</a></li>
-                    <li><a href="<?php echo tc_whatsapp_url(); ?>" target="_blank" rel="noopener">Soporte técnico</a></li>
+                    <li><a href="<?php echo tc_whatsapp_url( '', TC_WHATSAPP_NUMBER_PARKING_SUPPORT ); ?>" target="_blank" rel="noopener">Soporte técnico</a></li>
                     <li><a href="#">Trabaja con nosotros</a></li>
                 </ul>
             </div>

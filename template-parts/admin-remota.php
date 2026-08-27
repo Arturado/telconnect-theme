@@ -1,6 +1,6 @@
 <section class="admrem">
     <div class="admrem-container tc-container">
-        <div class="admrem-head">
+        <div id= "plataforma" class="admrem-head">
             <span class="admrem-eyebrow">Administración remota</span>
             <h2 class="admrem-title">Mira tu estacionamiento sin estar en tu estacionamiento</h2>
             <p class="admrem-subtitle">Todo lo que pasa en la caseta llega al navegador, en tu computador o tu celular. Sin llamar al operador y sin esperar el cierre del día.</p>

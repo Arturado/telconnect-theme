@@ -1,6 +1,6 @@
 <section class="plan">
     <div class="plan-container tc-container">
-        <div class="plan-head">
+        <div id="planes" class="plan-head">
             <span class="plan-eyebrow">Cómo se cobra el software</span>
             <h2 class="plan-title">Una licencia por operador. Ni una más.</h2>
         </div>

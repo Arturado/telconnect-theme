@@ -109,7 +109,16 @@
 /* Card grande de stat */
 .sp-card-stat {
     box-sizing: border-box;
-    flex: 0 0 628px;
+    /* flex-grow:1 (a diferencia de .sp-card, que se queda fija en 302px):
+       628+24+302+24+302 = 1280px, el viejo max-width de la sección — con
+       .sp-container ahora en .tc-container (1360px de contenido) sobran
+       80px que quedaban vacíos a la derecha del grid (flex-start por
+       default). Esta card absorbe ese espacio porque su contenido es
+       fluido (sin anchos internos fijos) — no se toca el gap de 24px ni
+       el ancho de las .sp-card chicas, que sí son pixel-perfect del
+       Figma. flex-shrink:0 se mantiene para no alterar el umbral de
+       wrap ya calibrado (comentario de .sp-grid arriba). */
+    flex: 1 0 628px;
     min-height: 370px;
     display: flex;
     flex-direction: column;
@@ -122,8 +131,9 @@
 
 .sp-stat-top {
     display: flex;
-    align-items: center;
-    gap: 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
 }
 
 .sp-stat-badge {

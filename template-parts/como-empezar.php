@@ -1,6 +1,6 @@
 <section class="empezar">
     <div class="empezar-container tc-container">
-        <div class="empezar-head">
+        <div id="como-empezar" class="empezar-head">
             <span class="empezar-eyebrow">Partir sin compromiso</span>
             <h2 class="empezar-title">Parte con quince días de prueba.</h2>
             <p class="empezar-subtitle">No te pedimos que decidas hoy. Te dejamos el sistema funcionando en tu estacionamiento y decides con la operación a la vista.</p>

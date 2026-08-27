@@ -1,6 +1,6 @@
 <section class="faq">
     <div class="faq-container tc-container">
-        <span class="faq-eyebrow">Preguntas frecuentes</span>
+        <span id="faq" class="faq-eyebrow">Preguntas frecuentes</span>
         <h2 class="faq-title">Todo lo que necesitas saber antes de comprar</h2>
 
         <div class="faq-list">

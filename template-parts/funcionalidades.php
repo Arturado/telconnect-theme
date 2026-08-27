@@ -1,6 +1,6 @@
 <section class="func">
     <div class="func-container tc-container">
-        <div class="func-head">
+        <div id="funcionalidades" class="func-head">
             <span class="func-eyebrow">Todo lo que hace</span>
             <h2 class="func-title">Cada función nace de un problema real de estacionamiento</h2>
         </div>
