@@ -7,6 +7,10 @@
     background: #fff;
 }
 
+.woocommerce div.product div.images {
+    margin-bottom: 0!important;
+}
+
 /* Márgen lateral (antes max-width:1280px + margin:auto acá): ahora lo
    aporta .tc-container (main.css), aplicado junto a .pdp-container en
    content-single-product.php — mismo margen que .header-inner en todo
@@ -689,7 +693,7 @@
     border: none;
     border-radius: 999px;
     font-family: var(--font-body);
-    font-weight: var(--weight-medium);
+    font-weight: 700;
     font-size: 14px;
     line-height: 20px;
     text-decoration: none;
@@ -820,7 +824,7 @@
     color: var(--color-body);
     padding-top: 20px;
     border-top: 1px solid #EEF0F3;
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: 6px;
 }
