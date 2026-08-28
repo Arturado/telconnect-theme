@@ -431,7 +431,7 @@
     }
     .pd-stats-totals {
         gap: 9px;
-        padding: 0;
+        padding: 10px;
     }
     .pd-stats-totals > div {
         padding: 12px 12px 8px;

@@ -229,7 +229,7 @@
     /* Figma mobile trae todo el texto de cabecera alineado a la
        izquierda (a diferencia del text-align:center de desktop). */
     .tienda-fisica {
-        padding: 64px 20px;
+        padding: 64px 1px;
         text-align: left;
     }
     .tf-eyebrow {

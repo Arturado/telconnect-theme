@@ -1,6 +1,6 @@
 <section class="social-proof">
     <div class="sp-container tc-container">
-        <span class="sp-eyebrow">Trayectoria y reconocimiento</span>
+        <span class="sp-eyebrow">TRAYECTORIA Y RECONOCIMIENTO</span>
         <h2 class="sp-title">Hay partners. Y hay trayectoria.</h2>
         <p class="sp-subtitle">No todos los partners llegan hasta aquí. Nuestra experiencia, escala y reconocimientos nos ponen un paso adelante dentro del ecosistema TUU.</p>
 
