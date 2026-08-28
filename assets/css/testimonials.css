@@ -114,6 +114,10 @@
     display: flex;
     gap: 24px;
     width: max-content;
+    /* Corrección del loop del marquee = mitad del gap (ver @keyframes
+       ts-marquee) — variable para poder recalcularla en mobile cuando
+       el gap cambia, sin duplicar el @keyframes. */
+    --ts-gap-correction: 12px;
     animation: ts-marquee 45s linear infinite;
 }
 
@@ -127,7 +131,7 @@
     }
     to {
         /* Se traslada exactamente el ancho de UN set (la mitad del track, ya que está duplicado) */
-        transform: translateX(calc(-50% - 12px));
+        transform: translateX(calc(-50% - var(--ts-gap-correction)));
     }
 }
 
@@ -242,9 +246,10 @@
     margin: 0;
 }
 
+/* Valores exactos de recursos/mobile/testimonials/figma.css (frame 390px) */
 @media (max-width: 900px) {
     .testimonials {
-        padding: 60px 0;
+        padding: 40px 0;
     }
     .ts-head {
         flex-direction: column;
@@ -252,11 +257,20 @@
         gap: 20px;
     }
     .ts-title {
-        font-size: 28px;
-        line-height: 1.3;
+        font-size: 30px;
+        line-height: 34px;
     }
     .ts-proof {
         align-items: flex-start;
+    }
+    /* Bubble "+N" del avatar stack y estrellas: negro en mobile según
+       figma.css, distinto del azul de desktop — overrides acotados acá,
+       no se toca la regla base compartida con desktop. */
+    .ts-avatar-count {
+        background: #0D0F15;
+    }
+    .ts-stars {
+        color: #000;
     }
     .ts-viewport {
         /* Cancela el full-bleed desktop de arriba — mobile se queda
@@ -266,8 +280,45 @@
         margin-left: 0;
         padding: 0 20px;
     }
+    .ts-track {
+        gap: 12px;
+        --ts-gap-correction: 6px;
+    }
     .ts-card {
-        flex: 0 0 320px;
-        height: 460px;
+        flex: 0 0 350px;
+        height: 420px;
+        padding: 16px 20px;
+        border-radius: 24px;
+    }
+    .ts-card-scrim-top {
+        height: 189px;
+    }
+    .ts-card-scrim-bottom {
+        height: 302px;
+    }
+    .ts-card-name {
+        font-size: 18px;
+        line-height: 24px;
+    }
+    .ts-card-dot {
+        font-size: 18px;
+        line-height: 24px;
+    }
+    .ts-card-biz {
+        font-size: 16px;
+        line-height: 22px;
+    }
+    .ts-card-stat {
+        font-size: 40px;
+        line-height: 44px;
+        margin-bottom: 8px;
+    }
+    .ts-card-desc {
+        font-size: 18px;
+        line-height: 25px;
+    }
+    .ts-card-quote {
+        font-size: 20px;
+        line-height: 28px;
     }
 }

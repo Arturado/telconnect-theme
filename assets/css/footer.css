@@ -139,29 +139,57 @@
 
 @media (max-width: 900px) {
     .site-footer {
-        padding: 48px 20px 32px;
+        padding: 56px 20px 28px;
     }
+    /* El capture de Figma pasa las 4 .footer-col a una grilla de 2
+       columnas (no a un stack de 1 por fila) — .footer-brand ocupa la
+       fila completa arriba. row-gap:36 es el espacio Figma entre las
+       dos filas de columnas; el primer salto (marca → columnas) es
+       mayor (44px), así que se suma con margin-bottom en .footer-brand
+       en vez de tocar el row-gap general. */
     .footer-top {
-        flex-wrap: wrap;
-        gap: 32px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 20px;
+        row-gap: 36px;
+        margin-bottom: 40px;
     }
     .footer-brand {
-        flex: 1 1 100%;
+        grid-column: 1 / -1;
+        margin-bottom: 8px;
     }
-    /* La base desktop define min-width:195px (arriba) — sin resetearlo acá,
-       2 columnas a 195px mínimo no entran en el ancho mobile disponible y
-       fuerzan un stack de 1 por fila "por accidente". Se deja explícito
-       en vez de depender de ese efecto colateral. */
+    /* La base desktop define min-width:195px (arriba) — a 2 columnas de
+       165px (350px de contenido - 20px de gap, entre 2) ese mínimo
+       rompe la grilla, hay que resetearlo explícito. */
     .footer-col {
-        flex: 1 1 100%;
         min-width: 0;
+    }
+    .footer-col h4 {
+        font-size: 19px;
+        line-height: 24px;
+        margin-bottom: 28px;
+    }
+    .footer-col ul {
+        gap: 12px;
+    }
+    .footer-col a {
+        font-size: 15px;
+        line-height: 21px;
+    }
+    .footer-wordmark {
+        margin-bottom: 20px;
+    }
+    .footer-divider {
+        margin-bottom: 20px;
     }
     .footer-legal {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         gap: 8px;
     }
     .footer-legal span {
-        text-align: left !important;
+        text-align: center !important;
+        font-size: 13px;
+        line-height: 19px;
     }
 }

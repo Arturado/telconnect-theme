@@ -384,14 +384,139 @@
 
 @media (max-width: 700px) {
     .social-proof {
-        padding: 60px 20px;
+        padding: 64px 20px;
+    }
+    .sp-eyebrow {
+        font-size: 11px;
+        margin-bottom: 10px;
     }
     .sp-title {
         font-size: 32px;
-        line-height: 1.3;
+        line-height: 38px;
+        letter-spacing: -0.02em;
+        max-width: 246px;
+        margin: 0 0 10px;
+    }
+    .sp-subtitle {
+        font-size: 15px;
+        line-height: 23px;
+        margin-bottom: 24px;
+    }
+
+    /* Cards chicas y card de stat: sin el min-height:370 de desktop
+       (pensado para llenar la fila junto a la card grande), acá cada
+       card se achica a su contenido real (~293px en Figma). */
+    .sp-card,
+    .sp-card-stat {
+        min-height: 0;
+        padding: 24px;
+    }
+    .sp-card-stat {
+        padding: 28px 24px;
+    }
+    .sp-badge-icon {
+        width: 44px;
+        height: 44px;
+        margin-bottom: 24px;
+    }
+    .sp-badge-icon img {
+        width: 20px;
+        height: 20px;
+    }
+    .sp-card h3 {
+        font-size: 22px;
+        line-height: 28px;
+        letter-spacing: -0.01em;
+        margin: 0 0 24px;
+        padding: 0;
+    }
+    .sp-card p {
+        font-size: 15px;
+        line-height: 23px;
+        padding: 0;
+    }
+
+    .sp-stat-badge {
+        width: 44px;
+        height: 44px;
     }
     .sp-stat-number {
-        font-size: 48px;
-        line-height: 1.1;
+        font-size: 44px;
+        line-height: 48px;
+    }
+    .sp-stat-label {
+        font-size: 12px;
+        line-height: 16px;
+    }
+    .sp-stat-note {
+        gap: 12px;
+    }
+    .sp-stat-note-icon {
+        width: 34px;
+        height: 34px;
+    }
+    .sp-stat-note-icon img {
+        width: 16px;
+        height: 16px;
+    }
+    .sp-stat-note p {
+        font-size: 14px;
+        line-height: 21px;
+    }
+
+    .sp-trust-panel {
+        padding: 22px 20px;
+        margin-bottom: 24px;
+    }
+    .sp-trust-header {
+        gap: 12px;
+        font-size: 16px;
+        line-height: 22px;
+        letter-spacing: -0.004em;
+    }
+    .sp-trust-header-badge {
+        width: 32px;
+        height: 32px;
+    }
+    .sp-trust-header-badge img {
+        width: 16px;
+        height: 16px;
+    }
+    .sp-trust-grid {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        gap: 24px;
+    }
+    .sp-trust-item {
+        flex: 1 1 100%;
+    }
+    .sp-trust-icon {
+        width: 44px;
+        height: 44px;
+    }
+    .sp-trust-item strong {
+        font-size: 14px;
+        line-height: 19px;
+        margin-bottom: 3px;
+    }
+    .sp-trust-item p {
+        font-size: 12px;
+        line-height: 17px;
+    }
+
+    .sp-footnote {
+        justify-content: flex-start;
+        gap: 10px;
+        font-size: 13px;
+        line-height: 19px;
+    }
+    .sp-footnote-badge {
+        width: 30px;
+        height: 30px;
+    }
+    .sp-footnote-badge img {
+        width: 16px;
+        height: 16px;
     }
 }

@@ -107,8 +107,8 @@
             <div class="dp-feature-item">
                 <img class="dp-feature-icon" src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/icons/camion.svg' ); ?>" alt="">
                 <div>
-                    <strong>Despacho a todo Chile</strong>
-                    <p>A todo Chile.</p>
+                    <strong>Despacho totalmente gratis</strong>
+                    <p>A todo Chile, sin costo de envío.</p>
                 </div>
             </div>
             <div class="dp-feature-divider"></div>

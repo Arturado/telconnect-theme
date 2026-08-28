@@ -226,18 +226,106 @@
 }
 
 @media (max-width: 700px) {
+    /* Figma mobile trae todo el texto de cabecera alineado a la
+       izquierda (a diferencia del text-align:center de desktop). */
     .tienda-fisica {
-        padding: 40px 20px;
+        padding: 64px 20px;
+        text-align: left;
+    }
+    .tf-eyebrow {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        margin-bottom: 10px;
     }
     .tf-title {
         font-size: 32px;
-        line-height: 1.3;
+        line-height: 38px;
+        letter-spacing: -0.02em;
+        margin: 0 0 10px;
     }
+    .tf-subtitle {
+        font-size: 15px;
+        line-height: 23px;
+        margin: 0 0 24px;
+    }
+
     .tf-info-card {
-        padding: 28px 24px;
+        padding: 22px 20px;
+        border-radius: 16px;
     }
+    /* Figma dibuja el separador entre filas como una línea aparte
+       (1px) en vez del border-bottom que ya usa esta sección — se
+       mantiene la técnica existente, solo se recalcula el padding
+       (9px arriba + 9px abajo + 1px de borde = 19px, igual al
+       padding-top:18px de la fila siguiente + línea de Figma). */
+    .tf-info-row {
+        gap: 14px;
+        padding: 9px 0;
+    }
+    .tf-info-row:first-child {
+        padding-top: 0;
+    }
+    .tf-info-row:last-of-type {
+        padding-bottom: 0;
+    }
+    .tf-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+    }
+    .tf-icon img {
+        width: 20px;
+        height: 20px;
+    }
+    .tf-info-text {
+        gap: 4px;
+    }
+    .tf-info-label {
+        font-size: 11px;
+        line-height: 15px;
+    }
+    .tf-info-text p {
+        font-size: 15px;
+        line-height: 22px;
+    }
+    .tf-btn-primary {
+        width: 100%;
+        box-sizing: border-box;
+        justify-content: center;
+        margin-top: 22px;
+        padding: 14px 24px;
+        font-size: 15px;
+        line-height: 20px;
+    }
+    .tf-btn-arrow {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Mapa embebido: mismo contenedor/iframe, solo cambia tamaño y
+       radio de borde para mobile (ver figma.css: "FOTO", 350x220,
+       radius 16 — el mockup de Figma usa una foto estática ahí, pero
+       el elemento real sigue siendo el iframe de Google Maps). */
+    .tf-map {
+        height: 220px;
+        border-radius: 16px;
+    }
+
     .tf-cta-banner {
         flex-direction: column;
         align-items: flex-start;
+        padding: 20px;
+        gap: 12px;
+        border-radius: 16px;
+    }
+    .tf-cta-banner strong {
+        font-size: 16px;
+        line-height: 23px;
+        letter-spacing: -0.004em;
+        margin-bottom: 12px;
+    }
+    .tf-btn-cta {
+        width: 100%;
+        box-sizing: border-box;
     }
 }

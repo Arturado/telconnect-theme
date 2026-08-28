@@ -61,12 +61,30 @@
     display: block;
 }
 
+/* Valores exactos de recursos/mobile/devices-complementos/figma.css (frame 390px) */
 @media (max-width: 900px) {
     .devices-complementos {
-        padding: 48px 20px;
+        /* Horizontal ya lo aporta .tc-container (20px en mobile, ver
+           main.css) sobre .dc-container — acá solo va el vertical, mismo
+           criterio que .hero-content en hero.css. */
+        padding: 64px 0;
     }
     .dc-title {
-        font-size: 32px;
-        line-height: 1.3;
+        font-size: 30px;
+        line-height: 34px;
+        margin-bottom: 14px;
+    }
+
+    /* .dc-card comparte .dp-card con Devices Products (ver devices-products.css),
+       que en mobile pasó a flex:0 0 100% (sin peek, a pedido). Acá el
+       capture.png SÍ muestra peek del card siguiente/anterior a los
+       costados — se revierte solo para .dc-card, con #dc-grid para
+       ganarle en especificidad a la regla compartida sin importar el
+       orden de carga de los CSS. */
+    #dc-grid .dc-card {
+        flex: 0 0 350px;
+    }
+    .dc-card-image {
+        aspect-ratio: 302 / 240;
     }
 }

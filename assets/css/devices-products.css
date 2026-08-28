@@ -488,25 +488,58 @@
     background: var(--color-eyebrow-blue-hover);
 }
 
+/* Valores exactos de recursos/mobile/devices-products/figma.css (frame 390px) */
 @media (max-width: 900px) {
     .devices-products {
-        padding: 48px 20px;
+        /* Horizontal ya lo aporta .tc-container (20px en mobile, ver
+           main.css) sobre .dp-container — acá solo va el vertical, mismo
+           criterio que .hero-content en hero.css. */
+        padding: 64px 0;
     }
     .dp-title {
-        font-size: 32px;
-        line-height: 1.3;
+        font-size: 30px;
+        line-height: 34px;
+        margin-bottom: 14px;
     }
+
+    /* Carrusel: 1 card visible con peek del siguiente (350px + 16px gap
+       en un frame de 390px = ~24px de peek), en vez de las 3 de desktop.
+       El step/gap/loop del carrusel (devices-carousel.js) se recalculan
+       solos desde el ancho real del card vía getBoundingClientRect, así
+       que alcanza con cambiar el flex-basis acá — no se toca el JS. */
+    .dp-grid {
+        gap: 16px;
+    }
+    /* 100% (no un px fijo tipo 350px) para que llene todo el ancho visible
+       del carrusel sin dejar asomar el borde del siguiente card — la
+       navegación entre productos queda solo a cargo de flechas/dots. */
     .dp-card {
-        flex: 0 0 300px;
+        flex: 0 0 100%;
     }
+    .dp-card-image {
+        aspect-ratio: 302 / 332;
+        border-radius: 16px;
+    }
+    .dp-price-was {
+        font-size: 12px;
+        line-height: 16px;
+        color: #848484;
+    }
+
     /* Mobile: de fila única con dividers a grid 2x2 — cada item pasa a
-       ser su propia card (mismo border/radius que .dp-card, ver arriba),
-       en vez de vivir dentro de la card grande compartida (esa pierde
-       su propio fondo/borde/padding, ahora es solo el grid wrapper). */
+       ser su propia card con elevación propia (border+shadow, texto
+       centrado), en vez de vivir dentro de la card grande compartida
+       (esa pierde su propio fondo/borde/padding, ahora es solo el grid
+       wrapper). */
     .dp-features-strip {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        /* La base (desktop) trae align-items:flex-start para la fila
+           horizontal — sin resetearlo acá, el grid deja cada item con su
+           alto de contenido propio en vez de estirarlo al alto de fila,
+           y las cards de una misma fila quedan de distinto tamaño. */
+        align-items: stretch;
+        gap: 16px;
         padding: 0;
         background: transparent;
         border: none;
@@ -518,11 +551,14 @@
     }
     .dp-feature-item {
         flex-direction: column;
-        gap: 10px;
-        padding: 20px;
+        align-items: center;
+        text-align: center;
+        gap: 4px;
+        padding: 24px 20px;
         background: #fff;
-        border: 1px solid #D9D9D9;
-        border-radius: 20px;
+        border: 1px solid #F3F3F3;
+        border-radius: 16px;
+        box-shadow: 0px 10px 28px -4px rgba(19,21,21,0.04), 0px 0px 18px rgba(19,21,21,0.05), 0px 0px 2px rgba(19,21,21,0.05);
     }
     /* Estas 2 reglas tienen más especificidad (clase + pseudo-clase)
        que .dp-feature-item sola de arriba y le ganan pase lo que pase
@@ -531,10 +567,38 @@
        y las cards del grid quedan con padding asimétrico. */
     .dp-feature-item:first-child,
     .dp-feature-item:last-child {
-        padding: 20px;
+        padding: 24px 20px;
+    }
+    /* text-wrap:balance en vez del fill greedy por defecto — con un
+       margen de ajuste tan chico (127px de ancho) el wrap normal deja
+       una palabra sola "colgando" en la 2da línea en vez del salto
+       parejo de figma.css (ej. "Entrega el" / "mismo día"). Se degrada
+       sin problema en navegadores que no lo soportan (wrap normal). */
+    .dp-feature-item strong {
+        font-size: 14px;
+        line-height: 19px;
+        text-wrap: balance;
+    }
+    .dp-feature-item p {
+        font-size: 11px;
+        line-height: 15px;
+        text-wrap: balance;
     }
     .dp-cta-banner {
         flex-direction: column;
         align-items: flex-start;
+        padding: 24px;
+        gap: 24px;
+    }
+    .dp-cta-banner strong {
+        font-size: 18px;
+        line-height: 27px;
+    }
+    .dp-cta-banner p {
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .dp-cta-btn {
+        width: 100%;
     }
 }
