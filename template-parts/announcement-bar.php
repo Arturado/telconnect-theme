@@ -13,7 +13,7 @@
                     <span class="dot">·</span>
                     <span>Distribuidor Autorizado TUU</span>
                     <span class="dot">·</span>
-                    <span>Despacho gratis en todo Chile y entrega en Santiago el mismo día</span>
+                    <span>Despacho a todo Chile y entrega en Santiago el mismo día</span>
                 </div>
                 <?php
             endfor;
