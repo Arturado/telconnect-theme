@@ -30,7 +30,27 @@
                                 <?php if ( $product->is_on_sale() ) : ?>
                                     <span class="dp-sale-badge"><?php echo esc_html( tc_get_product_discount_percent( $product ) ); ?>% dcto.</span>
                                 <?php endif; ?>
-                                <?php echo woocommerce_get_product_thumbnail(); ?>
+                                <?php
+                                /**
+                                 * 'large' en vez de 'woocommerce_thumbnail' — mismo motivo que
+                                 * devices-products.php (ver comentario detallado ahí): el tamaño
+                                 * cropeado cuadrado por defecto excluye del srcset cualquier
+                                 * candidato más grande que 300w, sin importar la resolución del
+                                 * original subido.
+                                 *
+                                 * sizes: .dc-card comparte .dp-card en desktop (misma fórmula que
+                                 * devices-products.php), pero en mobile queda fijo en 350px (no
+                                 * 100vw, ver #dc-grid .dc-card en devices-complementos.css — a
+                                 * propósito deja peek del card siguiente) → imagen = 350 - 2*24
+                                 * (padding) = 302px fijo, no un cálculo en vw.
+                                 */
+                                echo woocommerce_get_product_thumbnail(
+                                    'large',
+                                    array(
+                                        'sizes' => '(max-width: 900px) 302px, (max-width: 1440px) calc((100vw - 272px) / 3), 390px',
+                                    )
+                                );
+                                ?>
                             </div>
                             <div class="dp-card-body">
                                 <h3><?php the_title(); ?></h3>

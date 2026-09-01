@@ -1750,3 +1750,33 @@ function tc_pdp_price_note() {
     echo '<span class="pdp-price-note">' . esc_html__( 'Precio + IVA', 'telconnect' ) . '</span>';
 }
 add_action( 'woocommerce_single_product_summary', 'tc_pdp_price_note', 11 );
+
+/**
+ * PDP — sizes real de la imagen principal de la galería (pdp-photo-card)
+ * ============================================================
+ * Sin este filtro, wp_get_attachment_image() calcula un sizes por
+ * defecto a partir del ancho registrado de 'woocommerce_single'
+ * ("(max-width: 600px) 100vw, 600px"), que no tiene relación con el
+ * ancho real de .pdp-photo-card en desktop — ahí el navegador elegía
+ * un candidato de 600w del srcset y lo estiraba con CSS hasta los
+ * ~860px reales del contenedor, pixelando la foto aunque el srcset
+ * ya trae candidatos de hasta 2048w (ver pdp.css .pdp-photo-card).
+ *
+ * Fórmula derivada de main.css/pdp.css: .tc-container tiene
+ * max-width:1440px y padding:40px por lado (desde 960px de viewport
+ * hacia arriba); .pdp-grid reparte ese ancho entre .pdp-gallery-col
+ * (flex:1) y .pdp-summary-col (fijo 476px) con gap:24px — de ahí que
+ * la galería mida siempre (contenedor - 500px), hasta el tope de
+ * 1360-500=860px. Por debajo de 1000px .pdp-grid se apila
+ * (flex-direction:column) y el ancho ya no se puede derivar por
+ * álgebra de flex-grow (queda sujeto a fit-content del navegador) —
+ * como ahí el ancho real nunca puede superar el viewport, 100vw es
+ * la cota segura (nunca elige un candidato más chico del necesario).
+ */
+add_filter(
+    'woocommerce_gallery_image_html_attachment_image_params',
+    function ( $params ) {
+        $params['sizes'] = '(max-width: 1000px) 100vw, (max-width: 1520px) calc(100vw - 580px), 860px';
+        return $params;
+    }
+);

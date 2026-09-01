@@ -27,7 +27,30 @@
                                 <?php if ( $product->is_on_sale() ) : ?>
                                     <span class="dp-sale-badge"><?php echo esc_html( tc_get_product_discount_percent( $product ) ); ?>% dcto.</span>
                                 <?php endif; ?>
-                                <?php echo woocommerce_get_product_thumbnail(); ?>
+                                <?php
+                                /**
+                                 * 'large' (proporcional, no crop) en vez del 'woocommerce_thumbnail'
+                                 * por defecto (300x300 con crop cuadrado): WP solo incluye en el
+                                 * srcset los tamaños registrados con el MISMO ratio que el pedido,
+                                 * así que con un tamaño cropeado cuadrado el candidato más grande
+                                 * disponible quedaba en 300w pase lo que pase, aunque el original
+                                 * subido fuera de varios miles de px — pedir 'large' habilita toda
+                                 * la escalera ya generada (768/1024/1536/2048/scaled) sin tocar el
+                                 * recorte visual, que lo sigue haciendo el CSS (aspect-ratio +
+                                 * object-fit:cover en .dp-card-image, ver devices-products.css).
+                                 *
+                                 * sizes: fórmula derivada de .dp-card (flex 0 0 100% en mobile,
+                                 * flex 0 0 calc((100% - 48px)/3) en desktop dentro de .tc-container
+                                 * max-width:1440px/padding:40px) menos el padding:24px de .dp-card
+                                 * y el padding de .tc-container — ver devices-products.css.
+                                 */
+                                echo woocommerce_get_product_thumbnail(
+                                    'large',
+                                    array(
+                                        'sizes' => '(max-width: 900px) calc(100vw - 88px), (max-width: 1440px) calc((100vw - 272px) / 3), 390px',
+                                    )
+                                );
+                                ?>
                             </div>
                             <div class="dp-card-body">
                                 <h3><?php the_title(); ?></h3>
