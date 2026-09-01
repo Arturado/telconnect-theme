@@ -508,33 +508,127 @@
             });
 
             function syncProxyLabel() {
-                var totalEl = document.querySelector('.chk-summary-total span:last-child');
-                if (totalEl && totalEl.textContent.trim()) {
-                    // No se usa textContent sobre el botón: destruiría el markup
-                    // del roll de texto (.btn-label-mask > .btn-label +
-                    // .btn-label-ghost). Se actualizan los 2 spans por separado,
-                    // con el mismo texto, para que el hover siga funcionando.
-                    var newText = 'Pagar ' + totalEl.textContent.trim();
-                    var label = placeOrderProxy.querySelector('.btn-label');
-                    var ghost = placeOrderProxy.querySelector('.btn-label-ghost');
-                    if (label) {
-                        label.textContent = newText;
+                // El radio de "Forma de pago" ya trae data-order_button_text
+                // (ver payment-method.php + el filtro woocommerce_available_payment_gateways
+                // de BACS en functions.php) — el mismo valor que el checkout.js
+                // CORE de WC usa para renombrar el #place_order real al elegir
+                // un gateway (payment_method_selected(), assets/js/frontend/checkout.js).
+                // Se reusa acá para que el botón "Pagar" visible (este proxy)
+                // diga lo mismo que el real, sin duplicar el string en 2 lugares:
+                // "Ya transferí, confirmar pedido" con Transferencia bancaria,
+                // "Pagar $X" (fallback de abajo) con cualquier otro gateway.
+                var selectedRadio = document.querySelector('.chk-payment-radio:checked');
+                var customText = selectedRadio ? selectedRadio.getAttribute('data-order_button_text') : '';
+
+                var newText = customText;
+                if (!newText) {
+                    var totalEl = document.querySelector('.chk-summary-total span:last-child');
+                    if (!totalEl || !totalEl.textContent.trim()) {
+                        return;
                     }
-                    if (ghost) {
-                        ghost.textContent = newText;
-                    }
+                    newText = 'Pagar ' + totalEl.textContent.trim();
+                }
+
+                // No se usa textContent sobre el botón: destruiría el markup
+                // del roll de texto (.btn-label-mask > .btn-label +
+                // .btn-label-ghost). Se actualizan los 2 spans por separado,
+                // con el mismo texto, para que el hover siga funcionando.
+                var label = placeOrderProxy.querySelector('.btn-label');
+                var ghost = placeOrderProxy.querySelector('.btn-label-ghost');
+                if (label) {
+                    label.textContent = newText;
+                }
+                if (ghost) {
+                    ghost.textContent = newText;
                 }
             }
 
-            // "updated_checkout" lo dispara WooCommerce vía jQuery.trigger()
-            // después de cada recálculo AJAX de totales (cambio de método de
-            // envío, de comuna, etc.) — con jQuery cargado como dependencia
-            // (ver telconnect_enqueue_checkout_assets()) esto lo capta bien;
-            // un addEventListener nativo no vería este evento.
             if (window.jQuery) {
+                // "updated_checkout" lo dispara WooCommerce vía jQuery.trigger()
+                // después de cada recálculo AJAX de totales (cambio de método de
+                // envío, de comuna, etc.) — con jQuery cargado como dependencia
+                // (ver telconnect_enqueue_checkout_assets()) esto lo capta bien;
+                // un addEventListener nativo no vería este evento.
                 window.jQuery(document.body).on('updated_checkout', syncProxyLabel);
+
+                // "payment_method_selected" lo dispara el checkout.js CORE de WC
+                // (payment_method_selected(), assets/js/frontend/checkout.js)
+                // DESPUÉS de renombrar el #place_order real — se reusa el mismo
+                // evento para no inventar un listener de 'change' propio sobre
+                // los radios (que además se recrean en cada update_checkout,
+                // ver initPaymentToggle()) y para no depender del orden de
+                // ejecución entre 2 listeners de 'change' distintos.
+                window.jQuery(document.body).on('payment_method_selected', syncProxyLabel);
             }
         }
+    }
+
+    /**
+     * ============================================================
+     * Copiar "Datos de transferencia" (BACS) al portapapeles
+     * ============================================================
+     * El botón vive fuera del fragment .woocommerce-checkout-payment
+     * que WooCommerce reemplaza en cada update_checkout (ver docblock
+     * de tc_render_bacs_transfer_details() en functions.php: se
+     * imprime como hermano de <ul class="wc_payment_methods">, no dentro
+     * del <li> de BACS), así que el nodo del botón nunca se destruye/
+     * recrea — igual se delega en document (mismo criterio que
+     * initCheckoutCouponForm() más abajo) para no depender de ese
+     * detalle de implementación. navigator.clipboard.writeText()
+     * requiere un contexto seguro (HTTPS o localhost); si no está
+     * disponible o el navegador la bloquea, cae al fallback de
+     * document.execCommand('copy') vía un textarea oculto.
+     */
+    function initBacsCopy() {
+        if (!window.jQuery) {
+            return;
+        }
+        var $ = window.jQuery;
+
+        function fallbackCopy(text) {
+            var textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                // Sin API de portapapeles disponible y execCommand también
+                // falló — no hay más fallback razonable, el usuario igual
+                // ve los datos completos en pantalla para copiarlos a mano.
+            }
+            document.body.removeChild(textarea);
+        }
+
+        $(document).on('click', '.chk-bacs-copy', function (evt) {
+            evt.preventDefault();
+            var btn = this;
+            var text = btn.getAttribute('data-copy-text') || '';
+            if (!text) {
+                return;
+            }
+
+            var showCopied = function () {
+                btn.classList.add('is-copied');
+                window.clearTimeout(btn._copiedTimeout);
+                btn._copiedTimeout = window.setTimeout(function () {
+                    btn.classList.remove('is-copied');
+                }, 1600);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(showCopied, function () {
+                    fallbackCopy(text);
+                    showCopied();
+                });
+            } else {
+                fallbackCopy(text);
+                showCopied();
+            }
+        });
     }
 
     /**
@@ -664,6 +758,7 @@
         initPaymentToggle();
         initWizard();
         initCheckoutCouponForm();
+        initBacsCopy();
 
         // Ver docblock de initPaymentToggle(): reatar tras cada refresh de
         // fragment de WooCommerce, mismo gancho que syncProxyLabel.

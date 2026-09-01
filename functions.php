@@ -1682,6 +1682,139 @@ add_action( 'woocommerce_admin_order_data_after_billing_address', 'tc_display_ru
 
 /**
  * ============================================================
+ * Checkout — "Datos de transferencia" inline al elegir BACS
+ * ============================================================
+ * BACS nativo de WooCommerce solo trae 6 campos configurables desde el
+ * admin (account_name/account_number/bank_name/sort_code/iban/bic — ver
+ * generate_account_details_html() en class-wc-gateway-bacs.php), sin
+ * campos propios para RUT/Correo/Tipo de cuenta que este negocio sí
+ * necesita mostrar (ver capture de referencia). Confirmado contra
+ * woocommerce_bacs_accounts en la DB que ya están cargados así,
+ * repurposeando los 3 slots que sobran:
+ *   - iban      -> RUT            (77.829.787-6)
+ *   - bic       -> Correo         (pagos@telconnect.cl)
+ *   - bank_name -> "Banco - Tipo de cuenta" en un solo string
+ *                  ("Banco de Chile - Cuenta Vista"), separado acá por " - ".
+ * Todos los valores calzan 1 a 1 contra el capture del cliente — no es
+ * una suposición, se verificó contra la DB real antes de escribir esto.
+ */
+function tc_get_bacs_transfer_details() {
+    $accounts = get_option( 'woocommerce_bacs_accounts', array() );
+    if ( empty( $accounts[0] ) ) {
+        return null;
+    }
+
+    $account    = (object) $accounts[0];
+    $bank_parts = array_map( 'trim', explode( ' - ', (string) $account->bank_name, 2 ) );
+
+    return array(
+        'nombre'      => $account->account_name,
+        'rut'         => $account->iban,
+        'correo'      => $account->bic,
+        'banco'       => isset( $bank_parts[0] ) ? $bank_parts[0] : '',
+        'tipo_cuenta' => isset( $bank_parts[1] ) ? $bank_parts[1] : '',
+        'n_cuenta'    => $account->account_number,
+    );
+}
+
+// El texto del radio de BACS SIGUE viniendo vacío por defecto
+// ($gateway->order_button_text no lo setea WC_Gateway_BACS) — se completa
+// acá para que payment-method.php lo escriba en el data-order_button_text
+// del radio (ya lo hacía, sin tocar el template) y el checkout.js CORE de
+// WC (payment_method_selected(), assets/js/frontend/checkout.js) cambie
+// solo el texto del #place_order real al elegir Transferencia bancaria.
+// El botón "Pagar" visible (proxy, ver checkout.js del theme) lee este
+// mismo valor vía el atributo del radio, no hace falta duplicar el string ahí.
+add_filter(
+    'woocommerce_available_payment_gateways',
+    function ( $gateways ) {
+        if ( isset( $gateways['bacs'] ) ) {
+            $gateways['bacs']->order_button_text = __( 'Ya transferí, confirmar pedido', 'telconnect' );
+        }
+        return $gateways;
+    }
+);
+
+/**
+ * Se imprime como hermano de <ul class="wc_payment_methods"> (llamado
+ * justo después de woocommerce_checkout_payment() en form-checkout.php),
+ * no adentro del <li> de BACS: adentro le tocaría solo la mitad angosta
+ * del row de pills (Tarjeta/Transferencia van lado a lado), y el capture
+ * lo muestra a todo el ancho de la card "Forma de pago". Igual se le
+ * ponen las clases payment_box/payment_method_bacs que WooCommerce ya
+ * usa (misma lógica que el <li> real) para el show/hide: el checkout.js
+ * CORE de WC selecciona por esas 2 clases en TODO el documento
+ * (`div.payment_box.` + id-del-radio-chosen), no le importa dónde vive
+ * el nodo — cero JS propio para mostrar/ocultar esto.
+ */
+function tc_render_bacs_transfer_details() {
+    if ( ! WC()->cart || ! WC()->cart->needs_payment() ) {
+        return;
+    }
+
+    $gateways = WC()->payment_gateways()->get_available_payment_gateways();
+    if ( ! isset( $gateways['bacs'] ) ) {
+        return;
+    }
+
+    $details = tc_get_bacs_transfer_details();
+    if ( ! $details ) {
+        return;
+    }
+
+    $rows = array(
+        __( 'Nombre:', 'telconnect' )         => $details['nombre'],
+        __( 'RUT:', 'telconnect' )            => $details['rut'],
+        __( 'Correo:', 'telconnect' )         => $details['correo'],
+        __( 'Banco:', 'telconnect' )          => $details['banco'],
+        __( 'Tipo de cuenta:', 'telconnect' ) => $details['tipo_cuenta'],
+        __( 'N° de Cuenta:', 'telconnect' )   => $details['n_cuenta'],
+    );
+
+    // Texto plano para el botón de copiar — mismas 6 líneas "Label Valor",
+    // filtrando filas vacías (ej. tipo_cuenta si bank_name no traía " - ").
+    $copy_lines = array();
+    foreach ( $rows as $label => $value ) {
+        if ( '' !== $value ) {
+            $copy_lines[] = $label . ' ' . $value;
+        }
+    }
+    ?>
+    <div class="payment_box payment_method_bacs chk-bacs-card" style="<?php echo $gateways['bacs']->chosen ? '' : 'display:none;'; ?>">
+        <div class="chk-bacs-header">
+            <span class="chk-bacs-title"><?php esc_html_e( 'Datos de transferencia', 'telconnect' ); ?></span>
+            <button type="button" class="chk-bacs-copy" data-copy-text="<?php echo esc_attr( implode( "\n", $copy_lines ) ); ?>" aria-label="<?php esc_attr_e( 'Copiar datos de transferencia', 'telconnect' ); ?>">
+                <span class="chk-bacs-copy-icon" aria-hidden="true">📋</span>
+                <span class="chk-bacs-copy-tooltip" role="status"><?php esc_html_e( 'Copiado', 'telconnect' ); ?></span>
+            </button>
+        </div>
+        <div class="chk-bacs-rows">
+            <?php foreach ( $rows as $label => $value ) : ?>
+                <?php if ( '' === $value ) : continue; endif; ?>
+                <div class="chk-bacs-row">
+                    <span class="chk-bacs-label"><?php echo esc_html( $label ); ?></span>
+                    <span class="chk-bacs-value"><?php echo esc_html( $value ); ?></span>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <div class="chk-bacs-notice">
+            <span class="chk-bacs-notice-icon" aria-hidden="true">i</span>
+            <span>
+                <?php
+                printf(
+                    /* translators: %s es un link mailto: con el correo configurado en BACS para enviar el comprobante */
+                    esc_html__( 'Realiza la transferencia y valida tu pago enviando el comprobante a %s. Nuestro equipo se contactará contigo para confirmar la recepción y continuar con la activación de tu máquina.', 'telconnect' ),
+                    '<a href="' . esc_url( 'mailto:' . $details['correo'] ) . '">' . esc_html( $details['correo'] ) . '</a>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                );
+                ?>
+            </span>
+        </div>
+    </div>
+    <?php
+}
+
+/**
+ * ============================================================
  * Mi Cuenta
  * ============================================================
  */

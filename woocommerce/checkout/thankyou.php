@@ -188,19 +188,32 @@ $chk_ty_summary = ( $order && ! $order->has_status( array( 'failed', 'cancelled'
             <?php
             /**
              * woocommerce_order_details_table() (core, hook 'woocommerce_thankyou'
-             * prioridad 10) y las instrucciones de gateways como BACS (hook
-             * 'woocommerce_thankyou_{method}') no tienen ningún estilo propio del
-             * theme — sin este wrapper, salían con el look crudo de WooCommerce
-             * justo debajo de la card rediseñada. No se overridean sus templates
-             * (mismo criterio del §6/§8.1: restylear vía CSS, no reemplazar
-             * markup nativo sin necesidad) — solo se envuelve el output de ambos
-             * do_action en un contenedor para poder darle tipografía/espaciado
-             * consistentes con el resto de la página (ver .chk-thankyou-native
-             * en checkout.css).
+             * prioridad 10) no tiene estilo propio del theme y además duplica la
+             * card "Resumen del pedido" de arriba — se sigue llamando (no se
+             * overridea su template, mismo criterio del §6/§8.1: restylear vía
+             * CSS, no reemplazar markup nativo sin necesidad) pero queda oculta
+             * visualmente en .chk-thankyou-native (ver checkout.css).
+             *
+             * Las instrucciones de gateways vía 'woocommerce_thankyou_{method}'
+             * van en un wrapper APARTE (mismas clases, pero con display
+             * reescrito a visible en checkout.css) — a diferencia de la tabla
+             * de arriba, esto NO es redundante: es el único lugar donde sale la
+             * nota de "pago en espera de confirmación" + los datos bancarios
+             * que WC_Gateway_BACS::thankyou_page() imprime para BACS. Con
+             * has_action() de por medio (en vez de imprimir el wrapper
+             * siempre): con un gateway que no engancha nada ahí (TUU, hoy)
+             * el div saldría vacío pero con su margin/padding/border-top
+             * propios igual visibles — una línea horizontal decorativa de
+             * sobra en la página de gracias de cualquier pago con tarjeta.
              */
+            $chk_gateway_thankyou_hook = 'woocommerce_thankyou_' . $order->get_payment_method();
             ?>
+            <?php if ( has_action( $chk_gateway_thankyou_hook ) ) : ?>
+                <div class="chk-thankyou-native chk-thankyou-gateway-notice">
+                    <?php do_action( $chk_gateway_thankyou_hook, $order->get_id() ); ?>
+                </div>
+            <?php endif; ?>
             <div class="chk-thankyou-native">
-                <?php do_action( 'woocommerce_thankyou_' . $order->get_payment_method(), $order->get_id() ); ?>
                 <?php do_action( 'woocommerce_thankyou', $order->get_id() ); ?>
             </div>
 

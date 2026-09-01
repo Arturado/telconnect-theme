@@ -862,6 +862,165 @@
     margin: 0;
 }
 
+/* ===== BACS: "Datos de transferencia" (ver tc_render_bacs_transfer_details()
+   en functions.php) =====
+   .chk-bacs-card viene DEMÁS de .payment_box/.payment_method_bacs (esas 2
+   son las que necesita el checkout.js CORE de WC para el show/hide, ver
+   docblock en functions.php) — se resetean acá margin/padding/background
+   de la regla genérica ".wc_payment_method .payment_box" de arriba
+   porque este bloque NO vive dentro de un <li class="wc_payment_method">
+   (vive fuera del <ul>, a todo el ancho de la card "Forma de pago"), así
+   que no debe heredar ese margin lateral de 18px pensado para el <li>. */
+.chk-bacs-card {
+    box-sizing: border-box;
+    margin: 20px 0 0;
+    padding: 20px 24px;
+    background: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 16px;
+    font-size: inherit;
+    color: inherit;
+}
+
+.chk-bacs-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.chk-bacs-title {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: var(--weight-medium);
+    line-height: 22px;
+    color: #0D0F15;
+}
+
+.chk-bacs-copy {
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background 0.15s ease;
+}
+
+.chk-bacs-copy:hover {
+    background: #F3F3F3;
+}
+
+.chk-bacs-copy-icon {
+    font-size: 14px;
+}
+
+/* Tooltip "Copiado" — oculto por defecto, el JS (initBacsCopy() en
+   checkout.js) solo togglea .is-copied por ~1.6s, cero animación propia
+   más allá de la transición de opacity de acá. */
+.chk-bacs-copy-tooltip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    background: #0D0F15;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: var(--weight-medium);
+    line-height: 16px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.chk-bacs-copy.is-copied .chk-bacs-copy-tooltip {
+    opacity: 1;
+}
+
+.chk-bacs-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chk-bacs-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.chk-bacs-label {
+    color: #848484;
+    flex-shrink: 0;
+}
+
+.chk-bacs-value {
+    color: #0D0F15;
+    font-weight: var(--weight-medium);
+    text-align: right;
+    word-break: break-word;
+}
+
+/* Mismo azul que .chk-trust-note (checkout.css más abajo) — ver docblock
+   ahí: #EAEFFD de fondo / #1F43A8 de texto es el color de "aviso
+   informativo" ya establecido en el resto del checkout. */
+.chk-bacs-notice {
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #EAEFFD;
+    border-radius: 12px;
+}
+
+.chk-bacs-notice-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    border-radius: 50%;
+    background: #1F43A8;
+    color: #fff;
+    font-family: var(--font-main);
+    font-size: 10px;
+    font-style: italic;
+    font-weight: var(--weight-medium);
+    line-height: 1;
+}
+
+.chk-bacs-notice span:not(.chk-bacs-notice-icon) {
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: var(--weight-regular);
+    color: #1F43A8;
+}
+
+.chk-bacs-notice a {
+    color: #1F43A8;
+    font-weight: var(--weight-medium);
+}
+
 /* Botón real de WooCommerce (#place_order) — oculto visualmente (NO
    display:none, checkout.js filtra por :visible en algunos puntos),
    el botón "Pagar" que se ve de verdad vive en .chk-step-actions y le
@@ -1693,6 +1852,19 @@
     margin: 40px auto 0;
     padding-top: 32px;
     border-top: 1px solid #EEF0F3;
+}
+
+/* La nota de gateway (BACS: "Awaiting BACS payment" + datos bancarios,
+   ver thankyou.php) SÍ se muestra — a diferencia del resto de
+   .chk-thankyou-native, no es contenido duplicado. Mismas reglas de
+   tipografía/espaciado de arriba (h2/h3/p/ul.bacs_details/etc, todas
+   con selector ".chk-thankyou-native ...") por tener también la clase
+   .chk-thankyou-native — esto solo pisa el display. thankyou.php ya
+   se encarga de no imprimir este div cuando el gateway elegido no
+   engancha nada en 'woocommerce_thankyou_{method}' (ej. TUU), así que
+   acá no hace falta cubrir el caso "vacío". */
+.chk-thankyou-gateway-notice.chk-thankyou-native {
+    display: block;
 }
 
 .chk-thankyou-native h2,

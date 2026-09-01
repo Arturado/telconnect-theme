@@ -203,6 +203,10 @@ $chk_total_now = tc_get_order_summary_breakdown()['total'];
                                     );
                                 } );
                                 woocommerce_checkout_payment();
+
+                                // Fuera del <ul> de gateways a propósito — ver docblock
+                                // de tc_render_bacs_transfer_details() en functions.php.
+                                tc_render_bacs_transfer_details();
                                 ?>
                             </div>
 
