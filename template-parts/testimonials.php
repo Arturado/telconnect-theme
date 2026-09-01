@@ -31,41 +31,48 @@
                     array(
                         'type'  => 'stat',
                         'name'  => 'Camila Fuentes',
-                        'biz'   => 'Minimarket · Ñuñoa',
-                        'stat'  => '21 días',
+                        'biz'   => 'Minimarket ',
+                        'stat'  => '8 días',
                         'quote' => 'Recuperó la inversión de la máquina.',
+                        'img'   => '01.png',
                     ),
                     array(
                         'type'  => 'quote',
-                        'name'  => 'Rodrigo Salas',
+                        'name'  => 'Paula Rivas',
                         'biz'   => 'Estacionamiento',
                         'quote' => 'Dejamos el cuaderno y el descuadre de caja se acabó en una semana.',
+                        'img'   => '02.png',
                     ),
                     array(
                         'type'  => 'stat',
-                        'name'  => 'Paula Rivas',
-                        'biz'   => 'Cafetería · Providencia',
-                        'stat'  => '15 min',
-                        'quote' => 'Desde que cobra hasta que tiene la plata.',
+                        'name'  => 'Jorge Medina',
+                        'biz'   => 'Cafetería',
+                        'stat'  => '',
+                        'quote' => 'Vinieron al local, instalaron gastronomia y capacitaron a mis cajeros la misma tarde.',
+                        'img'   => '03.png',
                     ),
                     array(
                         'type'  => 'quote',
-                        'name'  => 'Jorge Medina',
-                        'biz'   => 'Botillería · Maipú',
-                        'quote' => 'Vinieron al local, instalaron y capacitaron a mis cajeros la misma tarde.',
+                        'name'  => 'Ana Torres',
+                        'biz'   => 'Costurera',
+                        'stat'  => '1 min',
+                        'quote' => 'Desde que el cliente paga hasta que nos abonan la plata.',
+                        'img'   => '04.png',
                     ),
                     array(
                         'type'  => 'stat',
-                        'name'  => 'Ana Torres',
-                        'biz'   => 'Minimarket · La Florida',
-                        'stat'  => '3x',
-                        'quote' => 'Más ventas los fines de semana desde que acepta tarjetas.',
+                        'name'  => 'Rodrigo Salas',
+                        'biz'   => 'Botilleria',
+                        'stat'  => '3 locales',
+                        'quote' => 'Administrados desde una sola cuenta.',
+                        'img'   => '05.png',
                     ),
                     array(
                         'type'  => 'quote',
                         'name'  => 'Valentina Rojas',
-                        'biz'   => 'Peluquería · Providencia',
-                        'quote' => 'Mis clientas pagan con QR y ya no ando pendiente del cambio.',
+                        'biz'   => 'Peluquería ',
+                        'quote' => 'Con reserva puedo organizar mejor mi agenda y perder clientas.',
+                        'img'   => '06.png',
                     ),
                 );
 
@@ -73,7 +80,10 @@
                 for ( $set = 1; $set <= 2; $set++ ) :
                     foreach ( $testimonials as $t ) :
                         ?>
-                        <div class="ts-card"<?php echo 2 === $set ? ' aria-hidden="true"' : ''; ?>>
+                        <?php
+                        $ts_card_bg = get_template_directory_uri() . '/assets/img/testimonios/' . $t['img'];
+                        ?>
+                        <div class="ts-card"<?php echo 2 === $set ? ' aria-hidden="true"' : ''; ?> style="--ts-card-bg: url('<?php echo esc_url( $ts_card_bg ); ?>');">
                             <div class="ts-card-scrim-top"></div>
                             <div class="ts-card-scrim-bottom"></div>
                             <div class="ts-card-header">

@@ -149,7 +149,13 @@
     padding: 32px;
     display: flex;
     flex-direction: column;
-    background: #0D0F15;
+    /* #0D0F15 de fondo (antes que quede detrás mientras carga la foto,
+       o si --ts-card-bg viniera vacío) + la foto del testimonio encima,
+       vía var(--ts-card-bg) seteada inline por testimonials.php (1 url()
+       distinta por card, ver el loop). Los scrims de abajo (rgba negro,
+       0.6 arriba/0.84 abajo) ya estaban pensados para dar legibilidad al
+       texto sobre esta foto, no sobre el fondo sólido. */
+    background: #0D0F15 var(--ts-card-bg) center / cover no-repeat;
     border-radius: 28px;
     overflow: hidden;
     scroll-snap-align: start;
