@@ -78,7 +78,7 @@ $chk_ty_summary = ( $order && ! $order->has_status( array( 'failed', 'cancelled'
                             <?php
                             printf(
                                 /* translators: %s es el email real del comprador */
-                                esc_html__( 'Te enviamos la confirmación y la boleta electrónica a %s.', 'telconnect' ),
+                                esc_html__( 'Te enviamos la confirmación de compra a %s.', 'telconnect' ),
                                 '<strong>' . esc_html( $order->get_billing_email() ) . '</strong>'
                             );
                             ?>
