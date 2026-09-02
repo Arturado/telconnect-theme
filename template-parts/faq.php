@@ -12,7 +12,7 @@
                 ),
                 array(
                     'q' => '¿Qué incluye mi máquina?',
-                    'a' => 'Pagos con tarjeta, boleta y factura electrónica conectada al SII, catálogo e inventario, sistema de reervas y acceso a Adelanto, Abono Flexible y Cuotas TUU. Todo activado desde el primer día, sin costo extra. ',
+                    'a' => 'Pagos con tarjeta, boleta y factura electrónica conectada al SII, catálogo e inventario, sistema de reservas y acceso a Adelanto, Abono Flexible y Cuotas TUU. Todo activado desde el primer día, sin costo extra. ',
                 ),
                 array(
                     'q' => '¿Hay mensualidad o arriendo?',
