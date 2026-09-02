@@ -14,7 +14,8 @@ define( 'TC_WHATSAPP_NUMBER_PARKING_SUPPORT', '56985729297' );
 // confirme. El respaldo real de cada solicitud NO depende de este email,
 // queda guardado en el plugin "Telconnect - Solicitudes Prueba" aunque el
 // envío falle (ver wp-content/plugins/telconnect-solicitudes-prueba/).
-define( 'TC_TRIAL_REQUEST_EMAIL', 'hola@arturodev.info' );
+define( 'TC_TRIAL_REQUEST_EMAIL_PARKING', 'clientesparking@telconnect.cl' );
+define( 'TC_TRIAL_REQUEST_EMAIL_ANDCO', 'andco@telconnect.cl' );
 
 
 /**
@@ -948,9 +949,10 @@ add_action( 'wp_enqueue_scripts', 'telconnect_enqueue_andco_modal_assets' );
  * 2. Persiste vía tc_solicitudes_prueba_guardar() (plugin standalone,
  *    wp-content/plugins/telconnect-solicitudes-prueba/) — ES el respaldo
  *    real, no depende de que el email se entregue.
- * 3. Envía notificación por wp_mail() a TC_TRIAL_REQUEST_EMAIL (arriba).
- *    Si el email falla (típico en local sin SMTP configurado) no se
- *    bloquea la respuesta de éxito al usuario, porque el dato ya quedó
+ * 3. Envía notificación por wp_mail() a TC_TRIAL_REQUEST_EMAIL_ANDCO si
+ *    origen="AndCo", o TC_TRIAL_REQUEST_EMAIL_PARKING en cualquier otro
+ *    caso (arriba). Si el email falla (típico en local sin SMTP configurado)
+ *    no se bloquea la respuesta de éxito al usuario, porque el dato ya quedó
  *    guardado en el paso 2 — se deja constancia en el log de PHP.
  */
 function tc_ajax_submit_trial_request() {
@@ -1023,7 +1025,14 @@ function tc_ajax_submit_trial_request() {
         . '¿Tiene máquina TUU?: ' . ( 'si' === $tiene_maquina ? 'Sí' : 'No' ) . "\n"
         . 'Origen: ' . ( $origen ? $origen : '(no especificado)' ) . "\n";
 
-    $mail_sent = wp_mail( TC_TRIAL_REQUEST_EMAIL, $subject, $body );
+    // El modal de AndCo (amodal.js) siempre manda origen="AndCo" — es el
+    // único trigger que existe para ese modal. El modal de Parking (pmodal.js)
+    // nunca manda ese valor (usa "Hero", "Cómo Empezar", "Planes"), así que
+    // basta este chequeo para enrutar la notificación sin tocar el guardado
+    // en el plugin (paso 2, arriba), que sigue registrando $origen tal cual.
+    $destinatario = ( 'AndCo' === $origen ) ? TC_TRIAL_REQUEST_EMAIL_ANDCO : TC_TRIAL_REQUEST_EMAIL_PARKING;
+
+    $mail_sent = wp_mail( $destinatario, $subject, $body );
 
     // Log de diagnóstico — confirma qué se intentó enviar y si wp_mail() lo
     // aceptó. Útil en local sin SMTP configurado, donde wp_mail() puede
@@ -1033,7 +1042,7 @@ function tc_ajax_submit_trial_request() {
             '[Telconnect Solicitud Prueba] Solicitud de prueba de "%s" (%s) — wp_mail() a %s: %s',
             $nombre,
             $email,
-            TC_TRIAL_REQUEST_EMAIL,
+            $destinatario,
             $mail_sent ? 'OK' : 'FALLÓ'
         )
     );
@@ -1913,3 +1922,39 @@ add_filter(
         return $params;
     }
 );
+
+/**
+ * Emails al cliente — reemplaza el "Contenido adicional" por defecto de
+ * WooCommerce (get_default_additional_content() en cada clase WC_Email_
+ * Customer_*, visible porque la opción woocommerce_feature_email_
+ * improvements_enabled está en "yes"). Ninguno de estos 8 emails tiene un
+ * valor guardado en wp_options (woocommerce_customer_*_settings no existe
+ * para ninguno), así que sin este filtro se ve el texto por defecto de
+ * WooCommerce con el placeholder {store_email} resuelto a
+ * woocommerce_email_from_address — de ahí salía "...contacto con nosotros
+ * en hola@arturodev.info" en pedidos en espera/procesando/completados/
+ * factura/nota, y una variante sin "¡Gracias de nuevo!" en fallidos/
+ * reembolsados. Se pisa por código (no por wp_options) para que quede
+ * versionado y no dependa de guardar el campo a mano en cada uno de los
+ * 8 tipos de email desde el admin.
+ */
+function tc_woocommerce_customer_email_additional_content() {
+    return sprintf(
+        '¡Gracias de nuevo! Si necesitas ayuda ponte en contacto por nuestro Whatsapp +%s.',
+        TC_WHATSAPP_NUMBER_PARKING_SUPPORT
+    );
+}
+foreach (
+    array(
+        'customer_processing_order',
+        'customer_on_hold_order',
+        'customer_completed_order',
+        'customer_invoice',
+        'customer_note',
+        'customer_failed_order',
+        'customer_refunded_order',
+        'customer_partially_refunded_order',
+    ) as $tc_customer_email_id
+) {
+    add_filter( 'woocommerce_email_additional_content_' . $tc_customer_email_id, 'tc_woocommerce_customer_email_additional_content' );
+}
